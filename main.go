@@ -2,6 +2,8 @@ package main
 
 import (
 	cin "cin/src"
+	"cin/src/base"
+	"cin/src/components"
 	"cin/src/configs"
 )
 
@@ -13,12 +15,11 @@ func main() {
 // 配置
 func config() *cin.Config {
 	config := new(cin.Config)
-	config.SetParams(map[string]interface{}{
+	config.Params = map[string]interface{}{
 		"test": 123123,
-	})
-	config.AddComponents("ws", &configs.WebsocketServer{
-		Port: 10001,
-		Mode: cin.WebsocketServerModeAutoHandler,
-	})
+	}
+	config.ComponentDict = map[string]base.ConfigComponentInterface{
+		"ws": configs.NewWebsocketServer(&components.WebsocketServer{}, 10001),
+	}
 	return config
 }

@@ -1,15 +1,18 @@
 package constants
 
 // 存状态常量。不需要知道具体的值
-import "cin/src/alias"
+import "cin/src/base"
 
 const (
-	ApplicationStatusInit    alias.ApplicationStatus = iota
+	ApplicationStatusInit base.ApplicationStatus = iota
 	ApplicationStatusStart
 	ApplicationStatusRun
 	ApplicationStatusStop
 	ApplicationStatusDestroy
 
-	WebsocketServerModeAutoHandler alias.WebsocketServerMode = iota
+	WebsocketServerModeAutoHandler base.WebsocketServerMode = iota
 	WebsocketServerModeCustom
+
+	ControllerTypeWebsocket base.WebsocketServerMode = iota
+	ControllerTypeHttp
 )

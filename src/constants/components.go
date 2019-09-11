@@ -1,7 +1,7 @@
 package constants
 
-import "cin/src/alias"
+import "cin/src/base"
 
 const (
-	ComponentWebsocketServer alias.ConfigComponent = 1
+	ComponentWebsocketServer base.ConfigComponent = 1
 )

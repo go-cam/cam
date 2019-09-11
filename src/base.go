@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"cin/src/configs"
 	"cin/src/constants"
 	"cin/src/controllers"
+	"cin/src/models"
 )
 
 const (
@@ -21,25 +21,30 @@ const (
 	ApplicationStatusDestroy = constants.ApplicationStatusDestroy
 
 	// websocket server 运行模式：自动处理【推荐】
-	// 使用框架内规定的 Handler 或 Controller 自动匹配对应的方法。发送数据必须是规范的数据。
+	// 使用框架内规定的 Handler 或 BaseController 自动匹配对应的方法。发送数据必须是规范的数据。
 	// 使用该模式依然可以使用 OnMessage 接收数据。但是不能发送数据
 	WebsocketServerModeAutoHandler = constants.WebsocketServerModeAutoHandler
 	// websocket server 运行模式：自定义处理。
 	// 自定义 OnMessage 回调方法发送数据。根据实际需求自定义数据返回
 	WebsocketServerModeCustom = constants.WebsocketServerModeCustom
+
+	// 控制器类型：websocket
+	ControllerTypeWebsocket = constants.ControllerTypeWebsocket
+	// 控制器类型：http
+	ControllerTypeHttp = constants.ControllerTypeHttp
 )
 
 // 基础 websocket 处理器
 type BaseWebsocketHandler struct {
-	controllers.WebsocketHandler
+	controllers.BaseWebsocketHandler
 }
 
 // 基础 websocket 处理器
 type BaseController struct {
-	controllers.WebsocketHandler
+	controllers.BaseWebsocketHandler
 }
 
 // 配置类
 type Config struct {
-	configs.Config
+	models.Config
 }
