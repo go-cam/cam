@@ -41,12 +41,13 @@ type Controller struct {
 
 // 配置类
 type Config struct {
-	*models.Config
+	models.Config
 }
 // 新建配置
 func NewConfig() *Config {
 	config := new(Config)
-	config.Config = new(models.Config)
-	config.Config.Init()
+	configModel := new(models.Config)
+	configModel.Init()
+	config.Config = *configModel
 	return config
 }

@@ -12,7 +12,7 @@ type Config struct {
 }
 
 // 初始化数据
-func (config Config) Init() {
+func (config *Config) Init() {
 	config.ComponentDict = map[string]base.ConfigComponentInterface{}
 	config.Params = map[string]interface{}{}
 }

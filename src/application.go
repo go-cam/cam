@@ -3,6 +3,7 @@ package cin
 import (
 	"cin/src/base"
 	"reflect"
+	"time"
 )
 
 // 服务器全局类
@@ -50,6 +51,7 @@ func (app *application) Run() {
 	app.onInit()
 	app.onStart()
 	app.onRun()
+	app.wait()
 	//app.onStop()
 	//app.onDestroy()
 }
@@ -97,4 +99,11 @@ func (app *application) onStop() {
 // 应用销毁组件并停止
 func (app *application) onDestroy() {
 
+}
+
+// 等待（不会让程序结束）
+func (app *application) wait() {
+	for {
+		time.Sleep(1 * time.Second)
+	}
 }
