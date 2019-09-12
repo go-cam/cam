@@ -2,32 +2,36 @@ package cin
 
 import (
 	"cin/src/base"
-	"cin/src/models"
 	"reflect"
 )
 
 // 服务器全局类
-type Application struct {
-	status        base.ApplicationStatus // 应用状态（初始化、开始、运行中、停止、销毁）[onInit, onStart, onRun, onStop, onDestroy]
-	config        *Config                // 应用全部配置
+type application struct {
+	// 应用状态（初始化、开始、运行中、停止、销毁）[onInit, onStart, onRun, onStop, onDestroy]
+	status base.ApplicationStatus
+	// 应用全部配置
+	config *Config
+	// 应用组件名
 	componentDict map[string]base.ComponentInterface
+	// url 路游戏（websocket、http通用）
+	router *router
 }
 
 // 应用全局实例（只需要一个实例即可操作整个应用）
-var App = NewApplication()
+var App = newApplication()
 
 // 框架方法
-func NewApplication() *Application {
-	app := new(Application)
+func newApplication() *application {
+	app := new(application)
 	app.status = ApplicationStatusInit
-	app.config = new(Config)
-	app.config.Config = *models.NewConfig()
+	app.config = NewConfig()
 	app.componentDict = map[string]base.ComponentInterface{}
+	app.router = newRouter()
 	return app
 }
 
 // 添加配置（有先后顺序。后面的配置将覆盖前面的配置）
-func (app *Application) AddConfig(config *Config) {
+func (app *application) AddConfig(config *Config) {
 	for key, value := range config.Params {
 		app.config.Params[key] = value
 	}
@@ -36,8 +40,13 @@ func (app *Application) AddConfig(config *Config) {
 	}
 }
 
+// 获取路游戏
+func (app *application) GetRouter() *router {
+	return app.router
+}
+
 // 启动应用
-func (app *Application) Run() {
+func (app *application) Run() {
 	app.onInit()
 	app.onStart()
 	app.onRun()
@@ -45,8 +54,8 @@ func (app *Application) Run() {
 	//app.onDestroy()
 }
 
-// TODO
-func (app *Application) onInit() {
+// 应用初始化
+func (app *application) onInit() {
 	// 实例化组件
 	for name, config := range app.config.ComponentDict {
 		// 使用结构体重新创建一个新对象（防止外部修改导致混乱）
@@ -61,22 +70,31 @@ func (app *Application) onInit() {
 	}
 }
 
-// TODO
-func (app *Application) onStart() {
+// 应用开始（初始化组件）
+func (app *application) onStart() {
+	for _, component := range app.componentDict {
+		t := reflect.TypeOf(component).Elem()
+		configDict := map[string]interface{}{}
+		if _, has := t.FieldByName("BaseHandler"); has {
+			configDict["handlerList"] = app.router.handlerList
+		}
+		component.Start(configDict)
+	}
+}
+
+// 应用运行
+func (app *application) onRun() {
+	for _, component := range app.componentDict {
+		go component.Run(nil)
+	}
+}
+
+// 应用向所有组件发送停止信号
+func (app *application) onStop() {
 
 }
 
-// TODO
-func (app *Application) onRun() {
-
-}
-
-// TODO
-func (app *Application) onStop() {
-
-}
-
-// TODO
-func (app *Application) onDestroy() {
+// 应用销毁组件并停止
+func (app *application) onDestroy() {
 
 }

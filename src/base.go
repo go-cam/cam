@@ -21,7 +21,7 @@ const (
 	ApplicationStatusDestroy = constants.ApplicationStatusDestroy
 
 	// websocket server 运行模式：自动处理【推荐】
-	// 使用框架内规定的 Handler 或 BaseController 自动匹配对应的方法。发送数据必须是规范的数据。
+	// 使用框架内规定的 Handler 或 Controller 自动匹配对应的方法。发送数据必须是规范的数据。
 	// 使用该模式依然可以使用 OnMessage 接收数据。但是不能发送数据
 	WebsocketServerModeAutoHandler = constants.WebsocketServerModeAutoHandler
 	// websocket server 运行模式：自定义处理。
@@ -35,16 +35,18 @@ const (
 )
 
 // 基础 websocket 处理器
-type BaseWebsocketHandler struct {
-	controllers.BaseWebsocketHandler
-}
-
-// 基础 websocket 处理器
-type BaseController struct {
-	controllers.BaseWebsocketHandler
+type Controller struct {
+	controllers.BaseController
 }
 
 // 配置类
 type Config struct {
-	models.Config
+	*models.Config
+}
+// 新建配置
+func NewConfig() *Config {
+	config := new(Config)
+	config.Config = new(models.Config)
+	config.Config.Init()
+	return config
 }

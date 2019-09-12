@@ -11,10 +11,8 @@ type Config struct {
 	ComponentDict       map[string]base.ConfigComponentInterface // 组件。组件名 => 配置
 }
 
-// 创建配置对象
-func NewConfig() *Config {
-	config := new(Config)
+// 初始化数据
+func (config Config) Init() {
 	config.ComponentDict = map[string]base.ConfigComponentInterface{}
 	config.Params = map[string]interface{}{}
-	return config
 }

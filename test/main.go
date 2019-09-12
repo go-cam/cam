@@ -5,16 +5,19 @@ import (
 	"cin/src/base"
 	"cin/src/components"
 	"cin/src/configs"
+	"cin/test/controllers"
 )
 
 func main() {
 	cin.App.AddConfig(config())
+	router := cin.App.GetRouter()
+	router.Register(&controllers.TestController{})
 	cin.App.Run()
 }
 
 // 配置
 func config() *cin.Config {
-	config := new(cin.Config)
+	config := cin.NewConfig()
 	config.Params = map[string]interface{}{
 		"test": 123123,
 	}
