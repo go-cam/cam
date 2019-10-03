@@ -14,7 +14,7 @@ import (
 )
 
 type WebsocketServer struct {
-	BaseHandler
+	Base
 
 	port uint16 // websocket 监听端口
 
@@ -29,6 +29,8 @@ type WebsocketServer struct {
 
 // 使用配置 初始化数据
 func (component *WebsocketServer) Init(configInterface base.ConfigComponentInterface) {
+	component.Base.Init(configInterface)
+
 	configValue := reflect.ValueOf(configInterface)
 	var config *configs.WebsocketServer
 	if configValue.Kind() == reflect.Ptr {
@@ -52,21 +54,23 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 	component.onConnectHandler = nil
 	component.onMessageHandler = nil
 	component.onCloseHandler = nil
+
+	// 注册处理器（控制器）
+	for _, handler := range config.HandlerList {
+		component.Register(handler)
+	}
+	component.onMessageHandler = config.OnWebsocketMessageHandler
 }
 
 // 开始
 func (component *WebsocketServer) Start(configDict map[string]interface{}) {
-	// 注册控制器
-	if handlerListIns, has := configDict["handlerList"]; has {
-		handlerList := handlerListIns.([]controllers.HandlerInterface)
-		for _, handler := range handlerList {
-			component.Register(handler)
-		}
-	}
+	component.Base.Start(configDict)
 }
 
 // 开启 websocket 监听
 func (component *WebsocketServer) Run(configDict map[string]interface{}) {
+	component.Base.Run(configDict)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", component.handlerFunc)
 	server := &http.Server{
@@ -99,7 +103,7 @@ func (component *WebsocketServer) Register(handlerInterface controllers.HandlerI
 	}
 }
 
-// 设置 接受消息的方法
+// 设置 接受新连接的方法
 func (component *WebsocketServer) OnConnect(handler func(conn *models.WebsocketSession)) {
 	component.onConnectHandler = handler
 }
@@ -122,6 +126,7 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 	}
 	session := models.NewWebsocketSession(conn)
 	component.callOnConnect(session)
+	component.Log("new client connected:" + conn.RemoteAddr().String())
 
 	defer func() {
 		component.callOnClose(session)

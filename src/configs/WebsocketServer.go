@@ -5,6 +5,7 @@ import "cin/src/base"
 // websocket server 所需的配置
 type WebsocketServer struct {
 	BaseConfig
+	PluginRouter
 	Port uint16                   // 服务器端口
 }
 

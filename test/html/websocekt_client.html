@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+    </style>
+</head>
+<body>
+<div>
+    <h1>websocket</h1>
+    <h2>连接</h2>
+    <div>当前状态：<span id="websocketStatus">未连接</span></div>
+    <div>
+        <label for="websocketUrl">ws 地址</label><input id="websocketUrl" value="ws://127.0.0.1:10001" placeholder="如：ws://127.0.0.1:10000" />
+    </div>
+    <button onclick="websocketClient.connect()">连接</button>
+
+    <div id="send" style="display: none">
+        <hr />
+        <div>
+            <label for="sendMessage">发送消息内容</label><input id="sendMessage" value="" placeholder="发送到服务器的内容" />
+        </div>
+        <button onclick="websocketClient.sendMessage()">发送</button>
+    </div>
+</div>
+<script>
+    /**
+     * 常量定义
+     */
+    let Constant = new function() {
+        /**
+         * 连接状态：待连接
+         */
+        this.CONN_STATE_WAIT = 1;
+        /**
+         * 连接状态：已连接
+         */
+        this.CONN_STATE_DONE = 2;
+
+        this.getConnStateLabel = (connState) => {
+            let labels = {};
+            labels[this.CONN_STATE_WAIT] = "待连接";
+            labels[this.CONN_STATE_DONE] = "已连接";
+            return labels.hasOwnProperty(connState) ? labels[connState] : "";
+        };
+    };
+
+    /**
+     * 页面参数帮助工具
+     */
+    let view = new function() {
+        /**
+         * 获取 websocketUrl
+         */
+        this.getWebsocketUrl = () => {
+            return document.getElementById("websocketUrl").value;
+        };
+
+        /**
+         * 设置状态的显示内容
+         */
+        this.setWebsocketStatus = (text) => {
+            document.getElementById("websocketStatus").innerHTML = text;
+        };
+
+        /**
+         * 显示发送给消息的块
+         */
+        this.showSendDiv = () => {
+            document.getElementById("send").style.display = "block";
+        };
+
+        /**
+         * 隐藏发送消息的块
+         */
+        this.hideSendDiv = () => {
+            document.getElementById("send").style.display = "none";
+        };
+
+        /**
+         * 获取发送的消息
+         */
+        this.getSendMessage = () => {
+            return document.getElementById("sendMessage").value;
+        };
+    };
+
+    let websocketClient = new function () {
+        this.conn = undefined;
+        this.status = Constant.CONN_STATE_WAIT;
+
+        /**
+         * 创建websocket连接
+         */
+        this.connect = () => {
+            let websocketUrl = view.getWebsocketUrl();
+            this.conn = new WebSocket(websocketUrl);
+            this.conn.onopen = (conn, event) => {
+                console.log("连接成功");
+                this.status = Constant.CONN_STATE_DONE;
+                this.refreshStatusLabels();
+                view.showSendDiv();
+            };
+            this.conn.onmessage = (conn, event) => {
+                console.log("接收到消息");
+            };
+            this.conn.onclose = (conn, event) => {
+                console.log("已关闭");
+                this.status = Constant.CONN_STATE_WAIT;
+                this.refreshStatusLabels();
+                view.hideSendDiv();
+            };
+        };
+
+        /**
+         * 刷新状态值
+         */
+        this.refreshStatusLabels = () => {
+            view.setWebsocketStatus(Constant.getConnStateLabel(this.status));
+        };
+
+        /**
+         * 发送消息
+         */
+        this.sendMessage = () => {
+            let sendMessage = view.getSendMessage();
+            this.conn.send(sendMessage);
+            console.log("[发送] " + sendMessage);
+        };
+    };
+</script>
+</body>
+</html>
