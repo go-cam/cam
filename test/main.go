@@ -1,7 +1,7 @@
 package main
 
 import (
-	cin "../../src"
+	cin "../src"
 	"base"
 	"components"
 	"configs"
