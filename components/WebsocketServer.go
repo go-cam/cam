@@ -1,16 +1,16 @@
 package components
 
 import (
-	"base"
-	"configs"
-	"controllers"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/controllers"
+	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/utils"
 	"github.com/gorilla/websocket"
-	"models"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
-	"utils"
 )
 
 type WebsocketServer struct {

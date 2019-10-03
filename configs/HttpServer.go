@@ -1,6 +1,6 @@
 package configs
 
-import "base"
+import "github.com/cinling/cin/base"
 
 // http 服务
 type HttpServer struct {

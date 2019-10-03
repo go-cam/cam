@@ -1,6 +1,6 @@
 package controllers
 
-import "models"
+import "github.com/cinling/cin/models"
 
 // websocket server 处理器接口
 type WebsocketHandlerInterface interface {

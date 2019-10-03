@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"controllers"
-	"models"
+	"github.com/cinling/cin/controllers"
+	"github.com/cinling/cin/models"
 )
 
 // 路由器

@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"base"
-	"configs"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
 	"reflect"
 	"time"
 )

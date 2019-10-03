@@ -1,7 +1,7 @@
 package models
 
 import (
-	"base"
+	"github.com/cinling/cin/base"
 )
 
 // 配置实例。用于封装配置

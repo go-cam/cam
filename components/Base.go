@@ -1,7 +1,7 @@
 package components
 
 import (
-	"base"
+	"github.com/cinling/cin/base"
 	"reflect"
 )
 

@@ -1,4 +1,4 @@
-package main
+package cin
 
 import (
 	"fmt"
