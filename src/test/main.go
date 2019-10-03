@@ -1,13 +1,13 @@
 package main
 
 import (
-	cin "cin/src"
-	"cin/src/base"
-	"cin/src/components"
-	"cin/src/configs"
-	"cin/src/models"
-	"cin/test/controllers"
+	cin "../../src"
+	"base"
+	"components"
+	"configs"
 	"fmt"
+	"models"
+	"test/controllers"
 )
 
 func main() {

@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"cin/src/constants"
-	"cin/src/controllers"
-	"cin/src/models"
+	"constants"
+	"controllers"
+	"models"
 )
 
 const (
@@ -13,12 +13,8 @@ const (
 	ApplicationStatusInit = constants.ApplicationStatusInit
 	// 应用状态：开始（启动中）
 	ApplicationStatusStart = constants.ApplicationStatusStart
-	// 应用状态：运行中
-	ApplicationStatusRun = constants.ApplicationStatusRun
 	// 应用状态：即将停止
 	ApplicationStatusStop = constants.ApplicationStatusStop
-	// 应用状态：销毁
-	ApplicationStatusDestroy = constants.ApplicationStatusDestroy
 
 	// websocket server 运行模式：自动处理【推荐】
 	// 使用框架内规定的 Handler 或 Controller 自动匹配对应的方法。发送数据必须是规范的数据。

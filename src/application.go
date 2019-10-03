@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"cin/src/base"
-	"cin/src/configs"
+	"base"
+	"configs"
 	"reflect"
 	"time"
 )
@@ -51,9 +51,7 @@ func (app *application) GetRouter() *router {
 func (app *application) Run() {
 	app.onInit()
 	app.onStart()
-	app.onRun()
-	//app.onStop()
-	//app.onDestroy()
+	app.onStop()
 	app.wait()
 }
 
@@ -84,25 +82,13 @@ func (app *application) onStart() {
 		if _, has := t.FieldByName("BaseHandler"); has {
 			configDict["handlerList"] = app.router.handlerList
 		}
-		component.Start(configDict)
-	}
-}
-
-// 应用运行
-func (app *application) onRun() {
-	for _, component := range app.componentDict {
-		go component.Run(nil)
+		component.Start()
 	}
 }
 
 // 应用向所有组件发送停止信号
 func (app *application) onStop() {
-
-}
-
-// 应用销毁组件并停止
-func (app *application) onDestroy() {
-
+ // TODO
 }
 
 // 等待（不会让程序结束）

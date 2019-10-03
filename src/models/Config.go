@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cin/src/base"
+	"base"
 )
 
 // 配置实例。用于封装配置

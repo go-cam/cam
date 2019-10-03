@@ -1,6 +1,6 @@
 package constants
 
-import "cin/src/base"
+import "base"
 
 const (
 	ComponentWebsocketServer base.ConfigComponent = 1

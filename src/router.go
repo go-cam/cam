@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"cin/src/controllers"
-	"cin/src/models"
+	"controllers"
+	"models"
 )
 
 // 路由器

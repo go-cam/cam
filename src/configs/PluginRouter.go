@@ -1,8 +1,8 @@
 package configs
 
 import (
-	"cin/src/controllers"
-	"cin/src/models"
+	"controllers"
+	"models"
 )
 
 // 路由插件。添加这个插件后的配置可获取路由的参数

@@ -1,6 +1,6 @@
 package configs
 
-import "cin/src/base"
+import "base"
 
 // 基础配置
 type BaseConfig struct {

@@ -1,16 +1,16 @@
 package components
 
 import (
-	"cin/src/base"
-	"cin/src/configs"
-	"cin/src/controllers"
-	"cin/src/models"
-	"cin/src/utils"
+	"base"
+	"configs"
+	"controllers"
 	"github.com/gorilla/websocket"
+	"models"
 	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
+	"utils"
 )
 
 type WebsocketServer struct {
@@ -63,13 +63,8 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 }
 
 // 开始
-func (component *WebsocketServer) Start(configDict map[string]interface{}) {
-	component.Base.Start(configDict)
-}
-
-// 开启 websocket 监听
-func (component *WebsocketServer) Run(configDict map[string]interface{}) {
-	component.Base.Run(configDict)
+func (component *WebsocketServer) Start() {
+	component.Base.Start()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", component.handlerFunc)
@@ -126,7 +121,6 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 	}
 	session := models.NewWebsocketSession(conn)
 	component.callOnConnect(session)
-	component.Log("new client connected:" + conn.RemoteAddr().String())
 
 	defer func() {
 		component.callOnClose(session)

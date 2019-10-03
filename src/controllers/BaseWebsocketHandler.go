@@ -1,6 +1,6 @@
 package controllers
 
-import "cin/src/models"
+import "models"
 
 // websocket server 处理器接口
 type WebsocketHandlerInterface interface {

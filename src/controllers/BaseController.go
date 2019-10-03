@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"cin/src/base"
+	"base"
 )
 
 // http 处理器接口

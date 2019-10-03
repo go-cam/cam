@@ -1,6 +1,6 @@
 package configs
 
-import "cin/src/base"
+import "base"
 
 // websocket server 所需的配置
 type WebsocketServer struct {
