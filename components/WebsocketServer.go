@@ -1,11 +1,11 @@
 package components
 
 import (
-	"github.com/cinling/cin/base"
-	"github.com/cinling/cin/configs"
-	"github.com/cinling/cin/controllers"
-	"github.com/cinling/cin/models"
-	"github.com/cinling/cin/utils"
+	"cin/base"
+	"cin/configs"
+	"cin/controllers"
+	"cin/models"
+	"cin/utils"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"reflect"

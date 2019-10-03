@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"github.com/cinling/cin/constants"
-	"github.com/cinling/cin/controllers"
-	"github.com/cinling/cin/models"
+	"cin/constants"
+	"cin/controllers"
+	"cin/models"
 )
 
 const (

@@ -3,12 +3,12 @@ package cin
 import (
 	"fmt"
 
-	"github.com/cinling/cin"
-	"github.com/cinling/cin/base"
-	"github.com/cinling/cin/components"
-	"github.com/cinling/cin/configs"
-	"github.com/cinling/cin/models"
-	"github.com/cinling/cin/test/controllers"
+	"cin"
+	"cin/base"
+	"cin/components"
+	"cin/configs"
+	"cin/models"
+	"cin/test/controllers"
 )
 
 func main() {

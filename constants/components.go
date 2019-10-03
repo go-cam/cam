@@ -1,6 +1,6 @@
 package constants
 
-import "github.com/cinling/cin/base"
+import "cin/base"
 
 const (
 	ComponentWebsocketServer base.ConfigComponent = 1

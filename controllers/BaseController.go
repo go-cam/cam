@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/cinling/cin/base"
+	"cin/base"
 )
 
 // http 处理器接口

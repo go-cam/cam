@@ -1,6 +1,6 @@
 package controllers
 
-import cin "github.com/cinling/cin"
+import cin "cin"
 
 // 测试控制器
 type TestController struct {

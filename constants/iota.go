@@ -1,7 +1,7 @@
 package constants
 
 // 存状态常量。不需要知道具体的值
-import "github.com/cinling/cin/base"
+import "cin/base"
 
 const (
 	ApplicationStatusInit base.ApplicationStatus = iota

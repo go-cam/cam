@@ -1,6 +1,6 @@
 package components
 
-import "github.com/cinling/cin/base"
+import "cin/base"
 
 // http服务
 type HttpServer struct {

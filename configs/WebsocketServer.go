@@ -1,6 +1,6 @@
 package configs
 
-import "github.com/cinling/cin/base"
+import "cin/base"
 
 // websocket server 所需的配置
 type WebsocketServer struct {

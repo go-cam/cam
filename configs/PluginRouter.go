@@ -1,8 +1,8 @@
 package configs
 
 import (
-	"github.com/cinling/cin/controllers"
-	"github.com/cinling/cin/models"
+	"cin/controllers"
+	"cin/models"
 )
 
 // 路由插件。添加这个插件后的配置可获取路由的参数
