@@ -42,7 +42,6 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 		panic("illegal config")
 	}
 
-
 	component.port = config.Port
 	component.upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
@@ -56,9 +55,7 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 	component.onCloseHandler = nil
 
 	// 注册处理器（控制器）
-	for _, handler := range config.HandlerList {
-		component.Register(handler)
-	}
+	component.handlerDict, component.handlerActionDict = common.getControllerDict(config.HandlerList)
 	component.onMessageHandler = config.OnWebsocketMessageHandler
 }
 

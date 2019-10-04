@@ -29,7 +29,8 @@ func config() *cin.Config {
 		"test": 123123,
 	}
 	config.ComponentDict = map[string]base.ConfigComponentInterface{
-		"ws": configs.NewWebsocketServer(&components.WebsocketServer{}, 10001),
+		"ws":   configs.NewWebsocketServer(&components.WebsocketServer{}, 10001),
+		"http": configs.NewHttpServer(&components.HttpServer{}, 10000),
 	}
 	return config
 }

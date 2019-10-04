@@ -51,8 +51,8 @@ func (app *application) GetRouter() *router {
 func (app *application) Run() {
 	app.onInit()
 	app.onStart()
-	app.onStop()
 	app.wait()
+	app.onStop()
 }
 
 // 应用初始化
@@ -77,18 +77,15 @@ func (app *application) onInit() {
 // 应用开始（初始化组件）
 func (app *application) onStart() {
 	for _, component := range app.componentDict {
-		t := reflect.TypeOf(component).Elem()
-		configDict := map[string]interface{}{}
-		if _, has := t.FieldByName("BaseHandler"); has {
-			configDict["handlerList"] = app.router.handlerList
-		}
-		component.Start()
+		go component.Start()
 	}
 }
 
 // 应用向所有组件发送停止信号
 func (app *application) onStop() {
- // TODO
+	for _, component := range app.componentDict {
+		component.Stop()
+	}
 }
 
 // 等待（不会让程序结束）
