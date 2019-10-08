@@ -196,18 +196,10 @@ func (component *WebsocketServer) callHandler(session *models.WebsocketSession, 
 	// 判断控制器是否合法（TODO 这里应该方法注册那里判断）
 	handlerType := component.handlerDict[handlerName]
 	handlerValue := reflect.New(handlerType.Elem())
-	websocketHandlerInterface := handlerValue.Interface().(base.WebsocketHandlerInterface)
-	if websocketHandlerInterface == nil {
-		return []byte("controller must be implement base.WebsocketHandlerInterface")
-	}
 	handlerInterface := handlerValue.Interface().(base.HandlerInterface)
 	if handlerInterface == nil {
 		return []byte("controller must be implement base.HandlerInterface")
 	}
-
-	// 设置消息
-	//websocketHandlerInterface.SetSession(session)
-	//websocketHandlerInterface.SetMessage(recvMessageModel)
 
 	// BeforeAction 一般可用于验证数据
 	if !handlerInterface.BeforeAction(actionName) {
@@ -220,12 +212,12 @@ func (component *WebsocketServer) callHandler(session *models.WebsocketSession, 
 	if len(retValues) != 1 || retValues[0].Kind() != reflect.String {
 		return []byte("only one argument of type string can be returned")
 	}
-	sendMessage := retValues[0].Interface().(string)
+	sendMessage := retValues[0].Interface().([]byte)
 
 	// AfterAction 一般可用于对返回数据做进一步的处理
 	sendMessage = handlerInterface.AfterAction(actionName, sendMessage)
 
-	return []byte(sendMessage)
+	return sendMessage
 }
 
 // 执行 自定义新连接连入方法

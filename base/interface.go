@@ -35,15 +35,6 @@ type HandlerInterface interface {
 	GetContext() ContextInterface
 }
 
-// websocket server 处理器接口
-type WebsocketHandlerInterface interface {
-}
-
-// http 处理器接口
-type HttpHandlerInterface interface {
-
-}
-
 // 上下文接口
 type ContextInterface interface {
 	// 获取 session

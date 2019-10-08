@@ -1,13 +1,12 @@
 package controllers
 
 import (
-	"cin/base"
 	"cin/models"
 )
 
 // websocket 处理器
+// Deprecated: 使用通用的 BaseHandler 代替
 type BaseWebsocketHandler struct {
-	base.WebsocketHandlerInterface
 	BaseHandler
 
 	session               *models.WebsocketSession // websocket session

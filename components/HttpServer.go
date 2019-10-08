@@ -102,9 +102,9 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	}
 
 
-	err = component.store.Save(r, w, session)
+	err = session.Save(r, w)
 	if err != nil {
-		panic("session save failed!")
+		panic("session save failed!" + err.Error())
 	}
 
 	w.WriteHeader(200)
@@ -117,10 +117,6 @@ func (component *HttpServer) callHandler(handlerName string, actionName string, 
 
 	handlerType := component.handlerDict[handlerName]
 	handlerValue := reflect.New(handlerType.Elem())
-	httpHandlerInterface := handlerValue.Interface().(base.HttpHandlerInterface)
-	if httpHandlerInterface == nil {
-		panic("controller must be implement base.WebsocketHandlerInterface")
-	}
 	handlerInterface := handlerValue.Interface().(base.HandlerInterface)
 	if handlerInterface == nil {
 		panic("controller must be implement base.HandlerInterface")
@@ -137,7 +133,7 @@ func (component *HttpServer) callHandler(handlerName string, actionName string, 
 	// DoAction
 	action := handlerValue.MethodByName(actionName)
 	retValues := action.Call([]reflect.Value{})
-	if len(retValues) != 1 || retValues[0].Kind() != reflect.String {
+	if len(retValues) != 1 || retValues[0].Kind() != reflect.Slice {
 		panic("only one argument of type []byte can be returned")
 	}
 	response = retValues[0].Interface().([]byte)
@@ -150,12 +146,12 @@ func (component *HttpServer) callHandler(handlerName string, actionName string, 
 
 // 获取文件 session store
 func (component *HttpServer) getFilesystemStore() *sessions.FilesystemStore {
-	runtimeDir := utils.File.GetRunPath() + "/runtime"
+	runtimeDir := utils.File.GetRunPath() + "/runtime/session"
 	if !utils.File.Exists(runtimeDir) {
 		err := utils.File.Mkdir(runtimeDir)
 		if err != nil {
-			panic("create runtime dir failed!")
+			panic("create runtime dir failed! " + err.Error())
 		}
 	}
-	return sessions.NewFilesystemStore(runtimeDir)
+	return sessions.NewFilesystemStore(runtimeDir, []byte("none"))
 }
