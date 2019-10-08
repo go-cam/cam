@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"cin"
 	"cin/base"
 	"cin/components"
@@ -30,7 +29,7 @@ func config() *cin.Config {
 	}
 	config.ComponentDict = map[string]base.ConfigComponentInterface{
 		"ws":   configs.NewWebsocketServer(&components.WebsocketServer{}, 10001),
-		"http": configs.NewHttpServer(&components.HttpServer{}, 10000),
+		"http": configs.NewHttpServer(&components.HttpServer{}, 10000).SetSessionName("test"),
 	}
 	return config
 }

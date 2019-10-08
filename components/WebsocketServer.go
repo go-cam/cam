@@ -3,7 +3,6 @@ package components
 import (
 	"cin/base"
 	"cin/configs"
-	"cin/controllers"
 	"cin/models"
 	"cin/utils"
 	"github.com/gorilla/websocket"
@@ -76,7 +75,7 @@ func (component *WebsocketServer) Start() {
 }
 
 // 注册处理器。注册后将根据路由自动匹配调用方法
-func (component *WebsocketServer) Register(handlerInterface controllers.HandlerInterface) {
+func (component *WebsocketServer) Register(handlerInterface base.HandlerInterface) {
 	t := reflect.TypeOf(handlerInterface)
 	handlerType := t.Elem() // 获取实体
 	handlerName := handlerType.Name()
@@ -197,18 +196,18 @@ func (component *WebsocketServer) callHandler(session *models.WebsocketSession, 
 	// 判断控制器是否合法（TODO 这里应该方法注册那里判断）
 	handlerType := component.handlerDict[handlerName]
 	handlerValue := reflect.New(handlerType.Elem())
-	websocketHandlerInterface := handlerValue.Interface().(controllers.WebsocketHandlerInterface)
+	websocketHandlerInterface := handlerValue.Interface().(base.WebsocketHandlerInterface)
 	if websocketHandlerInterface == nil {
-		return []byte("controller must be implement controllers.WebsocketHandlerInterface")
+		return []byte("controller must be implement base.WebsocketHandlerInterface")
 	}
-	handlerInterface := handlerValue.Interface().(controllers.HandlerInterface)
+	handlerInterface := handlerValue.Interface().(base.HandlerInterface)
 	if handlerInterface == nil {
-		return []byte("controller must be implement controllers.HandlerInterface")
+		return []byte("controller must be implement base.HandlerInterface")
 	}
 
 	// 设置消息
-	websocketHandlerInterface.SetSession(session)
-	websocketHandlerInterface.SetMessage(recvMessageModel)
+	//websocketHandlerInterface.SetSession(session)
+	//websocketHandlerInterface.SetMessage(recvMessageModel)
 
 	// BeforeAction 一般可用于验证数据
 	if !handlerInterface.BeforeAction(actionName) {

@@ -1,26 +1,26 @@
 package cin
 
 import (
-	"cin/controllers"
+	"cin/base"
 	"cin/models"
 )
 
 // 路由器
 type router struct {
-	handlerList               []controllers.HandlerInterface
+	handlerList               []base.HandlerInterface
 	onWebsocketMessageHandler func(conn *models.WebsocketSession, recvMessage []byte)
 }
 
 // 新建路由器
 func newRouter() *router {
 	r := new(router)
-	r.handlerList = []controllers.HandlerInterface{}
+	r.handlerList = []base.HandlerInterface{}
 	r.onWebsocketMessageHandler = nil
 	return r
 }
 
 // 注册控制器
-func (r *router) Register(controller controllers.HandlerInterface) {
+func (r *router) Register(controller base.HandlerInterface) {
 	r.handlerList = append(r.handlerList, controller)
 }
 

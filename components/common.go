@@ -1,6 +1,7 @@
 package components
 
 import (
+	"cin/base"
 	"cin/controllers"
 	"reflect"
 	"strings"
@@ -14,7 +15,7 @@ type commonFunc struct {
 var common = new(commonFunc)
 
 // 获取控制器记录map
-func (cf *commonFunc) getControllerDict(controllerList []controllers.HandlerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
+func (cf *commonFunc) getControllerDict(controllerList []base.HandlerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
 	handlerDict := map[string]reflect.Type{}
 	handlerActionDict := map[string]map[string]bool{}
 

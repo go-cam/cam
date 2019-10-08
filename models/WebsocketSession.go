@@ -6,6 +6,7 @@ import (
 )
 
 // websocket 使用的 session 。没有发送的功能。必须依赖 WebsocketServer 进行发送
+// Deprecated: 需要实现 SessionInterface 接口
 type WebsocketSession struct {
 	BaseModel
 	conn *websocket.Conn

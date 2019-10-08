@@ -1,16 +1,13 @@
 package controllers
 
-import "cin/models"
-
-// websocket server 处理器接口
-type WebsocketHandlerInterface interface {
-	SetSession(session *models.WebsocketSession)
-	SetMessage(message *models.Message)
-}
+import (
+	"cin/base"
+	"cin/models"
+)
 
 // websocket 处理器
 type BaseWebsocketHandler struct {
-	WebsocketHandlerInterface
+	base.WebsocketHandlerInterface
 	BaseHandler
 
 	session               *models.WebsocketSession // websocket session
