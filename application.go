@@ -102,8 +102,7 @@ func (app *application) writePluginParams(config base.ConfigComponentInterface) 
 	// 写入路由插件数据
 	if _, has := t.FieldByName("PluginRouter"); has {
 		pluginRouter := v.FieldByName("PluginRouter").Interface().(configs.PluginRouter)
-		pluginRouter.HandlerList = app.router.handlerList
-		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
+		pluginRouter.ControllerList = app.router.controllerList
 		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
 	}
 }

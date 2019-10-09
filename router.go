@@ -7,24 +7,19 @@ import (
 
 // 路由器
 type router struct {
-	handlerList               []base.HandlerInterface
+	controllerList            []base.ControllerInterface
 	onWebsocketMessageHandler func(conn *models.WebsocketSession, recvMessage []byte)
 }
 
 // 新建路由器
 func newRouter() *router {
 	r := new(router)
-	r.handlerList = []base.HandlerInterface{}
+	r.controllerList = []base.ControllerInterface{}
 	r.onWebsocketMessageHandler = nil
 	return r
 }
 
 // 注册控制器
-func (r *router) Register(controller base.HandlerInterface) {
-	r.handlerList = append(r.handlerList, controller)
-}
-
-//
-func (r *router) OnWebsocketMessage(handler func(conn *models.WebsocketSession, recvMessage []byte)) {
-	r.onWebsocketMessageHandler = handler
+func (r *router) Register(controller base.ControllerInterface) {
+	r.controllerList = append(r.controllerList, controller)
 }

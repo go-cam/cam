@@ -15,23 +15,22 @@ type commonFunc struct {
 var common = new(commonFunc)
 
 // 获取控制器记录map
-func (cf *commonFunc) getControllerDict(controllerList []base.HandlerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
-	handlerDict := map[string]reflect.Type{}
-	handlerActionDict := map[string]map[string]bool{}
+func (cf *commonFunc) getControllerDict(controllerList []base.ControllerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
+	controllerDict := map[string]reflect.Type{}
+	controllerActionDict := map[string]map[string]bool{}
 
 	excludeMethodNameDict := cf.getControllerExcludeMethodNameDict()
 
-	for _, handlerInterface := range controllerList {
-		t := reflect.TypeOf(handlerInterface)
-		handlerType := t.Elem() // 获取实体
-		handlerName := handlerType.Name()
-		handlerName = strings.TrimSuffix(handlerName, "Handler")
-		handlerName = strings.TrimSuffix(handlerName, "Controller")
-		handlerName = strings.ToLower(handlerName)
-		handlerDict[handlerName] = t
+	for _, controllerInterface := range controllerList {
+		t := reflect.TypeOf(controllerInterface)
+		controllerType := t.Elem() // 获取实体
+		controllerName := controllerType.Name()
+		controllerName = strings.TrimSuffix(controllerName, "Controller")
+		controllerName = strings.ToLower(controllerName)
+		controllerDict[controllerName] = t
 
 		// 保存控制器啊所有方法名字
-		handlerActionDict[handlerName] = map[string]bool{}
+		controllerActionDict[controllerName] = map[string]bool{}
 		methodLen := t.NumMethod()
 		for i := 0; i < methodLen; i++ {
 			method := t.Method(i)
@@ -42,11 +41,11 @@ func (cf *commonFunc) getControllerDict(controllerList []base.HandlerInterface) 
 				continue
 			}
 
-			handlerActionDict[handlerName][methodName] = true
+			controllerActionDict[controllerName][methodName] = true
 		}
 	}
 
-	return handlerDict, handlerActionDict
+	return controllerDict, controllerActionDict
 }
 
 // 获取控制器排除的方法名字

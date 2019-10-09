@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"cin"
 	"cin/base"
 	"cin/components"
 	"cin/configs"
-	"cin/models"
 	"cin/test/controllers"
 )
 
@@ -14,10 +12,6 @@ func main() {
 	cin.App.AddConfig(config())
 	router := cin.App.GetRouter()
 	router.Register(&controllers.TestController{})
-	router.OnWebsocketMessage(func(conn *models.WebsocketSession, recvMessage []byte) {
-		fmt.Println("接收：" + string(recvMessage))
-		conn.Send([]byte("收到了"))
-	})
 	cin.App.Run()
 }
 

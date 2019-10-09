@@ -17,7 +17,7 @@ const (
 	ApplicationStatusStop = constants.ApplicationStatusStop
 
 	// websocket server 运行模式：自动处理【推荐】
-	// 使用框架内规定的 Handler 或 Controller 自动匹配对应的方法。发送数据必须是规范的数据。
+	// 使用框架内规定的 Handler 或 BaseController 自动匹配对应的方法。发送数据必须是规范的数据。
 	// 使用该模式依然可以使用 OnMessage 接收数据。但是不能发送数据
 	WebsocketServerModeAutoHandler = constants.WebsocketServerModeAutoHandler
 	// websocket server 运行模式：自定义处理。
@@ -31,7 +31,7 @@ const (
 )
 
 // 基础 websocket 处理器
-type Controller struct {
+type BaseController struct {
 	controllers.BaseController
 }
 

@@ -17,8 +17,8 @@ type ComponentInterface interface {
 	Stop()
 }
 
-// 所有handler的基类（用于统一接口）
-type HandlerInterface interface {
+// 控制器实例
+type ControllerInterface interface {
 	// 初始化方法
 	Init()
 	// 执行动作前执行的方法

@@ -1,56 +1,49 @@
 package models
 
 import (
+	"cin/utils"
 	"github.com/gorilla/websocket"
-	"net"
 )
 
 // websocket 使用的 session 。没有发送的功能。必须依赖 WebsocketServer 进行发送
-// Deprecated: 需要实现 SessionInterface 接口
 type WebsocketSession struct {
 	BaseModel
+	// websocket 链接
 	conn *websocket.Conn
-	sendMessage []byte
+	// sessionId 用于记录记录链接的sessionId
+	sessionId string
+	// session 存储的 key value 数据
+	values map[interface{}]interface{}
 }
 
 // 新建websocket session
 func NewWebsocketSession(conn *websocket.Conn) *WebsocketSession {
 	model := new(WebsocketSession)
 	model.conn = conn
-	model.sendMessage = nil
+	model.sessionId = utils.String.UUID()
+	model.values = map[interface{}]interface{}{}
 	return model
 }
 
-// 关闭连接
-func (model *WebsocketSession) Close() error {
-	var err error
-	// 获取关闭的 handler
-	var closeHandler = model.conn.CloseHandler()
-	if closeHandler != nil {
-		err = closeHandler(0, "")
-		if err != nil {
-			return nil
-		}
+// 获取 sessionId
+func (model *WebsocketSession) GetSessionId() string {
+	return model.sessionId
+}
+// 设置值
+func (model *WebsocketSession) Set(key interface{}, value interface{}) {
+	model.values[key] = value
+}
+// 获取值
+func (model *WebsocketSession) Get(key interface{}) interface{} {
+	value, has := model.values[key]
+	if !has {
+		return nil
 	}
-	// 关闭连接
-	err = model.conn.Close()
-	if err != nil {
-		return err
-	}
-	return nil
+	return value
 }
-
-// 发送消息
-func (model *WebsocketSession) Send(message []byte) {
-	model.sendMessage = message
-}
-
-// 获取发送消息
-func (model *WebsocketSession) GetSendMessage() []byte {
-	return model.sendMessage
-}
-
-// 获取远端地址
-func (model *WebsocketSession) RemoveAddr() net.Addr {
-	return model.conn.RemoteAddr()
+// 销毁session 清空 session 所有数据
+func (model *WebsocketSession) Destroy() {
+	_ = model.conn.Close()
+	model.sessionId = ""
+	model.values = map[interface{}]interface{}{}
 }
