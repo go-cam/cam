@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"strings"
 )
 
 // http服务
@@ -84,21 +83,25 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 		panic("get session fail:" + err.Error())
 	}
 
-	tmpStr := strings.Split(url, "/")
-	if len(tmpStr) < 3 {
-		// TODO 这里添加自定义路由
+	dirs := utils.Url.SplitUrl(url)
+	dirLength := len(dirs)
+	if dirLength == 0 {
+		// TODO 默认路由
+		panic("404")
+	} else if dirLength == 1 {
+		// TODO 控制器默认路由
 		panic("404")
 	}
 
-	controllerName := tmpStr[1]
-	actionName := utils.String.UrlToHump(tmpStr[2])
+	controllerName := utils.Url.UrlToHump(dirs[0])
+	actionName := utils.Url.UrlToHump(dirs[1])
 	hasAction := false // 动作是否存在
 	if actionDict, has := component.controllerActionDict[controllerName]; has {
 		_, hasAction = actionDict[actionName]
 	}
 
 	if hasAction {
-		response = component.callControllerAction(controllerName, actionName, contextModel)
+		response = component.callControllerAction(controllerName, actionName, contextModel, w, r)
 	}
 
 
@@ -112,7 +115,7 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 }
 
 // 调用控制器处理
-func (component *HttpServer) callControllerAction(controllerName string, actionName string, context *models.Context) []byte {
+func (component *HttpServer) callControllerAction(controllerName string, actionName string, context *models.Context, w http.ResponseWriter, r *http.Request) []byte {
 	response := []byte("")
 
 	controllerType := component.controllerDict[controllerName]
@@ -124,6 +127,7 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 
 	// 设置控制器数据
 	controllerInterface.SetContext(context)
+	controllerInterface.SetHttpValues(w, r)
 
 	// BeforeAction
 	if !controllerInterface.BeforeAction(actionName) {

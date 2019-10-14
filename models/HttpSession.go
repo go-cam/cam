@@ -22,10 +22,12 @@ func NewHttpSession(session *sessions.Session) *HttpSession {
 func (model *HttpSession) GetSessionId() string {
 	return model.session.ID
 }
+
 // 设置值
 func (model *HttpSession) Set(key interface{}, value interface{}) {
 	model.session.Values[key] = value
 }
+
 // 获取值
 func (model *HttpSession) Get(key interface{}) interface{} {
 	value, has := model.session.Values[key]
@@ -34,8 +36,8 @@ func (model *HttpSession) Get(key interface{}) interface{} {
 	}
 	return value
 }
+
 // 销毁session 清空 session 所有数据
 func (model *HttpSession) Destroy() {
 	model.session.Values = map[interface{}]interface{}{}
 }
-

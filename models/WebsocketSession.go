@@ -29,10 +29,12 @@ func NewWebsocketSession(conn *websocket.Conn) *WebsocketSession {
 func (model *WebsocketSession) GetSessionId() string {
 	return model.sessionId
 }
+
 // 设置值
 func (model *WebsocketSession) Set(key interface{}, value interface{}) {
 	model.values[key] = value
 }
+
 // 获取值
 func (model *WebsocketSession) Get(key interface{}) interface{} {
 	value, has := model.values[key]
@@ -41,6 +43,7 @@ func (model *WebsocketSession) Get(key interface{}) interface{} {
 	}
 	return value
 }
+
 // 销毁session 清空 session 所有数据
 func (model *WebsocketSession) Destroy() {
 	_ = model.conn.Close()

@@ -26,7 +26,6 @@ func (cf *commonFunc) getControllerDict(controllerList []base.ControllerInterfac
 		controllerType := t.Elem() // 获取实体
 		controllerName := controllerType.Name()
 		controllerName = strings.TrimSuffix(controllerName, "Controller")
-		controllerName = strings.ToLower(controllerName)
 		controllerDict[controllerName] = t
 
 		// 保存控制器啊所有方法名字
