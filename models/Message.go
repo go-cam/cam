@@ -1,6 +1,6 @@
 package models
 
-type Message struct {
+type MessageModel struct {
 	BaseModel
 	Id    int64  `json:"i"` // 协议号
 	Route string `json:"r"` // 路由
@@ -8,6 +8,6 @@ type Message struct {
 }
 
 // 验证数据是否合法
-func (model *Message) Validate() bool {
+func (model *MessageModel) Validate() bool {
 	return model.Route != ""
 }

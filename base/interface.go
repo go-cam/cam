@@ -36,7 +36,7 @@ type ControllerInterface interface {
 	// 设置 http 请求的参数
 	SetHttpValues(w http.ResponseWriter, r *http.Request)
 	// 设置 websocket 请求的参数
-	//SetWebsocketValues()
+	SetValues(values map[string]interface{})
 }
 
 // 上下文接口

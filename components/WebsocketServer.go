@@ -24,6 +24,13 @@ type WebsocketServer struct {
 	onConnectHandler func(conn *models.Context)                     // 自定义方法：有新连接连入
 	onMessageHandler func(conn *models.Context, recvMessage []byte) // 自定义方法：收到消息
 	onCloseHandler   func(conn *models.Context)                     // 自定义方法：连接被关闭
+
+	// 传输消息解析器
+	// message: 客户端发送过来的消息
+	// controllerName: 控制器名字
+	// actionName: 控制器方法名字
+	// values: 传输的参数
+	messageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 }
 
 // 使用配置 初始化数据
@@ -52,10 +59,14 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 	component.onConnectHandler = nil
 	component.onMessageHandler = nil
 	component.onCloseHandler = nil
+	component.messageParseHandler = component.defaultRouteParseHandler
 
 	// 注册处理器（控制器）
 	component.controllerDict, component.controllerActionDict = common.getControllerDict(config.ControllerList)
 	component.onMessageHandler = config.OnWebsocketMessageHandler
+	if config.MessageParseHandler != nil {
+		component.messageParseHandler = config.MessageParseHandler
+	}
 }
 
 // 开始
@@ -148,7 +159,7 @@ func (component *WebsocketServer) getSendMessageByHandler(context *models.Contex
 
 // 获取返回结果
 func (component *WebsocketServer) callControllerAction(context *models.Context, recvMessage []byte) []byte {
-	recvMessageModel := new(models.Message)
+	recvMessageModel := new(models.MessageModel)
 	utils.Json.DecodeToObj(recvMessage, recvMessageModel)
 	if !recvMessageModel.Validate() {
 		// 不合法的数据。当没有找到匹配的路由处理
@@ -161,8 +172,7 @@ func (component *WebsocketServer) callControllerAction(context *models.Context, 
 	if strLen != 2 {
 		return []byte("illegal route. must be like 'controller/action'")
 	}
-	controllerName := routeArr[0]
-	actionName := routeArr[1]
+	controllerName, actionName, values := component.messageParseHandler(recvMessage)
 	hasAction := false // 动作是否存在
 	if actionDict, has := component.controllerActionDict[controllerName]; has {
 		if _, has = actionDict[actionName]; has {
@@ -182,6 +192,7 @@ func (component *WebsocketServer) callControllerAction(context *models.Context, 
 	}
 
 	controllerInterface.SetContext(context)
+	controllerInterface.SetValues(values)
 
 	// BeforeAction 一般可用于验证数据
 	if !controllerInterface.BeforeAction(actionName) {
@@ -221,4 +232,21 @@ func (component *WebsocketServer) callOnClose(context *models.Context) {
 	if component.onCloseHandler != nil {
 		component.onCloseHandler(context)
 	}
+}
+
+// 默认路由解析手柄
+func (component *WebsocketServer) defaultRouteParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
+	messageModel := new(models.MessageModel)
+	responseModel := new(models.ResponseModel)
+	utils.Json.DecodeToObj(message, messageModel)
+	utils.Json.DecodeToObj([]byte(messageModel.Data), responseModel)
+
+	if messageModel.Route == "" {
+		return "", "", responseModel.Values
+	}
+	if !strings.Contains(messageModel.Route, "/") {
+		return messageModel.Route, "", responseModel.Values
+	}
+	tmpArr := strings.Split(messageModel.Route, "/")
+	return utils.Url.UrlToHump(tmpArr[0]), utils.Url.UrlToHump(tmpArr[1]), responseModel.Values
 }

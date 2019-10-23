@@ -51,3 +51,8 @@ func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.R
 
 	// TODO 处理数组、对象、数组和对象混合的数据
 }
+
+// 设置接收到的参数
+func (controller *BaseController) SetValues(values map[string]interface{}) {
+	controller.values = values
+}

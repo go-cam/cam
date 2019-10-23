@@ -20,8 +20,16 @@
     <div id="send" style="display: none">
         <hr />
         <div>
-            <label for="sendMessage">发送消息内容</label><input id="sendMessage" value="" placeholder="发送到服务器的内容" />
+            <label for="sendMessage">发送消息内容</label><textarea id="sendMessage" rows="3" cols="50" placeholder="发送到服务器的内容"></textarea>
         </div>
+        <hr />
+        <div>
+            <label for="route">路由</label><input id="route" value="" placeholder="如：test/test" onchange="websocketClient.autoSetSendMessage()" />
+        </div>
+        <div>
+            <label for="data">内容</label><input id="data" value="" placeholder="如：{c:1,m:'11',d:[]}" onchange="websocketClient.autoSetSendMessage()" />
+        </div>
+        <hr />
         <button onclick="websocketClient.sendMessage()">发送</button>
     </div>
 </div>
@@ -85,11 +93,46 @@
         this.getSendMessage = () => {
             return document.getElementById("sendMessage").value;
         };
+
+        /**
+         * 设置发送消息
+         */
+        this.setSendMessage = (sendMessage) => {
+            console.log(sendMessage);
+            document.getElementById("sendMessage").value = sendMessage;
+        };
+
+        /**
+         * 获取路由
+         */
+        this.getRoute = () => {
+            return document.getElementById("route").value;
+        };
+
+        /**
+         * 获取数据
+         */
+        this.getData = () => {
+            return document.getElementById("data").value;
+        };
     };
 
+    /**
+     * websocket 客户端
+     */
     let websocketClient = new function () {
+        /**
+         * websocket 连接
+         */
         this.conn = undefined;
+        /**
+         * 连接状态
+         */
         this.status = Constant.CONN_STATE_WAIT;
+        /**
+         * 发送消息的id
+         */
+        this.id = 0;
 
         /**
          * 创建websocket连接
@@ -129,7 +172,41 @@
             this.conn.send(sendMessage);
             console.log("[发送] " + sendMessage);
         };
+
+        /**
+         * 获取消息id
+         * @returns {number}
+         */
+        this.getId = () => {
+            return this.id++;
+        };
+
+        /**
+         * 自动设置要发送的消息
+         */
+        this.autoSetSendMessage = () => {
+            let message = new Message(this.getId(), view.getRoute(), view.getData());
+            view.setSendMessage(message.toString());
+        }
     };
+
+    /**
+     * 消息类
+     * @constructor
+     */
+    function Message(id, route, data) {
+        this.id = id;
+        this.r = route;
+        this.d = data;
+
+        /**
+         * 转化成string
+         * @returns {string}
+         */
+        this.toString = () => {
+            return JSON.stringify(this);
+        };
+    }
 </script>
 </body>
 </html>
