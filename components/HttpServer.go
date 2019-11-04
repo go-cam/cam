@@ -135,7 +135,7 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 	}
 
 	// DoAction
-	action := controllerValue.MethodByName(actionName)
+	action := controllerValue.MethodByName(utils.Url.HumpToUrl(actionName))
 	retValues := action.Call([]reflect.Value{})
 	if len(retValues) != 1 || retValues[0].Kind() != reflect.Slice {
 		panic("only one argument of type []byte can be returned")

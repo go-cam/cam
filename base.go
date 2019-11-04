@@ -2,7 +2,6 @@ package cin
 
 import (
 	"cin/constants"
-	"cin/controllers"
 	"cin/models"
 )
 
@@ -32,7 +31,7 @@ const (
 
 // 基础 websocket 处理器
 type BaseController struct {
-	controllers.BaseController
+	models.BaseController
 }
 
 // 配置类

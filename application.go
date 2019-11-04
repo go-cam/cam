@@ -2,7 +2,11 @@ package cin
 
 import (
 	"cin/base"
+	"cin/components"
 	"cin/configs"
+	"cin/utils"
+	"fmt"
+	"os"
 	"reflect"
 	"time"
 )
@@ -50,6 +54,11 @@ func (app *application) GetRouter() *router {
 // 启动应用
 func (app *application) Run() {
 	app.onInit()
+	if len(os.Args) >= 2 {
+		// 如果运行参数大于1个，说明是一个一次单独的命令，不启动服务
+		app.callConsole()
+		return
+	}
 	app.onStart()
 	app.wait()
 	app.onStop()
@@ -103,6 +112,26 @@ func (app *application) writePluginParams(config base.ConfigComponentInterface) 
 	if _, has := t.FieldByName("PluginRouter"); has {
 		pluginRouter := v.FieldByName("PluginRouter").Interface().(configs.PluginRouter)
 		pluginRouter.ControllerList = app.router.controllerList
+		pluginRouter.ConsoleControllerList = app.router.consoleControllerList
+		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
 		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
+	}
+}
+
+// 调用命令行组件
+func (app *application) callConsole() {
+	isCallConsole := false
+
+	for _, componentIns := range app.componentDict {
+		name := utils.Reflect.GetClassName(componentIns)
+		if name == "Console" {
+			isCallConsole = true
+			consoleComponent := componentIns.(*components.Console)
+			consoleComponent.RunAction()
+		}
+	}
+
+	if !isCallConsole {
+		fmt.Println("the console component is not enabled.")
 	}
 }

@@ -1,4 +1,4 @@
-package controllers
+package models
 
 import (
 	"cin/base"
@@ -55,4 +55,13 @@ func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.R
 // 设置接收到的参数
 func (controller *BaseController) SetValues(values map[string]interface{}) {
 	controller.values = values
+}
+
+// 获取参数
+func (controller *BaseController) GetValue(key string) interface{} {
+	value, has := controller.values[key]
+	if !has {
+		value = nil
+	}
+	return value
 }

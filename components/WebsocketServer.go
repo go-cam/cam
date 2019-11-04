@@ -15,6 +15,7 @@ import (
 type WebsocketServer struct {
 	Base
 
+	config *configs.WebsocketServer
 	port uint16 // websocket 监听端口
 
 	upgrader             websocket.Upgrader         // websocket http 升级为 websocket 的方法
@@ -60,6 +61,7 @@ func (component *WebsocketServer) Init(configInterface base.ConfigComponentInter
 	component.onMessageHandler = nil
 	component.onCloseHandler = nil
 	component.messageParseHandler = component.defaultRouteParseHandler
+	component.config = config
 
 	// 注册处理器（控制器）
 	component.controllerDict, component.controllerActionDict = common.getControllerDict(config.ControllerList)
@@ -183,13 +185,10 @@ func (component *WebsocketServer) callControllerAction(context *models.Context, 
 		return []byte("route not found!")
 	}
 
-	// 判断控制器是否合法（TODO 这里应该方法注册那里判断）
+	// 判断控制器是否合法
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
 	controllerInterface := controllerValue.Interface().(base.ControllerInterface)
-	if controllerInterface == nil {
-		return []byte("controller must be implement base.ControllerInterface")
-	}
 
 	controllerInterface.SetContext(context)
 	controllerInterface.SetValues(values)
@@ -200,7 +199,7 @@ func (component *WebsocketServer) callControllerAction(context *models.Context, 
 	}
 
 	// 调用控制器对应的方法
-	action := controllerValue.MethodByName(actionName)
+	action := controllerValue.MethodByName(utils.Url.HumpToUrl(actionName))
 	retValues := action.Call([]reflect.Value{})
 	if len(retValues) != 1 || retValues[0].Kind() != reflect.String {
 		return []byte("only one argument of type string can be returned")

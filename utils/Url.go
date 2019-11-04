@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"regexp"
 	"strings"
 )
 
@@ -47,12 +46,18 @@ func (util *urlUtil) UrlToHump(url string) string {
 
 // 将驼峰命名转为url模式。如：GetUserList => get-user-list
 func (util *urlUtil) HumpToUrl(hump string) string {
-	// 将大写字母前面添加 - 。如：GetUserList => -Get-User-List
-	reg := regexp.MustCompile(	`([A-Z]])`)
-	reg.ReplaceAllString(hump, "-${n}")
-	// 将所有字母转为小写
-	hump = strings.ToLower(hump)
-	// 去除 - 前缀
-	hump = strings.TrimPrefix(hump, "-")
-	return hump
+	data := make([]byte, 0, len(hump)*2)
+	j := false
+	num := len(hump)
+	for i := 0; i < num; i++ {
+		d := hump[i]
+		if i > 0 && d >= 'A' && d <= 'Z' && j {
+			data = append(data, '-')
+		}
+		if d != '_' {
+			j = true
+		}
+		data = append(data, d)
+	}
+	return strings.ToLower(string(data[:]))
 }
