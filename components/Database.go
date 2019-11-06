@@ -8,10 +8,10 @@ import (
 	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-migrate/migrate"
-	"github.com/golang-migrate/migrate/database"
-	"github.com/golang-migrate/migrate/database/mysql"
-	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"reflect"
 )
 
@@ -68,7 +68,7 @@ func (component *Database) MigrateUp() {
 	if err != nil {
 		panic(err.Error())
 	}
-	m, err := migrate.NewWithDatabaseInstance("file://" + migrateDir, driverName, driver)
+	m, err := migrate.NewWithDatabaseInstance("file://"+migrateDir, driverName, driver)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -91,7 +91,7 @@ func (component *Database) MigrateUp() {
 // 通过 driverName 获取 driver
 func (component *Database) getDriver(driverName string, host string, port string, name string, username string, password string) (database.Driver, error) {
 	if driverName == constants.DatabaseDriverMysql {
-		db, err := sql.Open(driverName, username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name +  "?multiStatements=true")
+		db, err := sql.Open(driverName, username+":"+password+"@tcp("+host+":"+port+")/"+name+"?multiStatements=true")
 		if err != nil {
 			return nil, err
 		}
