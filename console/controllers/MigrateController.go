@@ -6,7 +6,6 @@ import (
 	"cin/utils"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -22,7 +21,7 @@ func (controller *MigrateController) Create() {
 	var err error
 
 	// 生成路径
-	migrateDir := filepath.Dir(os.Args[0]) + "/database/migrations"
+	migrateDir := controller.GetValue("migrateDir").(string)
 	if utils.File.Exists(migrateDir) {
 		err = utils.File.Mkdir(migrateDir)
 		utils.Error.Panic(err)

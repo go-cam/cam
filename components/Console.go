@@ -57,6 +57,8 @@ func (component *Console) RunAction() {
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
 	controllerInterface := controllerValue.Interface().(base.ControllerInterface)
+	controllerInterface.Init()
+	component.injectControllerValues(controllerInterface)
 
 	controllerInterface.BeforeAction(actionName)
 
@@ -64,4 +66,18 @@ func (component *Console) RunAction() {
 	_ = action.Call([]reflect.Value{})
 
 	controllerInterface.AfterAction(actionName, nil)
+}
+
+// 注入控制器参数
+func (component *Console) injectControllerValues(controllerIns base.ControllerInterface) {
+	controllerName := utils.Reflect.GetClassName(controllerIns)
+	if controllerName == "MigrateController" {
+		databaseComponentIns := common.app.GetComponent(new(Database))
+		if databaseComponentIns == nil {
+			return
+		}
+		databaseComponent := databaseComponentIns.(*Database)
+
+		controllerIns.AddValue("migrateDir", databaseComponent.config.MigrateDir)
+	}
 }

@@ -11,11 +11,18 @@ import (
 // 组件内通用的方法
 var common = newCommonFunc()
 
+// 设置app
+func SetApplication(app base.ApplicationInterface) {
+	common.app = app
+}
+
 // 组件内通用的方法封装
 type commonFunc struct {
 	excludeDict map[string]bool
+	app         base.ApplicationInterface
 }
 
+//
 func newCommonFunc() *commonFunc {
 	cf := new(commonFunc)
 	cf.excludeDict = nil

@@ -3,6 +3,7 @@ package cin
 import (
 	"cin/components"
 	"cin/configs"
+	"cin/utils"
 )
 
 // 新建 websocket server 配置
@@ -34,7 +35,7 @@ func NewConfigDatabase(driverName string, host string, port string, name string,
 	config.Name = name
 	config.Username = username
 	config.Password = password
-	config.MigrateDir = ""
+	config.SetMigrateDir(utils.File.GetRunPath() + "/database/migrations")
 	return config
 }
 

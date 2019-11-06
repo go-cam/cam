@@ -2,7 +2,12 @@ package base
 
 import "net/http"
 
-// 框架内接口
+// application 接口
+// NODE：Provides interface function to the module inner framework
+type ApplicationInterface interface {
+	// 获取组件实例
+	GetComponent(v ComponentInterface) ComponentInterface
+}
 
 // 组件类型配置接口
 type ConfigComponentInterface interface {
@@ -37,6 +42,8 @@ type ControllerInterface interface {
 	SetHttpValues(w http.ResponseWriter, r *http.Request)
 	// 设置 websocket 请求的参数
 	SetValues(values map[string]interface{})
+	// 添加参数
+	AddValue(key string, value interface{})
 }
 
 // 上下文接口

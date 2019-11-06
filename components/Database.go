@@ -4,11 +4,15 @@ import (
 	"cin/base"
 	"cin/configs"
 	"cin/constants"
+	"cin/utils"
 	"database/sql"
 	"errors"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database"
 	"github.com/golang-migrate/migrate/database/mysql"
+	_ "github.com/golang-migrate/migrate/source/file"
+	"reflect"
 )
 
 // 数据库组件
@@ -21,6 +25,18 @@ type Database struct {
 // 初始化
 func (component *Database) Init(configInterface base.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
+
+	configValue := reflect.ValueOf(configInterface)
+	var config *configs.Database
+	if configValue.Kind() == reflect.Ptr {
+		config = configValue.Interface().(*configs.Database)
+	} else if configValue.Kind() == reflect.Struct {
+		configStruct := configValue.Interface().(configs.Database)
+		config = &configStruct
+	} else {
+		panic("illegal config")
+	}
+	component.config = config
 }
 
 // 启动
@@ -48,11 +64,7 @@ func (component *Database) MigrateUp() {
 	username := component.config.Username
 	password := component.config.Password
 
-	db, err := sql.Open(driverName, username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name +  "?multiStatements=true")
-	if err != nil {
-		panic(err.Error())
-	}
-	driver, err := component.getDriver(db, driverName)
+	driver, err := component.getDriver(driverName, host, port, name, username, password)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -60,15 +72,29 @@ func (component *Database) MigrateUp() {
 	if err != nil {
 		panic(err.Error())
 	}
-	err = m.Steps(10000)
-	if err != nil {
-		panic(err.Error())
+	_, dirty, err := m.Version()
+	if dirty {
+		// 如果已经被弄脏，则尝试强制修复
+		err := m.Steps(-1)
+		utils.Error.Panic(err)
 	}
+
+	err = m.Up()
+
+	if err == migrate.ErrNoChange {
+		// 不需要升级的情况
+		err = nil
+	}
+	utils.Error.Panic(err)
 }
 
 // 通过 driverName 获取 driver
-func (component *Database) getDriver(db *sql.DB, driverName string) (database.Driver, error) {
+func (component *Database) getDriver(driverName string, host string, port string, name string, username string, password string) (database.Driver, error) {
 	if driverName == constants.DatabaseDriverMysql {
+		db, err := sql.Open(driverName, username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name +  "?multiStatements=true")
+		if err != nil {
+			return nil, err
+		}
 		driver, err := mysql.WithInstance(db, &mysql.Config{})
 		if err != nil {
 			return nil, err

@@ -1,5 +1,7 @@
 package configs
 
+import "strings"
+
 // 数据库配置
 type Database struct {
 	BaseConfig
@@ -23,6 +25,6 @@ type Database struct {
 
 // 设置 migrate 路径
 func (config *Database) SetMigrateDir(migrateDir string) *Database {
-	config.MigrateDir = migrateDir
+	config.MigrateDir = strings.Replace(migrateDir, "\\", "/", -1)
 	return config
 }

@@ -13,6 +13,8 @@ import (
 
 // 服务器全局类
 type application struct {
+	base.ApplicationInterface
+
 	// 应用状态（初始化、开始、运行中、停止、销毁）[onInit, onStart, onRun, onStop, onDestroy]
 	status base.ApplicationStatus
 	// 应用全部配置
@@ -66,6 +68,8 @@ func (app *application) Run() {
 
 // 应用初始化
 func (app *application) onInit() {
+	components.SetApplication(app)
+
 	// 实例化组件
 	for name, config := range app.config.ComponentDict {
 		// 使用结构体重新创建一个新对象（防止外部修改导致混乱）
@@ -134,4 +138,19 @@ func (app *application) callConsole() {
 	if !isCallConsole {
 		fmt.Println("the console component is not enabled.")
 	}
+}
+
+// OVERWRITE: 实现获取组件实例的方法
+func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
+	var componentIns base.ComponentInterface = nil
+
+	targetName := utils.Reflect.GetClassName(v)
+	for _, ins := range app.componentDict {
+		if utils.Reflect.GetClassName(ins) == targetName {
+			componentIns = ins
+			break
+		}
+	}
+
+	return componentIns
 }

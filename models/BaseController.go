@@ -57,6 +57,11 @@ func (controller *BaseController) SetValues(values map[string]interface{}) {
 	controller.values = values
 }
 
+// OVERWRITE: 添加参数
+func (controller *BaseController) AddValue(key string, value interface{}) {
+	controller.values[key] = value
+}
+
 // 获取参数
 func (controller *BaseController) GetValue(key string) interface{} {
 	value, has := controller.values[key]
