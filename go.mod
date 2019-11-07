@@ -1,4 +1,4 @@
-module cin
+module github.com/cinling/cin
 
 go 1.12
 
