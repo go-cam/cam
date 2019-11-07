@@ -1,4 +1,4 @@
-![Release Version](https://img.shields.io/badge/release-0.0.0-success)
+![Release Version](https://img.shields.io/badge/release-0.0.1-success)
 
 # cin
 一个 http 和 websocket 多模块的开发框架。创作主要灵感来源于 yii2 高级模板
