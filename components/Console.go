@@ -1,10 +1,10 @@
 package components
 
 import (
-	"cin/base"
-	"cin/configs"
-	"cin/utils"
 	"fmt"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/utils"
 	"os"
 	"reflect"
 	"strings"

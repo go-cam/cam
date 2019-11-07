@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cin/base"
+	"github.com/cinling/cin/base"
 	"github.com/gorilla/sessions"
 )
 

@@ -1,6 +1,6 @@
 package models
 
-import "cin/base"
+import "github.com/cinling/cin/base"
 
 // http 上下文对象
 type Context struct {

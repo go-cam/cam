@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"cin/base"
-	consoleController "cin/console/controllers"
-	"cin/models"
+	"github.com/cinling/cin/base"
+	consoleController "github.com/cinling/cin/console/controllers"
+	"github.com/cinling/cin/models"
 )
 
 // 路由器
@@ -24,7 +24,7 @@ func newRouter() *router {
 }
 
 // 写入默认的命令行控制器
-func (r *router) registerDefaultConsoleController()  {
+func (r *router) registerDefaultConsoleController() {
 	r.RegisterConsole(new(consoleController.MigrateController))
 }
 

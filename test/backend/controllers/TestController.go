@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"cin"
+	"github.com/cinling/cin"
 )
 
 // 测试控制器

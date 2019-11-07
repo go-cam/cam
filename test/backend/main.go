@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cin"
-	"cin/test/backend/config"
+	"github.com/cinling/cin"
+	"github.com/cinling/cin/test/backend/config"
 )
 
 func main() {

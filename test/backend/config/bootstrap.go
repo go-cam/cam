@@ -1,9 +1,9 @@
 package config
 
 import (
-	"cin"
-	"cin/test/backend/controllers"
-	"cin/test/common/config"
+	"github.com/cinling/cin"
+	"github.com/cinling/cin/test/backend/controllers"
+	"github.com/cinling/cin/test/common/config"
 )
 
 // 加载配置

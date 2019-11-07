@@ -1,9 +1,9 @@
 package components
 
 import (
-	"cin/base"
-	"cin/models"
-	"cin/utils"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/utils"
 	"reflect"
 	"strings"
 )

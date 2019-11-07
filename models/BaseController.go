@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cin/base"
+	"github.com/cinling/cin/base"
 	"net/http"
 )
 
@@ -36,6 +36,7 @@ func (controller *BaseController) AfterAction(action string, response []byte) []
 func (controller *BaseController) SetContext(context base.ContextInterface) {
 	controller.context = context
 }
+
 // 获取上下文对象
 func (controller *BaseController) GetContext() base.ContextInterface {
 	return controller.context

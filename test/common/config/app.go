@@ -1,7 +1,7 @@
 package config
 
 import (
-	"cin"
+	"github.com/cinling/cin"
 )
 
 // 获取默认配置

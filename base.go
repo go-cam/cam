@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"cin/constants"
-	"cin/models"
+	"github.com/cinling/cin/constants"
+	"github.com/cinling/cin/models"
 )
 
 const (
@@ -38,6 +38,7 @@ type BaseController struct {
 type Config struct {
 	models.Config
 }
+
 // 新建配置
 func NewConfig() *Config {
 	config := new(Config)

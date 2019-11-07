@@ -1,12 +1,12 @@
 package components
 
 import (
-	"cin/base"
-	"cin/configs"
-	"cin/constants"
-	"cin/utils"
 	"database/sql"
 	"errors"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/constants"
+	"github.com/cinling/cin/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"

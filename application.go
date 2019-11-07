@@ -1,11 +1,11 @@
 package cin
 
 import (
-	"cin/base"
-	"cin/components"
-	"cin/configs"
-	"cin/utils"
 	"fmt"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/components"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/utils"
 	"os"
 	"reflect"
 	"time"

@@ -1,10 +1,10 @@
 package components
 
 import (
-	"cin/base"
-	"cin/configs"
-	"cin/models"
-	"cin/utils"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/utils"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"reflect"
@@ -103,7 +103,6 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	if hasAction {
 		response = component.callControllerAction(controllerName, actionName, contextModel, w, r)
 	}
-
 
 	err = session.Save(r, w)
 	if err != nil {

@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"bufio"
-	"cin/models"
-	"cin/utils"
 	"fmt"
+	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/utils"
 	"os"
 	"strconv"
 	"strings"

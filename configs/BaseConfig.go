@@ -1,6 +1,6 @@
 package configs
 
-import "cin/base"
+import "github.com/cinling/cin/base"
 
 // 基础配置
 type BaseConfig struct {

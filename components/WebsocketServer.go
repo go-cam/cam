@@ -1,10 +1,10 @@
 package components
 
 import (
-	"cin/base"
-	"cin/configs"
-	"cin/models"
-	"cin/utils"
+	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/configs"
+	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/utils"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"reflect"
@@ -16,7 +16,7 @@ type WebsocketServer struct {
 	Base
 
 	config *configs.WebsocketServer
-	port uint16 // websocket 监听端口
+	port   uint16 // websocket 监听端口
 
 	upgrader             websocket.Upgrader         // websocket http 升级为 websocket 的方法
 	controllerDict       map[string]reflect.Type    // 控制器反射map
