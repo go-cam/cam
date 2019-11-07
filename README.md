@@ -1,24 +1,37 @@
-![Release Version](https://img.shields.io/badge/release-0.0.1-success)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cinling/cin)](https://github.com/cinling/cin/tags)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cinling/cin?color=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cin)
 
 # cin
-一个 http 和 websocket 多模块的开发框架。创作主要灵感来源于 yii2 高级模板
+The http and websocket server's framework.
 
-# 特性
+Inspiration come form yii2.
 
-- 数据库版本管理（使用 go-migrate）
-- 数据库ORM(使用xorm)
-- 自动路由
-- 应用模式启动
+# Getting started
 
-# 计划
+main.go
+```go
+package main
 
-## 0.0.0
-    1.构建 http 和 websocket 自动路由
+import (
+    "github.com/cinling/cin"
+    "github.com/cinling/cin/base"
+)
 
-## 0.1.0
-    1.添加 go-migrate 数据库版本管理
-    2.添加 xorm 作为orm引擎
+func main() {
+	config := cin.NewConfig()
+    config.ComponentDict = map[string]base.ConfigComponentInterface{
+        "ws":      cin.NewConfigWebsocketServer(24600),
+        "http":    cin.NewConfigHttpServer(24601).SetSessionName("test"),
+        "db":      cin.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
+        "console": cin.NewConfigConsole(),
+    }
+    cin.App.AddConfig(config)
+    cin.App.Run()
+}
+```
 
-## 0.2.0
-    1.添加 cin 命令行。（可用于创建项目，新增模块）
-    2.添加定时任务组件模块
+Then run go module to download dependency. 
+```
+go mod tidy
+```

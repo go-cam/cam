@@ -52,6 +52,11 @@ func (controller *MigrateController) Create() {
 		return
 	}
 
+	if !utils.File.Exists(migrateDir) {
+		err = utils.File.Mkdir(migrateDir)
+		utils.Error.Panic(err)
+	}
+
 	err = utils.File.WriteFile(downFilename, []byte{})
 	utils.Error.Panic(err)
 	err = utils.File.WriteFile(upFilename, []byte{})
