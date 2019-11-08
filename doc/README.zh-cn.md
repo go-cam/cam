@@ -3,15 +3,14 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cin)
 
 # cin
-[简体中文](https://github.com/cinling/cin/doc/doc/README.zh-cn.md)
 
-The http and websocket server's framework.
+http 和 websocket 的服务端框架。
 
-Inspiration come form yii2.
+灵感来源于 yii2 高级模板。
 
-# Getting started
+# 开始使用
 
-Edit file:  `main.go`
+编辑文件:  `main.go`
 ```go
 package main
 
@@ -33,21 +32,21 @@ func main() {
 }
 ```
 
-Run go module to download dependency. 
+运行命令生成依赖
 > go mod tidy
 
-Compiled code.
+编译代码
 > go build main.go
 
-Run bin file
+运行二进制文件
 
-- on windows
+- windows
 > ./main.exe
 
-- on linux
+- linux
 > ./main
 
 
-# Migrations
-After Compiled code, run the following command to create migration's file.
-> 
+# 数据库迁移（Migrations）
+编译文件后，运行一下命令生成数据库迁移文件
+> ./main.exe migrate/create [filename]
