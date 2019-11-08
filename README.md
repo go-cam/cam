@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cin)
 
 # cin
-[简体中文](https://github.com/cinling/cin/doc/doc/README.zh-cn.md)
+[简体中文](https://github.com/Cinling/cin/blob/master/doc/README.zh-cn.md)
 
 The http and websocket server's framework.
 
