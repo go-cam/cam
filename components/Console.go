@@ -78,6 +78,6 @@ func (component *Console) injectControllerValues(controllerIns base.ControllerIn
 		}
 		databaseComponent := databaseComponentIns.(*Database)
 
-		controllerIns.AddValue("migrateDir", databaseComponent.config.MigrateDir)
+		controllerIns.AddValue("migrateDir", databaseComponent.config.GetMigrateDir())
 	}
 }

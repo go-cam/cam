@@ -19,12 +19,17 @@ type Database struct {
 	// 密码
 	Password string
 
-	// 数据库迁移文件路径
-	MigrateDir string
+	// Database file storage path. Default is: /[path to run dir]/database
+	DBFileDir string
 }
 
 // 设置 migrate 路径
-func (config *Database) SetMigrateDir(migrateDir string) *Database {
-	config.MigrateDir = strings.Replace(migrateDir, "\\", "/", -1)
+func (config *Database) SetDBFileDir(migrateDir string) *Database {
+	config.DBFileDir = strings.Replace(migrateDir, "\\", "/", -1)
 	return config
+}
+
+// get migrations's dir
+func (config *Database) GetMigrateDir() string {
+	return config.DBFileDir + "/migrations"
 }

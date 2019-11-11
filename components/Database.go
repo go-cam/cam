@@ -52,7 +52,7 @@ func (component *Database) Stop() {
 
 // 升级数据库
 func (component *Database) MigrateUp() {
-	migrateDir := component.config.MigrateDir
+	migrateDir := component.config.GetMigrateDir()
 	if migrateDir == "" {
 		// 如果没有设置 migrate 路径，则不进行更新
 		return

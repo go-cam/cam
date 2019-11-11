@@ -35,7 +35,7 @@ func NewConfigDatabase(driverName string, host string, port string, name string,
 	config.Name = name
 	config.Username = username
 	config.Password = password
-	config.SetMigrateDir(utils.File.GetRunPath() + "/database/migrations")
+	config.SetDBFileDir(utils.File.GetRunPath() + "/database")
 	return config
 }
 
