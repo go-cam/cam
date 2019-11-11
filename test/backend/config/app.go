@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/cinling/cin"
-	"github.com/cinling/cin/base"
+	"github.com/cinling/cin/core/base"
 )
 
 // 获取默认配置

@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"github.com/cinling/cin/components"
-	"github.com/cinling/cin/configs"
-	"github.com/cinling/cin/utils"
+	"github.com/cinling/cin/core/components"
+	"github.com/cinling/cin/core/configs"
+	"github.com/cinling/cin/core/utils"
 )
 
 // 新建 websocket server 配置

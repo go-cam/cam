@@ -17,7 +17,7 @@ package main
 
 import (
     "github.com/cinling/cin"
-    "github.com/cinling/cin/base"
+    "github.com/cinling/cin/core/base"
 )
 
 func main() {
@@ -40,14 +40,9 @@ Compiled code.
 > go build main.go
 
 Run bin file
-
-- on windows
-> ./main.exe
-
-- on linux
-> ./main
+> ./main.exe  `or` ./main
 
 
 # Migrations
 After Compiled code, run the following command to create migration's file.
-> 
+> ./main.exe migrate/create [filename]

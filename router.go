@@ -1,9 +1,9 @@
 package cin
 
 import (
-	"github.com/cinling/cin/base"
 	consoleController "github.com/cinling/cin/console/controllers"
-	"github.com/cinling/cin/models"
+	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/models"
 )
 
 // 路由器

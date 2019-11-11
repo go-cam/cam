@@ -2,10 +2,10 @@ package cin
 
 import (
 	"fmt"
-	"github.com/cinling/cin/base"
-	"github.com/cinling/cin/components"
-	"github.com/cinling/cin/configs"
-	"github.com/cinling/cin/utils"
+	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/components"
+	"github.com/cinling/cin/core/configs"
+	"github.com/cinling/cin/core/utils"
 	"os"
 	"reflect"
 	"time"
@@ -83,6 +83,7 @@ func (app *application) onInit() {
 		app.writePluginParams(config)
 
 		componentInterface.Init(config)
+		componentInterface.SetApp(app)
 		app.componentDict[name] = componentInterface
 	}
 }
@@ -140,7 +141,7 @@ func (app *application) callConsole() {
 	}
 }
 
-// OVERWRITE: 实现获取组件实例的方法
+// Overwrite: 实现获取组件实例的方法
 func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
 	var componentIns base.ComponentInterface = nil
 
@@ -152,5 +153,14 @@ func (app *application) GetComponent(v base.ComponentInterface) base.ComponentIn
 		}
 	}
 
+	return componentIns
+}
+
+// Overwrite: get component instance by name
+func (app application) GetComponentByName(name string) base.ComponentInterface {
+	componentIns, has := app.componentDict[name]
+	if !has {
+		return nil
+	}
 	return componentIns
 }
