@@ -1,7 +1,7 @@
 package components
 
 import (
-	base2 "github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/base"
 	"github.com/cinling/cin/core/configs"
 	"github.com/cinling/cin/core/models"
 	"github.com/cinling/cin/core/utils"
@@ -24,7 +24,7 @@ type HttpServer struct {
 }
 
 // 使用配置初始化数据
-func (component *HttpServer) Init(configInterface base2.ConfigComponentInterface) {
+func (component *HttpServer) Init(configInterface base.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
@@ -119,7 +119,7 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
-	controllerInterface := controllerValue.Interface().(base2.ControllerInterface)
+	controllerInterface := controllerValue.Interface().(base.ControllerInterface)
 	if controllerInterface == nil {
 		panic("controller must be implement base.ControllerInterface")
 	}

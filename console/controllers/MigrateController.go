@@ -3,8 +3,6 @@ package controllers
 import (
 	"bufio"
 	"fmt"
-	//"github.com/cinling/cin/core/components"
-	"github.com/cinling/cin/core/models"
 	"github.com/cinling/cin/core/utils"
 	"os"
 	"strconv"
@@ -14,14 +12,12 @@ import (
 
 // 数据库版本管理控制器
 type MigrateController struct {
-	models.BaseController
+	baseConsoleController
 }
 
 // 创建一个数据库升级文件
 func (controller *MigrateController) Create() {
 	var err error
-
-	//dbComponentIns = controller.GetApp().GetComponentByName("db")
 
 	// 生成路径
 	migrateDir := controller.GetValue("migrateDir").(string)
@@ -68,7 +64,3 @@ func (controller *MigrateController) Create() {
 	fmt.Println("")
 	fmt.Println("Done: migrations's files created.")
 }
-
-//func (controller MigrateController) getDbComponent() *components.Database {
-//
-//}

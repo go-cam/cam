@@ -1,7 +1,7 @@
 package components
 
 import (
-	base2 "github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/base"
 	"github.com/cinling/cin/core/models"
 	"github.com/cinling/cin/core/utils"
 	"reflect"
@@ -12,14 +12,14 @@ import (
 var common = newCommonFunc()
 
 // 设置app
-func SetApplication(app base2.ApplicationInterface) {
+func SetApplication(app base.ApplicationInterface) {
 	common.app = app
 }
 
 // 组件内通用的方法封装
 type commonFunc struct {
 	excludeDict map[string]bool
-	app         base2.ApplicationInterface
+	app         base.ApplicationInterface
 }
 
 //
@@ -30,7 +30,7 @@ func newCommonFunc() *commonFunc {
 }
 
 // 获取控制器记录map
-func (cf *commonFunc) getControllerDict(controllerList []base2.ControllerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
+func (cf *commonFunc) getControllerDict(controllerList []base.ControllerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
 	controllerDict := map[string]reflect.Type{}
 	controllerActionDict := map[string]map[string]bool{}
 
@@ -45,7 +45,7 @@ func (cf *commonFunc) getControllerDict(controllerList []base2.ControllerInterfa
 		controllerDict[controllerName] = t
 
 		controllerValue := reflect.New(controllerType)
-		controllerInterface := controllerValue.Interface().(base2.ControllerInterface)
+		controllerInterface := controllerValue.Interface().(base.ControllerInterface)
 		if controllerInterface == nil {
 			panic(controllerName + " must be implement base.ControllerInterface")
 		}

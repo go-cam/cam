@@ -80,6 +80,6 @@ func (controller *BaseController) SetApp(app base.ApplicationInterface) {
 }
 
 // Return app instance
-func (controller *BaseController) GetApp() base.ApplicationInterface {
+func (controller *BaseController) GetAppInterface() base.ApplicationInterface {
 	return controller.app
 }

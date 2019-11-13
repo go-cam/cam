@@ -3,16 +3,16 @@ package components
 import (
 	"database/sql"
 	"errors"
-	base2 "github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/base"
 	"github.com/cinling/cin/core/configs"
 	"github.com/cinling/cin/core/constants"
 	"github.com/cinling/cin/core/utils"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"reflect"
 )
 
 // 数据库组件
@@ -20,28 +20,23 @@ type Database struct {
 	Base
 
 	config *configs.Database
+	engine *xorm.Engine
 }
 
 // 初始化
-func (component *Database) Init(configInterface base2.ConfigComponentInterface) {
+func (component *Database) Init(configInterface base.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
-
-	configValue := reflect.ValueOf(configInterface)
-	var config *configs.Database
-	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*configs.Database)
-	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(configs.Database)
-		config = &configStruct
-	} else {
-		panic("illegal config")
+	var done bool
+	component.config, done = configInterface.(*configs.Database)
+	if !done {
+		panic("configInterface type error. need [*configs.Database]")
 	}
-	component.config = config
 }
 
 // 启动
 func (component *Database) Start() {
 	component.Base.Start()
+	component.initEngine()
 	component.MigrateUp()
 }
 
@@ -75,6 +70,7 @@ func (component *Database) MigrateUp() {
 	_, dirty, err := m.Version()
 	if dirty {
 		// 如果已经被弄脏，则尝试强制修复
+		// fix dirty version. but it's not work. must be fixed manually
 		err := m.Steps(-1)
 		utils.Error.Panic(err)
 	}
@@ -91,7 +87,7 @@ func (component *Database) MigrateUp() {
 // 通过 driverName 获取 driver
 func (component *Database) getDriver(driverName string, host string, port string, name string, username string, password string) (database.Driver, error) {
 	if driverName == constants.DatabaseDriverMysql {
-		db, err := sql.Open(driverName, username+":"+password+"@tcp("+host+":"+port+")/"+name+"?multiStatements=true")
+		db, err := sql.Open(driverName, component.GetDSN())
 		if err != nil {
 			return nil, err
 		}
@@ -103,4 +99,33 @@ func (component *Database) getDriver(driverName string, host string, port string
 	} else {
 		return nil, errors.New("not support driver: " + driverName)
 	}
+}
+
+// get xorm engine
+func (component *Database) GetEngine() *xorm.Engine {
+	return component.engine
+}
+
+// init xorm engine
+func (component *Database) initEngine() {
+	var err error
+	component.engine, err = xorm.NewEngine(component.config.DriverName, component.GetDSN())
+	utils.Error.Panic(err)
+}
+
+// get data source name.
+// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
+func (component *Database) GetDSN() string {
+	host := component.config.Host
+	port := component.config.Port
+	name := component.config.Name
+	username := component.config.Username
+	password := component.config.Password
+
+	return username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?multiStatements=true&charset=utf8"
+}
+
+func (component *Database) GetSession() *xorm.Session {
+	component.engine.Sync()
+	return component.engine.NewSession()
 }

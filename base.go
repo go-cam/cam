@@ -29,11 +29,6 @@ const (
 	ControllerTypeHttp = constants.ControllerTypeHttp
 )
 
-// 基础 websocket 处理器
-type BaseController struct {
-	models.BaseController
-}
-
 // 配置类
 type Config struct {
 	models.Config

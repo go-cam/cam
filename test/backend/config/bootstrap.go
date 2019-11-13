@@ -8,10 +8,10 @@ import (
 
 // 加载配置
 func LoadConfig() {
-	// 加载 common 配置
+	// load common's config
 	cin.App.AddConfig(config.GetApp())
 	cin.App.AddConfig(config.GetAppLocal())
-	// 加载 本模块配置
+	// load module's config
 	cin.App.AddConfig(GetApp())
 	cin.App.AddConfig(GetAppLocal())
 

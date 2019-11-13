@@ -1,10 +1,8 @@
 package controllers
 
-import "github.com/cinling/cin/core/models"
-
 // xorm's console controller
 type XormController struct {
-	models.BaseController
+	baseConsoleController
 }
 
 // Generate ORM classes automatically according to the database

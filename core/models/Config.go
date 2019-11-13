@@ -4,15 +4,21 @@ import (
 	"github.com/cinling/cin/core/base"
 )
 
-// 配置实例。用于封装配置
+// config struct
+// config can merge in application
 type Config struct {
 	BaseModel
-	Params        map[string]interface{}                   // 参数。自定义的配置参数
-	ComponentDict map[string]base.ConfigComponentInterface // 组件。组件名 => 配置
+	// Application config
+	AppConfig *AppConfig
+	// Params required by the business logic
+	Params map[string]interface{}
+	// Components's config
+	ComponentDict map[string]base.ConfigComponentInterface
 }
 
-// 初始化数据
+// init params
 func (config *Config) Init() {
+	config.AppConfig = nil
 	config.ComponentDict = map[string]base.ConfigComponentInterface{}
 	config.Params = map[string]interface{}{}
 }

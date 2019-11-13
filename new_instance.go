@@ -3,8 +3,16 @@ package cin
 import (
 	"github.com/cinling/cin/core/components"
 	"github.com/cinling/cin/core/configs"
+	"github.com/cinling/cin/core/models"
 	"github.com/cinling/cin/core/utils"
 )
+
+// new application config
+func NewAppConfig() *models.AppConfig {
+	appConfig := new(models.AppConfig)
+	appConfig.DefaultDBName = "db"
+	return appConfig
+}
 
 // 新建 websocket server 配置
 func NewConfigWebsocketServer(port uint16) *configs.WebsocketServer {

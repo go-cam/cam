@@ -9,6 +9,8 @@ type ApplicationInterface interface {
 	GetComponent(v ComponentInterface) ComponentInterface
 	// get Component instance by component name
 	GetComponentByName(name string) ComponentInterface
+	// get default db component's interface
+	GetDBInterface() ComponentInterface
 }
 
 // 组件类型配置接口

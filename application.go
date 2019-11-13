@@ -33,18 +33,26 @@ func newApplication() *application {
 	app := new(application)
 	app.status = ApplicationStatusInit
 	app.config = NewConfig()
+	app.config.AppConfig = NewAppConfig()
 	app.componentDict = map[string]base.ComponentInterface{}
 	app.router = newRouter()
 	return app
 }
 
-// 添加配置（有先后顺序。后面的配置将覆盖前面的配置）
+// Add config
+// Merge as much as possible, otherwise overwrite.
+//
+// config: new config
 func (app *application) AddConfig(config *Config) {
 	for key, value := range config.Params {
 		app.config.Params[key] = value
 	}
 	for name, componentConfig := range config.ComponentDict {
 		app.config.ComponentDict[name] = componentConfig
+	}
+
+	if config.AppConfig != nil {
+		app.config.AppConfig = config.AppConfig
 	}
 }
 
@@ -55,15 +63,20 @@ func (app *application) GetRouter() *router {
 
 // 启动应用
 func (app *application) Run() {
+	fmt.Println("App: Initializing ...")
 	app.onInit()
 	if len(os.Args) >= 2 {
 		// 如果运行参数大于1个，说明是一个一次单独的命令，不启动服务
 		app.callConsole()
 		return
 	}
+	fmt.Println("App: Starting up ...")
 	app.onStart()
+	fmt.Println("App: Startup done.")
 	app.wait()
+	fmt.Println("App: Stop now...")
 	app.onStop()
+	fmt.Println("App: Stop done. Application was exit.")
 }
 
 // 应用初始化
@@ -157,10 +170,24 @@ func (app *application) GetComponent(v base.ComponentInterface) base.ComponentIn
 }
 
 // Overwrite: get component instance by name
-func (app application) GetComponentByName(name string) base.ComponentInterface {
+func (app *application) GetComponentByName(name string) base.ComponentInterface {
 	componentIns, has := app.componentDict[name]
 	if !has {
 		return nil
 	}
 	return componentIns
+}
+
+// get default db component's interface
+func (app *application) GetDBInterface() base.ComponentInterface {
+	componentIns := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
+	if componentIns == nil {
+		return nil
+	}
+	return componentIns
+}
+
+// get default db component
+func (app *application) GetDB() *components.Database {
+	return app.GetDBInterface().(*components.Database)
 }

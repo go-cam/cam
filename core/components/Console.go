@@ -2,7 +2,7 @@ package components
 
 import (
 	"fmt"
-	base2 "github.com/cinling/cin/core/base"
+	"github.com/cinling/cin/core/base"
 	"github.com/cinling/cin/core/configs"
 	"github.com/cinling/cin/core/utils"
 	"os"
@@ -21,7 +21,7 @@ type Console struct {
 }
 
 // 初始化方法
-func (component *Console) Init(configInterface base2.ConfigComponentInterface) {
+func (component *Console) Init(configInterface base.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
@@ -56,7 +56,7 @@ func (component *Console) RunAction() {
 
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
-	controllerInterface := controllerValue.Interface().(base2.ControllerInterface)
+	controllerInterface := controllerValue.Interface().(base.ControllerInterface)
 
 	// init controller
 	controllerInterface.Init()
