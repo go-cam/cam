@@ -47,11 +47,7 @@ func (component *Database) Stop() {
 
 // 升级数据库
 func (component *Database) MigrateUp() {
-	migrateDir := component.config.GetMigrateDir()
-	if migrateDir == "" {
-		// 如果没有设置 migrate 路径，则不进行更新
-		return
-	}
+	migrateDir := component.GetMigrateDir()
 	driverName := component.config.DriverName
 	host := component.config.Host
 	port := component.config.Port
@@ -125,7 +121,19 @@ func (component *Database) GetDSN() string {
 	return username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?multiStatements=true&charset=utf8"
 }
 
+// TODO not testing
 func (component *Database) GetSession() *xorm.Session {
-	component.engine.Sync()
 	return component.engine.NewSession()
+}
+
+func (component *Database) GetXormModelDir() string {
+	return component.config.DBFileDir + "/models"
+}
+
+func (component *Database) GetMigrateDir() string {
+	return component.config.DBFileDir + "/migrations"
+}
+
+func (component *Database) GetXormTemplateDir() string {
+	return component.config.XormTemplateDir
 }

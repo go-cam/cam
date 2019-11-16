@@ -26,6 +26,7 @@ func newRouter() *router {
 // 写入默认的命令行控制器
 func (r *router) registerDefaultConsoleController() {
 	r.RegisterConsole(new(consoleController.MigrateController))
+	r.RegisterConsole(new(consoleController.XormController))
 }
 
 // 注册控制器

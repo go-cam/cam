@@ -21,15 +21,17 @@ type Database struct {
 
 	// Database file storage path. Default is: /[path to run dir]/database
 	DBFileDir string
+	// xorm template path.
+	XormTemplateDir string
 }
 
 // 设置 migrate 路径
-func (config *Database) SetDBFileDir(migrateDir string) *Database {
-	config.DBFileDir = strings.Replace(migrateDir, "\\", "/", -1)
+func (config *Database) SetDBFileDir(dir string) *Database {
+	config.DBFileDir = strings.Replace(dir, "\\", "/", -1)
 	return config
 }
 
-// get migrations's dir
-func (config *Database) GetMigrateDir() string {
-	return config.DBFileDir + "/migrations"
+func (config *Database) SetXormTemplateDir(dir string) *Database {
+	config.XormTemplateDir = strings.Replace(dir, "\\", "/", -1)
+	return config
 }

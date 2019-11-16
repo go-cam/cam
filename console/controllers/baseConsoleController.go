@@ -11,7 +11,7 @@ type baseConsoleController struct {
 }
 
 // get database component instance
-func (controller MigrateController) getDatabaseComponent() *components.Database {
+func (controller *baseConsoleController) GetDatabaseComponent() *components.Database {
 	ins := controller.GetAppInterface().GetComponentByName("db")
 	if ins == nil {
 		return nil
