@@ -71,3 +71,11 @@ type SessionInterface interface {
 	// 销毁session
 	Destroy()
 }
+
+// migration interface
+type MigrationInterface interface {
+	// update migration
+	Up()
+	// recall migration
+	Down()
+}

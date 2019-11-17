@@ -31,14 +31,14 @@ func (controller *XormController) InstallCmdXorm() {
 func (controller *XormController) Generate() {
 	db := controller.GetDatabaseComponent()
 	dsn := db.GetDSN()
-	tmlDir := db.GetXormTemplateDir()
+	tplDir := db.GetXormTemplateDir()
 	modelsDir := db.GetXormModelDir()
 	if !utils.File.Exists(modelsDir) {
 		err := utils.File.Mkdir(modelsDir)
 		utils.Error.Panic(err)
 	}
 
-	command := "xorm reverse mysql \"" + dsn + "\" \"" + tmlDir + "\" \"" + modelsDir + "\""
+	command := "xorm reverse mysql \"" + dsn + "\" \"" + tplDir + "\" \"" + modelsDir + "\""
 	fmt.Println(command)
 	err := utils.Console.Start(command)
 	utils.Error.Panic(err)

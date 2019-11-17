@@ -191,3 +191,9 @@ func (app *application) GetDBInterface() base.ComponentInterface {
 func (app *application) GetDB() *components.Database {
 	return app.GetDBInterface().(*components.Database)
 }
+
+// TODO
+// add migration
+func (app *application) AddMigration(m base.MigrationInterface) {
+
+}

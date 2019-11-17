@@ -39,3 +39,49 @@ func (util *stringUtil) Random(size int) string {
 	}
 	return string(result)
 }
+
+// underline to hump
+// example：get_user_list => GetUserList
+func (util *stringUtil) UnderToHump(url string) string {
+	words := strings.Split(url, "_")
+	hump := ""
+	for _, word := range words {
+		if len(word) > 0 {
+			firstStr := strings.ToUpper(word[0:1])
+			otherStr := word[1:]
+			hump += firstStr + otherStr
+		}
+	}
+	return hump
+}
+
+// hump to underline
+// example： GetUserList => get_user_list
+func (util *stringUtil) HumpToUnder(hump string) string {
+	data := make([]byte, 0, len(hump)*2)
+	j := false
+	num := len(hump)
+	for i := 0; i < num; i++ {
+		d := hump[i]
+		if i > 0 && d >= 'A' && d <= 'Z' && j {
+			data = append(data, '_')
+		}
+		if d != '_' {
+			j = true
+		}
+		data = append(data, d)
+	}
+	return strings.ToLower(string(data[:]))
+}
+
+// Fill the number with 0
+// example:
+//		FillZero("12", 2) => "12"
+//		FillZero("9", 2) => "09"
+//		FillZero("129", 2) => "129"
+func (util *stringUtil) FillZero(num string, digit int) string {
+	for fillNum := len(num) - digit; fillNum > 0; fillNum-- {
+		num = "0" + num
+	}
+	return num
+}
