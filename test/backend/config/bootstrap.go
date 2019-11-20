@@ -3,7 +3,9 @@ package config
 import (
 	"github.com/cinling/cin"
 	"github.com/cinling/cin/test/backend/controllers"
+	_ "github.com/cinling/cin/test/backend/database/migrations"
 	"github.com/cinling/cin/test/common/config"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // 加载配置

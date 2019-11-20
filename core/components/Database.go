@@ -1,18 +1,12 @@
 package components
 
 import (
-	"database/sql"
-	"errors"
+	"fmt"
 	"github.com/cinling/cin/core/base"
 	"github.com/cinling/cin/core/configs"
-	"github.com/cinling/cin/core/constants"
+	"github.com/cinling/cin/core/models/tables"
 	"github.com/cinling/cin/core/utils"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 // 数据库组件
@@ -31,12 +25,12 @@ func (component *Database) Init(configInterface base.ConfigComponentInterface) {
 	if !done {
 		panic("configInterface type error. need [*configs.Database]")
 	}
+	component.engine = nil
 }
 
 // 启动
 func (component *Database) Start() {
 	component.Base.Start()
-	component.initEngine()
 	component.MigrateUp()
 }
 
@@ -45,68 +39,88 @@ func (component *Database) Stop() {
 	component.Base.Stop()
 }
 
-// 升级数据库
+// up all database version
 func (component *Database) MigrateUp() {
-	migrateDir := component.GetMigrateDir()
-	driverName := component.config.DriverName
-	host := component.config.Host
-	port := component.config.Port
-	name := component.config.Name
-	username := component.config.Username
-	password := component.config.Password
+	lastVersion := component.MigrateLastVersion()
+	var err error
+	for version, m := range component.config.MigrationDict {
+		if version <= lastVersion {
+			continue
+		}
 
-	driver, err := component.getDriver(driverName, host, port, name, username, password)
-	if err != nil {
-		panic(err.Error())
-	}
-	m, err := migrate.NewWithDatabaseInstance("file://"+migrateDir, driverName, driver)
-	if err != nil {
-		panic(err.Error())
-	}
-	_, dirty, err := m.Version()
-	if dirty {
-		// 如果已经被弄脏，则尝试强制修复
-		// fix dirty version. but it's not work. must be fixed manually
-		err := m.Steps(-1)
+		fmt.Print("\tMigrate up: " + version)
+
+		m.Up()
+		sqlList := m.GetSqlList()
+
+		session := component.GetSession()
+		err = session.Begin()
 		utils.Error.Panic(err)
-	}
 
-	err = m.Up()
+		for _, sqlStr := range sqlList {
+			_, err = session.Exec(sqlStr)
+			if err != nil {
+				panic(err)
+			}
+		}
+		migration := new(tables.Migration)
+		migration.Version = version
+		_, err := session.Insert(migration)
+		if err != nil {
+			_ = session.Rollback()
+			utils.Error.Panic(err)
+		} else {
+			err = session.Commit()
+			utils.Error.Panic(err)
+		}
 
-	if err == migrate.ErrNoChange {
-		// 不需要升级的情况
-		err = nil
+		fmt.Println(" done.")
 	}
-	utils.Error.Panic(err)
 }
 
-// 通过 driverName 获取 driver
-func (component *Database) getDriver(driverName string, host string, port string, name string, username string, password string) (database.Driver, error) {
-	if driverName == constants.DatabaseDriverMysql {
-		db, err := sql.Open(driverName, component.GetDSN())
-		if err != nil {
-			return nil, err
-		}
-		driver, err := mysql.WithInstance(db, &mysql.Config{})
-		if err != nil {
-			return nil, err
-		}
-		return driver, nil
-	} else {
-		return nil, errors.New("not support driver: " + driverName)
+// TODO
+// down last database version
+func (component *Database) MigrateDown() {
+
+}
+
+// get last version
+func (component *Database) MigrateLastVersion() string {
+	session := component.GetSession()
+	exists, err := session.IsTableExist(new(tables.Migration))
+	utils.Error.Panic(err)
+	if !exists {
+		err = component.createMigrateVersionTable()
+		utils.Error.Panic(err)
+		return ""
 	}
+
+	migration := new(tables.Migration)
+	has, err := session.Desc("version").Get(migration)
+	utils.Error.Panic(err)
+
+	version := ""
+	if has {
+		version = migration.Version
+	}
+	return version
+}
+
+// create migrations's version record table
+func (component *Database) createMigrateVersionTable() error {
+	session := component.GetSession()
+	migration := new(tables.Migration)
+	return session.Sync2(migration)
 }
 
 // get xorm engine
 func (component *Database) GetEngine() *xorm.Engine {
+	if component.engine == nil {
+		var err error
+		component.engine, err = xorm.NewEngine(component.config.DriverName, component.GetDSN())
+		utils.Error.Panic(err)
+	}
 	return component.engine
-}
-
-// init xorm engine
-func (component *Database) initEngine() {
-	var err error
-	component.engine, err = xorm.NewEngine(component.config.DriverName, component.GetDSN())
-	utils.Error.Panic(err)
 }
 
 // get data source name.
@@ -123,9 +137,10 @@ func (component *Database) GetDSN() string {
 
 // TODO not testing
 func (component *Database) GetSession() *xorm.Session {
-	return component.engine.NewSession()
+	return component.GetEngine().NewSession()
 }
 
+// get xorm models's dir
 func (component *Database) GetXormModelDir() string {
 	return component.config.DBFileDir + "/models"
 }
@@ -134,6 +149,7 @@ func (component *Database) GetMigrateDir() string {
 	return component.config.DBFileDir + "/migrations"
 }
 
+// get xorm template dir
 func (component *Database) GetXormTemplateDir() string {
 	return component.config.XormTemplateDir
 }

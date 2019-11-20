@@ -10,7 +10,7 @@ type reflectUtil struct {
 }
 
 // 通过反射获取类的名字
-func (util *reflectUtil) GetClassName(v interface{}) string {
+func (util *reflectUtil) GetStructName(v interface{}) string {
 	t := reflect.TypeOf(v)
 	return t.Elem().Name()
 }

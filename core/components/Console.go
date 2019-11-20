@@ -72,7 +72,7 @@ func (component *Console) RunAction() {
 
 //// 注入控制器参数
 //func (component *Console) injectControllerValues(controllerIns base.ControllerInterface) {
-//	controllerName := utils.Reflect.GetClassName(controllerIns)
+//	controllerName := utils.Reflect.GetStructName(controllerIns)
 //	if controllerName == "MigrateController" {
 //		databaseComponentIns := common.app.GetComponent(new(Database))
 //		if databaseComponentIns == nil {

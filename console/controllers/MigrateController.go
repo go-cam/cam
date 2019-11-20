@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/cinling/cin/core/models/tpl"
+	"github.com/cinling/cin/core/models/tpls"
 	"github.com/cinling/cin/core/utils"
 	"html/template"
 	"os"
@@ -120,15 +120,25 @@ func (controller *MigrateController) getFilename(name string) string {
 func (controller *MigrateController) getTpl() string {
 	return `package migrations
 
-import "github.com/cinling/cin/core/models"
+import (
+	"github.com/cinling/cin"
+	"github.com/cinling/cin/core/models"
+)
+
+func init() {
+	m := new(m191118_073955_init)
+	cin.App.AddMigration(m)
+}
 
 type {{ .ClassName}} struct {
 	models.Migration
 }
 
+// up
 func (migration *{{ .ClassName}}) Up() {
 }
 
+// down
 func (migration *{{ .ClassName}}) Down() {
 }
 `
@@ -145,7 +155,7 @@ func (controller *MigrateController) getMigrationContent(filename string) []byte
 	filename = strings.TrimSuffix(filename, ".go")
 	className := filename
 	buf := bytes.NewBuffer(retBytes)
-	data := tpl.Migration{ClassName: className}
+	data := tpls.Migration{ClassName: className}
 	err = t.Execute(buf, data)
 	utils.Error.Panic(err)
 

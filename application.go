@@ -23,6 +23,9 @@ type application struct {
 	componentDict map[string]base.ComponentInterface
 	// url 路游戏（websocket、http通用）
 	router *router
+
+	// migrations's struct dict
+	migrationDict map[string]base.MigrationInterface
 }
 
 // 应用全局实例（只需要一个实例即可操作整个应用）
@@ -36,6 +39,7 @@ func newApplication() *application {
 	app.config.AppConfig = NewAppConfig()
 	app.componentDict = map[string]base.ComponentInterface{}
 	app.router = newRouter()
+	app.migrationDict = map[string]base.MigrationInterface{}
 	return app
 }
 
@@ -134,6 +138,11 @@ func (app *application) writePluginParams(config base.ConfigComponentInterface) 
 		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
 		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
 	}
+	if _, has := t.FieldByName("PluginMigrate"); has {
+		pluginMigrate := v.FieldByName("PluginMigrate").Interface().(configs.PluginMigrate)
+		pluginMigrate.MigrationDict = app.migrationDict
+		v.FieldByName("PluginMigrate").Set(reflect.ValueOf(pluginMigrate))
+	}
 }
 
 // 调用命令行组件
@@ -141,7 +150,7 @@ func (app *application) callConsole() {
 	isCallConsole := false
 
 	for _, componentIns := range app.componentDict {
-		name := utils.Reflect.GetClassName(componentIns)
+		name := utils.Reflect.GetStructName(componentIns)
 		if name == "Console" {
 			isCallConsole = true
 			consoleComponent := componentIns.(*components.Console)
@@ -158,9 +167,9 @@ func (app *application) callConsole() {
 func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
 	var componentIns base.ComponentInterface = nil
 
-	targetName := utils.Reflect.GetClassName(v)
+	targetName := utils.Reflect.GetStructName(v)
 	for _, ins := range app.componentDict {
-		if utils.Reflect.GetClassName(ins) == targetName {
+		if utils.Reflect.GetStructName(ins) == targetName {
 			componentIns = ins
 			break
 		}
@@ -192,8 +201,8 @@ func (app *application) GetDB() *components.Database {
 	return app.GetDBInterface().(*components.Database)
 }
 
-// TODO
-// add migration
+// add migration struct
 func (app *application) AddMigration(m base.MigrationInterface) {
-
+	id := utils.Reflect.GetStructName(m)
+	app.migrationDict[id] = m
 }

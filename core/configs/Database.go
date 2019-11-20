@@ -5,6 +5,7 @@ import "strings"
 // 数据库配置
 type Database struct {
 	BaseConfig
+	PluginMigrate
 
 	// 驱动名字
 	DriverName string
@@ -31,6 +32,7 @@ func (config *Database) SetDBFileDir(dir string) *Database {
 	return config
 }
 
+// set xorm dir
 func (config *Database) SetXormTemplateDir(dir string) *Database {
 	config.XormTemplateDir = strings.Replace(dir, "\\", "/", -1)
 	return config

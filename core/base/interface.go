@@ -78,4 +78,6 @@ type MigrationInterface interface {
 	Up()
 	// recall migration
 	Down()
+	// get up sql list
+	GetSqlList() []string
 }

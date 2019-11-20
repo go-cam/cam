@@ -2,7 +2,6 @@ package utils
 
 import (
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -21,10 +20,4 @@ func (util *migrateUtil) IdByDatetime() string {
 // generate migration's file id by timestamp
 func (util *migrateUtil) IdByTimestamp() string {
 	return strconv.FormatInt(time.Now().Unix(), 10)
-}
-
-// get migration's file id
-func (util *migrateUtil) GetId(filename string) string {
-	id := strings.TrimSuffix(filename, ".go")
-	return id
 }
