@@ -45,6 +45,7 @@ func NewConfigDatabase(driverName string, host string, port string, name string,
 	config.Password = password
 	config.SetDBFileDir(utils.File.GetRunPath() + "/database")
 	config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
+	config.AutoMigrate = false
 	return config
 }
 

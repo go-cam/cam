@@ -30,4 +30,5 @@ CREATE TABLE user (
 
 // down
 func (m *m191118_073955_init) Down() {
+	m.Exec(`DROP TABLE user`)
 }

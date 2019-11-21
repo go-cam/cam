@@ -109,6 +109,24 @@ func (controller *MigrateController) Create() {
 	fmt.Print("\nDone.")
 }
 
+// migrate up
+func (controller *MigrateController) Up() {
+	db := controller.GetDatabaseComponent()
+	if db == nil {
+		panic("no database.")
+	}
+	db.MigrateUp()
+}
+
+// migrate down
+func (controller *MigrateController) Down() {
+	db := controller.GetDatabaseComponent()
+	if db == nil {
+		panic("no database.")
+	}
+	db.MigrateDown()
+}
+
 // get migration's filename. only filename, not absolute filename
 func (controller *MigrateController) getFilename(name string) string {
 	// generate filename

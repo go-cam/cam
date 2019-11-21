@@ -24,6 +24,9 @@ type Database struct {
 	DBFileDir string
 	// xorm template path.
 	XormTemplateDir string
+
+	// run migrate up on component startup
+	AutoMigrate bool
 }
 
 // 设置 migrate 路径
@@ -35,5 +38,11 @@ func (config *Database) SetDBFileDir(dir string) *Database {
 // set xorm dir
 func (config *Database) SetXormTemplateDir(dir string) *Database {
 	config.XormTemplateDir = strings.Replace(dir, "\\", "/", -1)
+	return config
+}
+
+// migrate up on component startup
+func (config *Database) SetAutoMigrate() *Database {
+	config.AutoMigrate = true
 	return config
 }
