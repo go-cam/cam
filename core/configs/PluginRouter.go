@@ -1,8 +1,8 @@
 package configs
 
 import (
-	"github.com/cinling/cin/core/base"
-	"github.com/cinling/cin/core/models"
+	"github.com/cinling/cam/core/base"
+	"github.com/cinling/cam/core/models"
 )
 
 // 路由插件。添加这个插件后的配置可获取路由的参数

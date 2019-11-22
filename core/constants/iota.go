@@ -2,7 +2,7 @@ package constants
 
 // 存状态常量。不需要知道具体的值
 import (
-	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cam/core/base"
 )
 
 const (

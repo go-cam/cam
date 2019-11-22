@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/cinling/cin/core/models/tpls"
-	"github.com/cinling/cin/core/utils"
+	"github.com/cinling/cam/core/models/tpls"
+	"github.com/cinling/cam/core/utils"
 	"html/template"
 	"os"
 	"regexp"
@@ -139,8 +139,8 @@ func (controller *MigrateController) getTpl() string {
 	return `package migrations
 
 import (
-	"github.com/cinling/cin"
-	"github.com/cinling/cin/core/models"
+	"github.com/cinling/cam"
+	"github.com/cinling/cam/core/models"
 )
 
 func init() {

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/cinling/cin/core/utils"
+	"github.com/cinling/cam/core/utils"
 	"github.com/gorilla/websocket"
 )
 

@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/cinling/cin"
-	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cam"
+	"github.com/cinling/cam/core/base"
 )
 
 // 获取默认配置

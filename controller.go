@@ -1,6 +1,6 @@
 package cin
 
-import "github.com/cinling/cin/core/models"
+import "github.com/cinling/cam/core/models"
 
 // base controller [websocket/http/console]
 type BaseController struct {

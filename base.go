@@ -1,8 +1,8 @@
 package cin
 
 import (
-	"github.com/cinling/cin/core/constants"
-	"github.com/cinling/cin/core/models"
+	"github.com/cinling/cam/core/constants"
+	"github.com/cinling/cam/core/models"
 )
 
 const (

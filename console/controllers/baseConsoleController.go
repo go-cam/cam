@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/cinling/cin/core/components"
-	"github.com/cinling/cin/core/models"
+	"github.com/cinling/cam/core/components"
+	"github.com/cinling/cam/core/models"
 	"os"
 )
 

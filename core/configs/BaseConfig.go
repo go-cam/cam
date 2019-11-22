@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cam/core/base"
 )
 
 // 基础配置

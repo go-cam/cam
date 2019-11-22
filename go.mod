@@ -1,4 +1,4 @@
-module github.com/cinling/cin
+module github.com/cinling/cam
 
 go 1.12
 

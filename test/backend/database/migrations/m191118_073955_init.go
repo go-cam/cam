@@ -1,8 +1,8 @@
 package migrations
 
 import (
-	"github.com/cinling/cin"
-	"github.com/cinling/cin/core/models"
+	"github.com/cinling/cam"
+	"github.com/cinling/cam/core/models"
 )
 
 func init() {

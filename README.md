@@ -1,21 +1,22 @@
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cinling/cin)](https://github.com/cinling/cin/tags)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cinling/cin?color=red)
-![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cin)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cinling/cam)](https://github.com/cinling/cam/tags)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cinling/cam?color=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cam)
 
 # cin
-[简体中文](https://github.com/Cinling/cin/blob/master/doc/README.zh-cn.md)
+[简体中文](https://github.com/cinling/cam/blob/master/doc/README.zh-cn.md)
 
 The http and websocket server's framework.
 
 Inspiration come form yii2.
 
 # Dependencies
-- github.com/go-sql-driver/mysql v1.4.1
-- github.com/go-xorm/xorm v0.7.9
-- github.com/golang-migrate/migrate/v4 v4.7.0
-- github.com/gorilla/sessions v1.2.0
-- github.com/gorilla/websocket v1.4.1
-- github.com/tidwall/gjson v1.3.4
+	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-xorm/xorm v0.7.9
+	github.com/gorilla/sessions v1.2.0
+	github.com/gorilla/websocket v1.4.1
+	github.com/kr/pretty v0.1.0 // indirect
+	github.com/tidwall/gjson v1.3.4
+	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734 // indirect
 
 # Getting started
 
@@ -24,8 +25,8 @@ Edit file:  `main.go`
 package main
 
 import (
-    "github.com/cinling/cin"
-    "github.com/cinling/cin/core/base"
+    "github.com/cinling/cam"
+    "github.com/cinling/cam/core/base"
 )
 
 func main() {

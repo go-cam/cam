@@ -2,10 +2,10 @@ package cin
 
 import (
 	"fmt"
-	"github.com/cinling/cin/core/base"
-	"github.com/cinling/cin/core/components"
-	"github.com/cinling/cin/core/configs"
-	"github.com/cinling/cin/core/utils"
+	"github.com/cinling/cam/core/base"
+	"github.com/cinling/cam/core/components"
+	"github.com/cinling/cam/core/configs"
+	"github.com/cinling/cam/core/utils"
 	"os"
 	"reflect"
 	"time"

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/cinling/cin/core/base"
+	"github.com/cinling/cam/core/base"
 	"net/http"
 )
 
