@@ -1,4 +1,4 @@
-package cin
+package cam
 
 import (
 	"github.com/go-cam/cam/core/components"

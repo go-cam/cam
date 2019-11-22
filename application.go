@@ -1,4 +1,4 @@
-package cin
+package cam
 
 import (
 	"fmt"

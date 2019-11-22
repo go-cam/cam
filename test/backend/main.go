@@ -7,5 +7,5 @@ import (
 
 func main() {
 	config.LoadConfig()
-	cin.App.Run()
+	cam.App.Run()
 }

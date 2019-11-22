@@ -1,12 +1,13 @@
 package migrations
 
 import (
+	"github.com/go-cam/cam"
 	"github.com/go-cam/cam/core/models"
 )
 
 func init() {
 	m := new(m191118_073955_init)
-	cin.App.AddMigration(m)
+	cam.App.AddMigration(m)
 }
 
 type m191118_073955_init struct {

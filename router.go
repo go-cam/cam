@@ -1,4 +1,4 @@
-package cin
+package cam
 
 import (
 	consoleController "github.com/go-cam/cam/console/controllers"

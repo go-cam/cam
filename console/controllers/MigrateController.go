@@ -145,7 +145,7 @@ import (
 
 func init() {
 	m := new(m191118_073955_init)
-	cin.App.AddMigration(m)
+	cam.App.AddMigration(m)
 }
 
 type {{ .ClassName}} struct {

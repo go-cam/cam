@@ -6,14 +6,14 @@ import (
 )
 
 // 获取默认配置
-func GetApp() *cin.Config {
-	config := cin.NewConfig()
-	config.AppConfig = cin.NewAppConfig()
+func GetApp() *cam.Config {
+	config := cam.NewConfig()
+	config.AppConfig = cam.NewAppConfig()
 	config.ComponentDict = map[string]base.ConfigComponentInterface{
-		"ws":      cin.NewConfigWebsocketServer(24600),
-		"http":    cin.NewConfigHttpServer(24601).SetSessionName("test"),
-		"db":      cin.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
-		"console": cin.NewConfigConsole(),
+		"ws":      cam.NewConfigWebsocketServer(24600),
+		"http":    cam.NewConfigHttpServer(24601).SetSessionName("test"),
+		"db":      cam.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
+		"console": cam.NewConfigConsole(),
 	}
 	return config
 }

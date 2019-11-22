@@ -30,15 +30,15 @@ import (
 )
 
 func main() {
-	config := cin.NewConfig()
+	config := cam.NewConfig()
     config.ComponentDict = map[string]base.ConfigComponentInterface{
-        "ws":      cin.NewConfigWebsocketServer(24600),
-        "http":    cin.NewConfigHttpServer(24601).SetSessionName("test"),
-        "db":      cin.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
-        "console": cin.NewConfigConsole(),
+        "ws":      cam.NewConfigWebsocketServer(24600),
+        "http":    cam.NewConfigHttpServer(24601).SetSessionName("test"),
+        "db":      cam.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
+        "console": cam.NewConfigConsole(),
     }
-    cin.App.AddConfig(config)
-    cin.App.Run()
+    cam.App.AddConfig(config)
+    cam.App.Run()
 }
 ```
 
