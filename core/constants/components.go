@@ -1,7 +1,7 @@
 package constants
 
 import (
-	"github.com/cinling/cam/core/base"
+	"github.com/go-cam/cam/core/base"
 )
 
 const (

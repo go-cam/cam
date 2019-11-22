@@ -1,6 +1,6 @@
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cinling/cam)](https://github.com/cinling/cam/tags)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cinling/cam?color=red)
-![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cam)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/go-cam/cam)](https://github.com/go-cam/cam/tags)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/go-cam/cam?color=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/go-cam/cam)
 
 # cin
 
@@ -15,8 +15,8 @@ http 和 websocket 的服务端框架。
 package main
 
 import (
-    "github.com/cinling/cam"
-    "github.com/cinling/cam/base"
+    "github.com/go-cam/cam"
+    "github.com/go-cam/cam/base"
 )
 
 func main() {

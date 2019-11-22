@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/cinling/cam"
+	"github.com/go-cam/cam"
 )
 
 // 测试控制器

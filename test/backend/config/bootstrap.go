@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/cinling/cam"
-	"github.com/cinling/cam/test/backend/controllers"
-	_ "github.com/cinling/cam/test/backend/database/migrations"
-	"github.com/cinling/cam/test/common/config"
+	"github.com/go-cam/cam"
+	"github.com/go-cam/cam/test/backend/controllers"
+	_ "github.com/go-cam/cam/test/backend/database/migrations"
+	"github.com/go-cam/cam/test/common/config"
 	_ "github.com/go-sql-driver/mysql"
 )
 

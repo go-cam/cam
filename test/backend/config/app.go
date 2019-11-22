@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/cinling/cam"
-	"github.com/cinling/cam/core/base"
+	"github.com/go-cam/cam"
+	"github.com/go-cam/cam/core/base"
 )
 
 // 获取默认配置

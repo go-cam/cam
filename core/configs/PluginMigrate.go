@@ -1,8 +1,8 @@
 package configs
 
 import (
-	"github.com/cinling/cam/core/base"
-	"github.com/cinling/cam/core/utils"
+	"github.com/go-cam/cam/core/base"
+	"github.com/go-cam/cam/core/utils"
 )
 
 // migrate plugin

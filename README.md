@@ -1,9 +1,9 @@
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cinling/cam)](https://github.com/cinling/cam/tags)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/cinling/cam?color=red)
-![GitHub last commit](https://img.shields.io/github/last-commit/cinling/cam)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/go-cam/cam)](https://github.com/go-cam/cam/tags)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/go-cam/cam?color=red)
+![GitHub last commit](https://img.shields.io/github/last-commit/go-cam/cam)
 
 # cin
-[简体中文](https://github.com/cinling/cam/blob/master/doc/README.zh-cn.md)
+[简体中文](https://github.com/go-cam/cam/blob/master/doc/README.zh-cn.md)
 
 The http and websocket server's framework.
 
@@ -25,8 +25,8 @@ Edit file:  `main.go`
 package main
 
 import (
-    "github.com/cinling/cam"
-    "github.com/cinling/cam/core/base"
+    "github.com/go-cam/cam"
+    "github.com/go-cam/cam/core/base"
 )
 
 func main() {

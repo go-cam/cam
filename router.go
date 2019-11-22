@@ -1,9 +1,9 @@
 package cin
 
 import (
-	consoleController "github.com/cinling/cam/console/controllers"
-	"github.com/cinling/cam/core/base"
-	"github.com/cinling/cam/core/models"
+	consoleController "github.com/go-cam/cam/console/controllers"
+	"github.com/go-cam/cam/core/base"
+	"github.com/go-cam/cam/core/models"
 )
 
 // 路由器

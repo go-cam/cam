@@ -1,6 +1,6 @@
 package models
 
-import "github.com/cinling/cam/core/base"
+import "github.com/go-cam/cam/core/base"
 
 // http 上下文对象
 type Context struct {

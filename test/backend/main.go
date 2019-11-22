@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/cinling/cam"
-	"github.com/cinling/cam/test/backend/config"
+	"github.com/go-cam/cam"
+	"github.com/go-cam/cam/test/backend/config"
 )
 
 func main() {

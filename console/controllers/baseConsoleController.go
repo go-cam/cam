@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/cinling/cam/core/components"
-	"github.com/cinling/cam/core/models"
+	"github.com/go-cam/cam/core/components"
+	"github.com/go-cam/cam/core/models"
 	"os"
 )
 

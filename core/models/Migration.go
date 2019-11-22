@@ -1,6 +1,6 @@
 package models
 
-import "github.com/cinling/cam/core/base"
+import "github.com/go-cam/cam/core/base"
 
 // base migration struct
 type Migration struct {

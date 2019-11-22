@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/cinling/cam/core/utils"
+	"github.com/go-cam/cam/core/utils"
 )
 
 // xorm's console controller

@@ -1,10 +1,10 @@
 package cin
 
 import (
-	"github.com/cinling/cam/core/components"
-	"github.com/cinling/cam/core/configs"
-	"github.com/cinling/cam/core/models"
-	"github.com/cinling/cam/core/utils"
+	"github.com/go-cam/cam/core/components"
+	"github.com/go-cam/cam/core/configs"
+	"github.com/go-cam/cam/core/models"
+	"github.com/go-cam/cam/core/utils"
 )
 
 // new application config

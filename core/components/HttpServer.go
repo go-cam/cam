@@ -1,10 +1,10 @@
 package components
 
 import (
-	"github.com/cinling/cam/core/base"
-	"github.com/cinling/cam/core/configs"
-	"github.com/cinling/cam/core/models"
-	"github.com/cinling/cam/core/utils"
+	"github.com/go-cam/cam/core/base"
+	"github.com/go-cam/cam/core/configs"
+	"github.com/go-cam/cam/core/models"
+	"github.com/go-cam/cam/core/utils"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"reflect"
