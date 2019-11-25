@@ -1,14 +1,22 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/go-cam/cam"
 )
 
-// 测试控制器
+// text controller
 type TestController struct {
 	cam.BaseController
 }
 
-func (controller *TestController) Test() []byte {
-	return []byte("test")
+// test action
+func (controller *TestController) Test() {
+	fmt.Println("test")
+	controller.Write([]byte("test"))
+}
+
+// private func
+func (controller *TestController) privateFunc() {
+
 }

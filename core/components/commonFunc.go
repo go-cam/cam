@@ -3,7 +3,6 @@ package components
 import (
 	"github.com/go-cam/cam/core/base"
 	"github.com/go-cam/cam/core/models"
-	"github.com/go-cam/cam/core/utils"
 	"reflect"
 	"strings"
 )
@@ -41,7 +40,6 @@ func (cf *commonFunc) getControllerDict(controllerList []base.ControllerInterfac
 		controllerType := t.Elem() // 获取实体
 		controllerName := controllerType.Name()
 		controllerName = strings.TrimSuffix(controllerName, "Controller")
-		controllerName = utils.Url.HumpToUrl(controllerName)
 		controllerDict[controllerName] = t
 
 		controllerValue := reflect.New(controllerType)
@@ -55,7 +53,7 @@ func (cf *commonFunc) getControllerDict(controllerList []base.ControllerInterfac
 		methodLen := t.NumMethod()
 		for i := 0; i < methodLen; i++ {
 			method := t.Method(i)
-			methodName := utils.Url.HumpToUrl(method.Name)
+			methodName := method.Name
 
 			// 判断是否是排除的方法名字
 			if _, exclude := excludeMethodNameDict[methodName]; exclude {
@@ -78,7 +76,7 @@ func (cf *commonFunc) getControllerExcludeMethodNameDict() map[string]bool {
 		methodLen := t.NumMethod()
 		for i := 0; i < methodLen; i++ {
 			method := t.Method(i)
-			methodName := utils.Url.HumpToUrl(method.Name)
+			methodName := method.Name
 			cf.excludeDict[methodName] = true
 		}
 	}

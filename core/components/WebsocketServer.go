@@ -202,17 +202,14 @@ func (component *WebsocketServer) callControllerAction(context *models.Context, 
 	}
 
 	// 调用控制器对应的方法
-	action := controllerValue.MethodByName(utils.Url.HumpToUrl(actionName))
-	retValues := action.Call([]reflect.Value{})
-	if len(retValues) != 1 || retValues[0].Kind() != reflect.String {
-		return []byte("only one argument of type string can be returned")
-	}
-	sendMessage := retValues[0].Interface().([]byte)
+	action := controllerValue.MethodByName(actionName)
+	_ = action.Call([]reflect.Value{})
+	response := controllerInterface.Read()
 
 	// AfterAction 一般可用于对返回数据做进一步的处理
-	sendMessage = controllerInterface.AfterAction(actionName, sendMessage)
+	response = controllerInterface.AfterAction(actionName, response)
 
-	return sendMessage
+	return response
 }
 
 // 执行 自定义新连接连入方法

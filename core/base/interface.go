@@ -52,6 +52,8 @@ type ControllerInterface interface {
 	AddValue(key string, value interface{})
 	// set app instance
 	SetApp(app ApplicationInterface)
+	// get action return
+	Read() []byte
 }
 
 // 上下文接口

@@ -69,7 +69,8 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	defer func() {
 		if rec := recover(); rec != nil {
 			w.WriteHeader(500)
-			_, _ = w.Write([]byte(rec.(string)))
+			panic(rec)
+			//_, _ = w.Write([]byte(rec.(string)))
 		}
 	}()
 	// 返回数据
@@ -136,13 +137,9 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 	}
 
 	// DoAction
-	action := controllerValue.MethodByName(utils.Url.HumpToUrl(actionName))
-	retValues := action.Call([]reflect.Value{})
-	if len(retValues) != 1 || retValues[0].Kind() != reflect.Slice {
-		panic("only one argument of type []byte can be returned")
-	}
-	response = retValues[0].Interface().([]byte)
-
+	action := controllerValue.MethodByName(actionName)
+	action.Call([]reflect.Value{})
+	response = controllerInterface.Read()
 	// AfterAction
 	response = controllerInterface.AfterAction(actionName, response)
 

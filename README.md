@@ -1,5 +1,5 @@
-[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/go-cam/cam)](https://github.com/go-cam/cam/tags)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/go-cam/cam?color=red)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/go-cam/cam)](https://github.com/go-cam/cam/tags)
 ![GitHub last commit](https://img.shields.io/github/last-commit/go-cam/cam)
 
 # cin
@@ -31,14 +31,14 @@ import (
 
 func main() {
 	config := cam.NewConfig()
-    config.ComponentDict = map[string]base.ConfigComponentInterface{
-        "ws":      cam.NewConfigWebsocketServer(24600),
-        "http":    cam.NewConfigHttpServer(24601).SetSessionName("test"),
-        "db":      cam.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
-        "console": cam.NewConfigConsole(),
-    }
-    cam.App.AddConfig(config)
-    cam.App.Run()
+	config.ComponentDict = map[string]base.ConfigComponentInterface{
+		"ws":      cam.NewConfigWebsocketServer(24600),
+		"http":    cam.NewConfigHttpServer(24601).SetSessionName("test"),
+		"db":      cam.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
+		"console": cam.NewConfigConsole(),
+	 }
+	 cam.App.AddConfig(config)
+	 cam.App.Run()
 }
 ```
 

@@ -14,12 +14,14 @@ type BaseController struct {
 	// 上下文
 	context base.ContextInterface
 	// 接收到请求的参数
-	values map[string]interface{}
+	values        map[string]interface{}
+	responseBytes []byte
 }
 
 // 初始化
 func (controller *BaseController) Init() {
 	controller.values = map[string]interface{}{}
+	controller.responseBytes = []byte("")
 }
 
 // 执行动作前执行的方法
@@ -82,4 +84,14 @@ func (controller *BaseController) SetApp(app base.ApplicationInterface) {
 // Return app instance
 func (controller *BaseController) GetAppInterface() base.ApplicationInterface {
 	return controller.app
+}
+
+// set response str
+func (controller *BaseController) Write(bytes []byte) {
+	controller.responseBytes = bytes
+}
+
+// return action write
+func (controller *BaseController) Read() []byte {
+	return controller.responseBytes
 }
