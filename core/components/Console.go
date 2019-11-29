@@ -48,10 +48,10 @@ func (component *Console) RunAction() {
 	}
 	route := os.Args[1]
 	tmpArr := strings.Split(route, "/")
-	controllerName := tmpArr[0]
+	controllerName := utils.Url.UrlToHump(tmpArr[0])
 	actionName := ""
 	if len(tmpArr) >= 2 {
-		actionName = tmpArr[1]
+		actionName = utils.Url.UrlToHump(tmpArr[1])
 	}
 
 	controllerType := component.controllerDict[controllerName]
@@ -64,7 +64,7 @@ func (component *Console) RunAction() {
 
 	controllerInterface.BeforeAction(actionName)
 
-	action := controllerValue.MethodByName(utils.Url.UrlToHump(actionName))
+	action := controllerValue.MethodByName(actionName)
 	_ = action.Call([]reflect.Value{})
 
 	controllerInterface.AfterAction(actionName, nil)
