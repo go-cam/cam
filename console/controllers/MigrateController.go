@@ -144,7 +144,7 @@ import (
 )
 
 func init() {
-	m := new(m191118_073955_init)
+	m := new({{ .ClassName}})
 	cam.App.AddMigration(m)
 }
 
