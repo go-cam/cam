@@ -138,7 +138,7 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 
 	// DoAction
 	action := controllerValue.MethodByName(actionName)
-	action.Call([]reflect.Value{})
+	_ = action.Call([]reflect.Value{})
 	response = controllerInterface.Read()
 	// AfterAction
 	response = controllerInterface.AfterAction(actionName, response)

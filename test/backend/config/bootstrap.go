@@ -23,5 +23,5 @@ func LoadConfig() {
 // 路由设置
 func routeConfig() {
 	router := cam.App.GetRouter()
-	router.Register(&controllers.TestController{})
+	router.Register(new(controllers.TestController))
 }

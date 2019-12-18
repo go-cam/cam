@@ -8,6 +8,7 @@ import (
 	"github.com/go-cam/cam/core/utils"
 	"os"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -26,6 +27,9 @@ type application struct {
 
 	// migrations's struct dict
 	migrationDict map[string]base.MigrationInterface
+
+	// log component
+	logComponent *components.Log
 }
 
 // 应用全局实例（只需要一个实例即可操作整个应用）
@@ -103,6 +107,9 @@ func (app *application) onInit() {
 		componentInterface.SetApp(app)
 		app.componentDict[name] = componentInterface
 	}
+
+	// init log component
+	app.initLogComponent()
 }
 
 // 应用开始（初始化组件）
@@ -145,6 +152,30 @@ func (app *application) writePluginParams(config base.ConfigComponentInterface) 
 	}
 }
 
+// init LogComponent. if LogComponent not in the dict, create one
+func (app *application) initLogComponent() {
+	logComponent, _ := app.getComponentAndName(new(components.Log))
+	if logComponent != nil {
+		app.logComponent = logComponent.(*components.Log)
+	} else {
+		var name = "log"
+		var has = true
+		for i := 0; !has; i++ {
+			if i != 0 {
+				name = "log" + strconv.Itoa(i)
+			}
+			_, has = app.componentDict[name]
+		}
+
+		logConfig := new(configs.Log)
+		logComponent = new(components.Log)
+		logConfig.Component = logComponent
+		logComponent.Init(logConfig)
+		app.logComponent = logComponent.(*components.Log)
+		app.componentDict[name] = logComponent
+	}
+}
+
 // 调用命令行组件
 func (app *application) callConsole() {
 	isCallConsole := false
@@ -163,19 +194,27 @@ func (app *application) callConsole() {
 	}
 }
 
-// Overwrite: 实现获取组件实例的方法
-func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
+// get component and the name in the dict
+func (app *application) getComponentAndName(v base.ComponentInterface) (base.ComponentInterface, string) {
 	var componentIns base.ComponentInterface = nil
+	var componentName = ""
 
 	targetName := utils.Reflect.GetStructName(v)
-	for _, ins := range app.componentDict {
+	for name, ins := range app.componentDict {
 		if utils.Reflect.GetStructName(ins) == targetName {
 			componentIns = ins
+			componentName = name
 			break
 		}
 	}
 
-	return componentIns
+	return componentIns, componentName
+}
+
+// Overwrite: 实现获取组件实例的方法
+func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
+	ins, _ := app.getComponentAndName(v)
+	return ins
 }
 
 // Overwrite: get component instance by name
@@ -198,11 +237,31 @@ func (app *application) GetDBInterface() base.ComponentInterface {
 
 // get default db component
 func (app *application) GetDB() *components.Database {
-	return app.GetDBInterface().(*components.Database)
+	ins := app.GetDBInterface()
+	var db *components.Database = nil
+	if ins != nil {
+		db = ins.(*components.Database)
+	}
+	return db
 }
 
 // add migration struct
 func (app *application) AddMigration(m base.MigrationInterface) {
 	id := utils.Reflect.GetStructName(m)
 	app.migrationDict[id] = m
+}
+
+// log info
+func (app *application) Info(title string, content string) error {
+	return app.logComponent.Info(title, content)
+}
+
+// log warning
+func (app *application) Warn(title string, content string) error {
+	return app.logComponent.Warn(title, content)
+}
+
+// log error
+func (app *application) Error(title string, content string) error {
+	return app.logComponent.Error(title, content)
 }

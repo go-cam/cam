@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/go-cam/cam"
 )
 
@@ -12,8 +11,8 @@ type TestController struct {
 
 // test action
 func (controller *TestController) Test() {
-	fmt.Println("test")
-	controller.Write([]byte("test"))
+	_ = cam.App.Info("title", "content")
+	controller.Write([]byte("done"))
 }
 
 // private func

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -50,6 +51,25 @@ func (util *fileUtil) ReadFile(filePath string) ([]byte, error) {
 // 写文件
 func (util *fileUtil) WriteFile(filename string, content []byte) error {
 	return ioutil.WriteFile(filename, content, 0644)
+}
+
+// append content end of the file
+func (util *fileUtil) AppendFile(filename string, content []byte) error {
+	if !util.Exists(filename) {
+		return util.WriteFile(filename, content)
+	}
+
+	file, err := os.OpenFile(filename, os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	index, err := file.Seek(0, io.SeekEnd)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteAt(content, index)
+	return err
 }
 
 // 删除文件
