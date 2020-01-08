@@ -91,7 +91,7 @@ func (app *application) Run() {
 func (app *application) onInit() {
 	components.SetApplication(app)
 
-	// 实例化组件
+	// read config component
 	for name, config := range app.config.ComponentDict {
 		// 使用结构体重新创建一个新对象（防止外部修改导致混乱）
 		componentInterface := config.GetComponent()
@@ -108,8 +108,8 @@ func (app *application) onInit() {
 		app.componentDict[name] = componentInterface
 	}
 
-	// init log component
-	app.initLogComponent()
+	// init core component
+	app.initCoreComponent()
 }
 
 // 应用开始（初始化组件）
@@ -152,8 +152,14 @@ func (app *application) writePluginParams(config base.ConfigComponentInterface) 
 	}
 }
 
+// init core component
+func (app *application) initCoreComponent() {
+
+	app.initCoreComponentLog()
+}
+
 // init LogComponent. if LogComponent not in the dict, create one
-func (app *application) initLogComponent() {
+func (app *application) initCoreComponentLog() {
 	logComponent, _ := app.getComponentAndName(new(components.Log))
 	if logComponent != nil {
 		app.logComponent = logComponent.(*components.Log)
@@ -264,4 +270,9 @@ func (app *application) Warn(title string, content string) error {
 // log error
 func (app *application) Error(title string, content string) error {
 	return app.logComponent.Error(title, content)
+}
+
+// get one .evn file values
+func (app *application) GetEvn(key string) string {
+	return utils.Env.Get(key)
 }

@@ -28,8 +28,8 @@ func NewConfigHttpServer(port uint16) *configs.HttpServer {
 	config := new(configs.HttpServer)
 	config.Component = &components.HttpServer{}
 	config.Port = port
-	config.SessionKey = "cin-key"
-	config.SessionName = "cin"
+	config.SessionKey = "cam-key"
+	config.SessionName = "cam"
 	return config
 }
 
@@ -44,6 +44,7 @@ func NewConfigDatabase(driverName string, host string, port string, name string,
 	config.Username = username
 	config.Password = password
 	config.SetDBFileDir(utils.File.GetRunPath() + "/database")
+	// TODO fix path
 	config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
 	config.AutoMigrate = false
 	return config

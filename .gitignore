@@ -20,3 +20,5 @@
 *-local.*
 # project runtime
 runtime
+# environment file
+.env
