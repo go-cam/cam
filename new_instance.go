@@ -11,11 +11,12 @@ import (
 func NewAppConfig() *models.AppConfig {
 	appConfig := new(models.AppConfig)
 	appConfig.DefaultDBName = "db"
+	appConfig.DefaultTemplatesDir = "common/templates"
 	return appConfig
 }
 
-// 新建 websocket server 配置
-func NewConfigWebsocketServer(port uint16) *configs.WebsocketServer {
+// new WebsocketServer config
+func NewWebsocketServerConfig(port uint16) *configs.WebsocketServer {
 	config := new(configs.WebsocketServer)
 	config.Port = port
 	config.Component = &components.WebsocketServer{}
@@ -23,8 +24,13 @@ func NewConfigWebsocketServer(port uint16) *configs.WebsocketServer {
 	return config
 }
 
-// 新建 http server 配置
-func NewConfigHttpServer(port uint16) *configs.HttpServer {
+// Deprecated: instead by NewWebsocketServerConfig()
+func NewConfigWebsocketServer(port uint16) *configs.WebsocketServer {
+	return NewWebsocketServerConfig(port)
+}
+
+// new HttpServer config
+func NewHttpServerConfig(port uint16) *configs.HttpServer {
 	config := new(configs.HttpServer)
 	config.Component = &components.HttpServer{}
 	config.Port = port
@@ -33,8 +39,13 @@ func NewConfigHttpServer(port uint16) *configs.HttpServer {
 	return config
 }
 
-// 新建 数据库配置
-func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *configs.Database {
+// Deprecated: instead by NewHttpServerConfig()
+func NewConfigHttpServer(port uint16) *configs.HttpServer {
+	return NewHttpServerConfig(port)
+}
+
+// new Database config
+func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *configs.Database {
 	config := new(configs.Database)
 	config.Component = &components.Database{}
 	config.DriverName = driverName
@@ -44,15 +55,32 @@ func NewConfigDatabase(driverName string, host string, port string, name string,
 	config.Username = username
 	config.Password = password
 	config.SetDBFileDir(utils.File.GetRunPath() + "/database")
-	// TODO fix path
-	config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
+	rootPath := App.GetEvn("ROOT_PATH")
+	templateDir := App.config.AppConfig.DefaultTemplatesDir
+	if rootPath != "" && templateDir != "" {
+		//config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
+		xormTemplateDir := rootPath + "/" + templateDir + "/xorm"
+		if utils.File.Exists(xormTemplateDir) {
+			config.SetXormTemplateDir(xormTemplateDir)
+		}
+	}
 	config.AutoMigrate = false
 	return config
 }
 
-// 新建 控制台配置
-func NewConfigConsole() *configs.Console {
+// Deprecated: instead by NewDatabaseConfig()
+func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *configs.Database {
+	return NewDatabaseConfig(driverName, host, port, name, username, password)
+}
+
+// new Console config
+func NewConsoleConfig() *configs.Console {
 	config := new(configs.Console)
 	config.Component = &components.Console{}
 	return config
+}
+
+// Deprecated: instead by NewConsoleConfig()
+func NewConfigConsole() *configs.Console {
+	return NewConsoleConfig()
 }

@@ -10,10 +10,10 @@ func GetApp() *cam.Config {
 	config := cam.NewConfig()
 	config.AppConfig = cam.NewAppConfig()
 	config.ComponentDict = map[string]base.ConfigComponentInterface{
-		"ws":      cam.NewConfigWebsocketServer(24600),
-		"http":    cam.NewConfigHttpServer(24601).SetSessionName("test"),
-		"db":      cam.NewConfigDatabase("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
-		"console": cam.NewConfigConsole(),
+		"ws":      cam.NewWebsocketServerConfig(24600),
+		"http":    cam.NewHttpServerConfig(24601).SetSessionName("test"),
+		"db":      cam.NewDatabaseConfig("mysql", "127.0.0.1", "3306", "cin", "root", "root"),
+		"console": cam.NewConsoleConfig(),
 	}
 	return config
 }
