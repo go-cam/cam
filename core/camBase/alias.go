@@ -13,3 +13,6 @@ type WebsocketServerMode uint8
 
 // 控制器类型（websocket 或 http）
 type ControllerType uint8
+
+// CamModule types
+type CamModuleType uint8
