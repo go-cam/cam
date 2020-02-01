@@ -2,7 +2,7 @@ package migrations
 
 import (
 	"github.com/go-cam/cam"
-	"github.com/go-cam/cam/core/models"
+	"github.com/go-cam/cam/core/camModels"
 )
 
 func init() {
@@ -11,7 +11,7 @@ func init() {
 }
 
 type m191118_073955_init struct {
-	models.Migration
+	camModels.Migration
 }
 
 // up

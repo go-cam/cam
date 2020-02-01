@@ -1,24 +1,24 @@
 package cam
 
 import (
-	consoleController "github.com/go-cam/cam/console/controllers"
-	"github.com/go-cam/cam/core/base"
-	"github.com/go-cam/cam/core/models"
+	consoleController "github.com/go-cam/cam/console/camConsoleControllers"
+	"github.com/go-cam/cam/core/camBase"
+	"github.com/go-cam/cam/core/camModels"
 )
 
 // 路由器
 type router struct {
-	controllerList            []base.ControllerInterface
-	consoleControllerList     []base.ControllerInterface
-	onWebsocketMessageHandler func(conn *models.Context, recvMessage []byte)
+	controllerList            []camBase.ControllerInterface
+	consoleControllerList     []camBase.ControllerInterface
+	onWebsocketMessageHandler func(conn *camModels.Context, recvMessage []byte)
 }
 
 // 新建路由器
 func newRouter() *router {
 	r := new(router)
-	r.controllerList = []base.ControllerInterface{}
+	r.controllerList = []camBase.ControllerInterface{}
 	r.onWebsocketMessageHandler = nil
-	r.consoleControllerList = []base.ControllerInterface{}
+	r.consoleControllerList = []camBase.ControllerInterface{}
 	r.registerDefaultConsoleController()
 	return r
 }
@@ -30,11 +30,11 @@ func (r *router) registerDefaultConsoleController() {
 }
 
 // 注册控制器
-func (r *router) Register(controller base.ControllerInterface) {
+func (r *router) Register(controller camBase.ControllerInterface) {
 	r.controllerList = append(r.controllerList, controller)
 }
 
 // 注册命令行控制器
-func (r *router) RegisterConsole(controller base.ControllerInterface) {
+func (r *router) RegisterConsole(controller camBase.ControllerInterface) {
 	r.consoleControllerList = append(r.consoleControllerList, controller)
 }

@@ -1,10 +1,10 @@
 package cam
 
-import "github.com/go-cam/cam/core/models"
+import "github.com/go-cam/cam/core/camModels"
 
 // base controller [websocket/http/console]
 type BaseController struct {
-	models.BaseController
+	camModels.BaseController
 }
 
 // get application instance

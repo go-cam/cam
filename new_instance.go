@@ -1,38 +1,38 @@
 package cam
 
 import (
-	"github.com/go-cam/cam/core/components"
-	"github.com/go-cam/cam/core/configs"
-	"github.com/go-cam/cam/core/models"
-	"github.com/go-cam/cam/core/utils"
+	"github.com/go-cam/cam/core/camComponents"
+	"github.com/go-cam/cam/core/camConfigs"
+	"github.com/go-cam/cam/core/camModels"
+	"github.com/go-cam/cam/core/camUtils"
 )
 
 // new application config
-func NewAppConfig() *models.AppConfig {
-	appConfig := new(models.AppConfig)
+func NewAppConfig() *camModels.AppConfig {
+	appConfig := new(camModels.AppConfig)
 	appConfig.DefaultDBName = "db"
 	appConfig.DefaultTemplatesDir = "common/templates"
 	return appConfig
 }
 
 // new WebsocketServer config
-func NewWebsocketServerConfig(port uint16) *configs.WebsocketServer {
-	config := new(configs.WebsocketServer)
+func NewWebsocketServerConfig(port uint16) *camConfigs.WebsocketServer {
+	config := new(camConfigs.WebsocketServer)
 	config.Port = port
-	config.Component = &components.WebsocketServer{}
+	config.Component = &camComponents.WebsocketServer{}
 	config.MessageParseHandler = nil
 	return config
 }
 
 // Deprecated: instead by NewWebsocketServerConfig()
-func NewConfigWebsocketServer(port uint16) *configs.WebsocketServer {
+func NewConfigWebsocketServer(port uint16) *camConfigs.WebsocketServer {
 	return NewWebsocketServerConfig(port)
 }
 
 // new HttpServer config
-func NewHttpServerConfig(port uint16) *configs.HttpServer {
-	config := new(configs.HttpServer)
-	config.Component = &components.HttpServer{}
+func NewHttpServerConfig(port uint16) *camConfigs.HttpServer {
+	config := new(camConfigs.HttpServer)
+	config.Component = &camComponents.HttpServer{}
 	config.Port = port
 	config.SessionKey = "cam-key"
 	config.SessionName = "cam"
@@ -40,27 +40,27 @@ func NewHttpServerConfig(port uint16) *configs.HttpServer {
 }
 
 // Deprecated: instead by NewHttpServerConfig()
-func NewConfigHttpServer(port uint16) *configs.HttpServer {
+func NewConfigHttpServer(port uint16) *camConfigs.HttpServer {
 	return NewHttpServerConfig(port)
 }
 
 // new Database config
-func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *configs.Database {
-	config := new(configs.Database)
-	config.Component = &components.Database{}
+func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
+	config := new(camConfigs.Database)
+	config.Component = &camComponents.Database{}
 	config.DriverName = driverName
 	config.Host = host
 	config.Port = port
 	config.Name = name
 	config.Username = username
 	config.Password = password
-	config.SetDBFileDir(utils.File.GetRunPath() + "/database")
+	config.SetDBFileDir(camUtils.File.GetRunPath() + "/database")
 	rootPath := App.GetEvn("ROOT_PATH")
 	templateDir := App.config.AppConfig.DefaultTemplatesDir
 	if rootPath != "" && templateDir != "" {
 		//config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
 		xormTemplateDir := rootPath + "/" + templateDir + "/xorm"
-		if utils.File.Exists(xormTemplateDir) {
+		if camUtils.File.Exists(xormTemplateDir) {
 			config.SetXormTemplateDir(xormTemplateDir)
 		}
 	}
@@ -69,18 +69,18 @@ func NewDatabaseConfig(driverName string, host string, port string, name string,
 }
 
 // Deprecated: instead by NewDatabaseConfig()
-func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *configs.Database {
+func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
 	return NewDatabaseConfig(driverName, host, port, name, username, password)
 }
 
 // new Console config
-func NewConsoleConfig() *configs.Console {
-	config := new(configs.Console)
-	config.Component = &components.Console{}
+func NewConsoleConfig() *camConfigs.Console {
+	config := new(camConfigs.Console)
+	config.Component = &camComponents.Console{}
 	return config
 }
 
 // Deprecated: instead by NewConsoleConfig()
-func NewConfigConsole() *configs.Console {
+func NewConfigConsole() *camConfigs.Console {
 	return NewConsoleConfig()
 }

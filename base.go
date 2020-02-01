@@ -1,43 +1,43 @@
 package cam
 
 import (
-	"github.com/go-cam/cam/core/constants"
-	"github.com/go-cam/cam/core/models"
+	"github.com/go-cam/cam/core/camConstants"
+	"github.com/go-cam/cam/core/camModels"
 )
 
 const (
-	ComponentWebsocketServer = constants.ComponentWebsocketServer
+	ComponentWebsocketServer = camConstants.ComponentWebsocketServer
 
 	// 应用状态：初始化
-	ApplicationStatusInit = constants.ApplicationStatusInit
+	ApplicationStatusInit = camConstants.ApplicationStatusInit
 	// 应用状态：开始（启动中）
-	ApplicationStatusStart = constants.ApplicationStatusStart
+	ApplicationStatusStart = camConstants.ApplicationStatusStart
 	// 应用状态：即将停止
-	ApplicationStatusStop = constants.ApplicationStatusStop
+	ApplicationStatusStop = camConstants.ApplicationStatusStop
 
 	// websocket server 运行模式：自动处理【推荐】
 	// 使用框架内规定的 Handler 或 BaseController 自动匹配对应的方法。发送数据必须是规范的数据。
 	// 使用该模式依然可以使用 OnMessage 接收数据。但是不能发送数据
-	WebsocketServerModeAutoHandler = constants.WebsocketServerModeAutoHandler
+	WebsocketServerModeAutoHandler = camConstants.WebsocketServerModeAutoHandler
 	// websocket server 运行模式：自定义处理。
 	// 自定义 OnMessage 回调方法发送数据。根据实际需求自定义数据返回
-	WebsocketServerModeCustom = constants.WebsocketServerModeCustom
+	WebsocketServerModeCustom = camConstants.WebsocketServerModeCustom
 
 	// 控制器类型：websocket
-	ControllerTypeWebsocket = constants.ControllerTypeWebsocket
+	ControllerTypeWebsocket = camConstants.ControllerTypeWebsocket
 	// 控制器类型：http
-	ControllerTypeHttp = constants.ControllerTypeHttp
+	ControllerTypeHttp = camConstants.ControllerTypeHttp
 )
 
 // 配置类
 type Config struct {
-	models.Config
+	camModels.Config
 }
 
 // 新建配置
 func NewConfig() *Config {
 	config := new(Config)
-	configModel := new(models.Config)
+	configModel := new(camModels.Config)
 	configModel.Init()
 	config.Config = *configModel
 	return config

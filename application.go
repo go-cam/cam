@@ -2,10 +2,10 @@ package cam
 
 import (
 	"fmt"
-	"github.com/go-cam/cam/core/base"
-	"github.com/go-cam/cam/core/components"
-	"github.com/go-cam/cam/core/configs"
-	"github.com/go-cam/cam/core/utils"
+	"github.com/go-cam/cam/core/camBase"
+	"github.com/go-cam/cam/core/camComponents"
+	"github.com/go-cam/cam/core/camConfigs"
+	"github.com/go-cam/cam/core/camUtils"
 	"os"
 	"reflect"
 	"strconv"
@@ -14,22 +14,22 @@ import (
 
 // 服务器全局类
 type application struct {
-	base.ApplicationInterface
+	camBase.ApplicationInterface
 
 	// 应用状态（初始化、开始、运行中、停止、销毁）[onInit, onStart, onRun, onStop, onDestroy]
-	status base.ApplicationStatus
+	status camBase.ApplicationStatus
 	// 应用全部配置
 	config *Config
 	// 应用组件名
-	componentDict map[string]base.ComponentInterface
+	componentDict map[string]camBase.ComponentInterface
 	// url 路游戏（websocket、http通用）
 	router *router
 
 	// migrations's struct dict
-	migrationDict map[string]base.MigrationInterface
+	migrationDict map[string]camBase.MigrationInterface
 
 	// log component
-	logComponent *components.Log
+	logComponent *camComponents.Log
 }
 
 // 应用全局实例（只需要一个实例即可操作整个应用）
@@ -41,9 +41,9 @@ func newApplication() *application {
 	app.status = ApplicationStatusInit
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
-	app.componentDict = map[string]base.ComponentInterface{}
+	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.router = newRouter()
-	app.migrationDict = map[string]base.MigrationInterface{}
+	app.migrationDict = map[string]camBase.MigrationInterface{}
 	return app
 }
 
@@ -89,7 +89,7 @@ func (app *application) Run() {
 
 // 应用初始化
 func (app *application) onInit() {
-	components.SetApplication(app)
+	camComponents.SetApplication(app)
 
 	// read config component
 	for name, config := range app.config.ComponentDict {
@@ -98,7 +98,7 @@ func (app *application) onInit() {
 		t := reflect.TypeOf(componentInterface)
 		componentType := t.Elem()
 		componentValue := reflect.New(componentType)
-		componentInterface = componentValue.Interface().(base.ComponentInterface)
+		componentInterface = componentValue.Interface().(camBase.ComponentInterface)
 
 		// 写入插件的数据
 		app.writePluginParams(config)
@@ -134,19 +134,19 @@ func (app *application) wait() {
 }
 
 // 自动写入插件配置
-func (app *application) writePluginParams(config base.ConfigComponentInterface) {
+func (app *application) writePluginParams(config camBase.ConfigComponentInterface) {
 	t := reflect.TypeOf(config).Elem()
 	v := reflect.ValueOf(config).Elem()
 	// 写入路由插件数据
 	if _, has := t.FieldByName("PluginRouter"); has {
-		pluginRouter := v.FieldByName("PluginRouter").Interface().(configs.PluginRouter)
+		pluginRouter := v.FieldByName("PluginRouter").Interface().(camConfigs.PluginRouter)
 		pluginRouter.ControllerList = app.router.controllerList
 		pluginRouter.ConsoleControllerList = app.router.consoleControllerList
 		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
 		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
 	}
 	if _, has := t.FieldByName("PluginMigrate"); has {
-		pluginMigrate := v.FieldByName("PluginMigrate").Interface().(configs.PluginMigrate)
+		pluginMigrate := v.FieldByName("PluginMigrate").Interface().(camConfigs.PluginMigrate)
 		pluginMigrate.MigrationDict = app.migrationDict
 		v.FieldByName("PluginMigrate").Set(reflect.ValueOf(pluginMigrate))
 	}
@@ -160,9 +160,9 @@ func (app *application) initCoreComponent() {
 
 // init LogComponent. if LogComponent not in the dict, create one
 func (app *application) initCoreComponentLog() {
-	logComponent, _ := app.getComponentAndName(new(components.Log))
+	logComponent, _ := app.getComponentAndName(new(camComponents.Log))
 	if logComponent != nil {
-		app.logComponent = logComponent.(*components.Log)
+		app.logComponent = logComponent.(*camComponents.Log)
 	} else {
 		var name = "log"
 		var has = true
@@ -173,11 +173,11 @@ func (app *application) initCoreComponentLog() {
 			_, has = app.componentDict[name]
 		}
 
-		logConfig := new(configs.Log)
-		logComponent = new(components.Log)
+		logConfig := new(camConfigs.Log)
+		logComponent = new(camComponents.Log)
 		logConfig.Component = logComponent
 		logComponent.Init(logConfig)
-		app.logComponent = logComponent.(*components.Log)
+		app.logComponent = logComponent.(*camComponents.Log)
 		app.componentDict[name] = logComponent
 	}
 }
@@ -187,10 +187,10 @@ func (app *application) callConsole() {
 	isCallConsole := false
 
 	for _, componentIns := range app.componentDict {
-		name := utils.Reflect.GetStructName(componentIns)
+		name := camUtils.Reflect.GetStructName(componentIns)
 		if name == "Console" {
 			isCallConsole = true
-			consoleComponent := componentIns.(*components.Console)
+			consoleComponent := componentIns.(*camComponents.Console)
 			consoleComponent.RunAction()
 		}
 	}
@@ -201,13 +201,13 @@ func (app *application) callConsole() {
 }
 
 // get component and the name in the dict
-func (app *application) getComponentAndName(v base.ComponentInterface) (base.ComponentInterface, string) {
-	var componentIns base.ComponentInterface = nil
+func (app *application) getComponentAndName(v camBase.ComponentInterface) (camBase.ComponentInterface, string) {
+	var componentIns camBase.ComponentInterface = nil
 	var componentName = ""
 
-	targetName := utils.Reflect.GetStructName(v)
+	targetName := camUtils.Reflect.GetStructName(v)
 	for name, ins := range app.componentDict {
-		if utils.Reflect.GetStructName(ins) == targetName {
+		if camUtils.Reflect.GetStructName(ins) == targetName {
 			componentIns = ins
 			componentName = name
 			break
@@ -218,13 +218,13 @@ func (app *application) getComponentAndName(v base.ComponentInterface) (base.Com
 }
 
 // Overwrite: 实现获取组件实例的方法
-func (app *application) GetComponent(v base.ComponentInterface) base.ComponentInterface {
+func (app *application) GetComponent(v camBase.ComponentInterface) camBase.ComponentInterface {
 	ins, _ := app.getComponentAndName(v)
 	return ins
 }
 
 // Overwrite: get component instance by name
-func (app *application) GetComponentByName(name string) base.ComponentInterface {
+func (app *application) GetComponentByName(name string) camBase.ComponentInterface {
 	componentIns, has := app.componentDict[name]
 	if !has {
 		return nil
@@ -233,7 +233,7 @@ func (app *application) GetComponentByName(name string) base.ComponentInterface 
 }
 
 // get default db component's interface
-func (app *application) GetDBInterface() base.ComponentInterface {
+func (app *application) GetDBInterface() camBase.ComponentInterface {
 	componentIns := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
 	if componentIns == nil {
 		return nil
@@ -242,18 +242,18 @@ func (app *application) GetDBInterface() base.ComponentInterface {
 }
 
 // get default db component
-func (app *application) GetDB() *components.Database {
+func (app *application) GetDB() *camComponents.Database {
 	ins := app.GetDBInterface()
-	var db *components.Database = nil
+	var db *camComponents.Database = nil
 	if ins != nil {
-		db = ins.(*components.Database)
+		db = ins.(*camComponents.Database)
 	}
 	return db
 }
 
 // add migration struct
-func (app *application) AddMigration(m base.MigrationInterface) {
-	id := utils.Reflect.GetStructName(m)
+func (app *application) AddMigration(m camBase.MigrationInterface) {
+	id := camUtils.Reflect.GetStructName(m)
 	app.migrationDict[id] = m
 }
 
@@ -274,5 +274,5 @@ func (app *application) Error(title string, content string) error {
 
 // get one .evn file values
 func (app *application) GetEvn(key string) string {
-	return utils.Env.Get(key)
+	return camUtils.Env.Get(key)
 }
