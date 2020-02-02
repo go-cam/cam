@@ -18,4 +18,4 @@
 
 # Contents
 
-- Installation
+- [Installation](https://github.com/go-cam/cam-doc/blob/master/Installation/Installation.md)
