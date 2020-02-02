@@ -15,4 +15,7 @@ const (
 
 	ControllerTypeWebsocket camBase.WebsocketServerMode = iota
 	ControllerTypeHttp
+
+	CamModuleTypeApp = iota
+	CamModuleTypeLib
 )
