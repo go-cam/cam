@@ -7,9 +7,9 @@ import (
 	"github.com/go-cam/cam/core/camConfigs"
 	"github.com/go-cam/cam/core/camModels/camModelsTables"
 	"github.com/go-cam/cam/core/camUtils"
-	"github.com/go-xorm/xorm"
 	"os"
 	"strings"
+	"xorm.io/xorm"
 )
 
 // 数据库组件
