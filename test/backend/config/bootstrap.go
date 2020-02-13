@@ -15,7 +15,6 @@ func LoadConfig() {
 	cam.App.AddConfig(config.GetAppLocal())
 	// load module's config
 	cam.App.AddConfig(GetApp())
-	cam.App.AddConfig(GetAppLocal())
 
 	routeConfig()
 }

@@ -48,15 +48,11 @@ func (component *HttpServer) Init(configInterface camBase.ConfigComponentInterfa
 func (component *HttpServer) Start() {
 	component.Base.Start()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
-	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.config.Port), 10),
-		Handler: mux,
+	if !component.config.IsSslOnly {
+		go component.listenAndServe()
 	}
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
+	if component.config.IsSslOn {
+		go component.listenAndServeTLS()
 	}
 }
 
@@ -156,4 +152,28 @@ func (component *HttpServer) getFilesystemStore() *sessions.FilesystemStore {
 		}
 	}
 	return sessions.NewFilesystemStore(runtimeDir, []byte("none"))
+}
+
+// enable server
+func (component *HttpServer) listenAndServe() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", component.handlerFunc)
+	server := &http.Server{
+		Addr:    ":" + strconv.FormatUint(uint64(component.config.Port), 10),
+		Handler: mux,
+	}
+	err := server.ListenAndServe()
+	camUtils.Error.Panic(err)
+}
+
+// enable server with SSl
+func (component *HttpServer) listenAndServeTLS() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", component.handlerFunc)
+	server := &http.Server{
+		Addr:    ":" + strconv.FormatUint(uint64(component.config.SslPort), 10),
+		Handler: mux,
+	}
+	err := server.ListenAndServeTLS(component.config.SslCertFile, component.config.SslKeyFile)
+	camUtils.Error.Panic(err)
 }

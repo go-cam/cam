@@ -16,7 +16,6 @@ type WebsocketServer struct {
 	Base
 
 	config *camConfigs.WebsocketServer
-	port   uint16 // websocket 监听端口
 
 	upgrader             websocket.Upgrader         // websocket http 升级为 websocket 的方法
 	controllerDict       map[string]reflect.Type    // 控制器反射map
@@ -49,7 +48,6 @@ func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentIn
 		panic("illegal config")
 	}
 
-	component.port = config.Port
 	component.upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -75,15 +73,11 @@ func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentIn
 func (component *WebsocketServer) Start() {
 	component.Base.Start()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
-	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.port), 10),
-		Handler: mux,
+	if !component.config.IsSslOnly {
+		go component.listenAndServe()
 	}
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
+	if component.config.IsSslOn {
+		go component.listenAndServeTLS()
 	}
 }
 
@@ -248,4 +242,28 @@ func (component *WebsocketServer) defaultRouteParseHandler(message []byte) (cont
 	}
 	tmpArr := strings.Split(messageModel.Route, "/")
 	return camUtils.Url.UrlToHump(tmpArr[0]), camUtils.Url.UrlToHump(tmpArr[1]), responseModel.Values
+}
+
+// enable server
+func (component *WebsocketServer) listenAndServe() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", component.handlerFunc)
+	server := &http.Server{
+		Addr:    ":" + strconv.FormatUint(uint64(component.config.Port), 10),
+		Handler: mux,
+	}
+	err := server.ListenAndServe()
+	camUtils.Error.Panic(err)
+}
+
+// enable server with SSl
+func (component *WebsocketServer) listenAndServeTLS() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", component.handlerFunc)
+	server := &http.Server{
+		Addr:    ":" + strconv.FormatUint(uint64(component.config.SslPort), 10),
+		Handler: mux,
+	}
+	err := server.ListenAndServeTLS(component.config.SslCertFile, component.config.SslKeyFile)
+	camUtils.Error.Panic(err)
 }
