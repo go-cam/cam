@@ -50,3 +50,8 @@ func (model *WebsocketSession) Destroy() {
 	model.sessionId = ""
 	model.values = map[interface{}]interface{}{}
 }
+
+// get client connection
+func (model *WebsocketSession) GetConn() *websocket.Conn {
+	return model.conn
+}
