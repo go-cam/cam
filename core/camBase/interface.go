@@ -56,9 +56,11 @@ type ControllerInterface interface {
 	Read() []byte
 }
 
-// 上下文接口
+// context interface
 type ContextInterface interface {
-	// 获取 session
+	// set session
+	SetSession(session SessionInterface)
+	// get session
 	GetSession() SessionInterface
 }
 

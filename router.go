@@ -3,14 +3,13 @@ package cam
 import (
 	consoleController "github.com/go-cam/cam/console/camConsoleControllers"
 	"github.com/go-cam/cam/core/camBase"
-	"github.com/go-cam/cam/core/camModels"
 )
 
 // 路由器
 type router struct {
 	controllerList            []camBase.ControllerInterface
 	consoleControllerList     []camBase.ControllerInterface
-	onWebsocketMessageHandler func(conn *camModels.Context, recvMessage []byte)
+	onWebsocketMessageHandler func(conn camBase.ContextInterface, recvMessage []byte)
 }
 
 // 新建路由器

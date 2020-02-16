@@ -5,6 +5,7 @@ type WebsocketServer struct {
 	BaseConfig
 	PluginRouter
 	PluginSsl
+	PluginContext
 	Port uint16 // 服务器端口
 
 	// 传输消息解析器

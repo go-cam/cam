@@ -75,7 +75,8 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	url := r.URL.String()
 	session, err := component.store.Get(r, component.config.SessionName)
 	sessionModel := camModels.NewHttpSession(session)
-	contextModel := camModels.NewContext(sessionModel)
+	contextModel := component.config.NewContext()
+	contextModel.SetSession(sessionModel)
 	if err != nil {
 		panic("get session fail:" + err.Error())
 	}
@@ -111,7 +112,7 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 }
 
 // 调用控制器处理
-func (component *HttpServer) callControllerAction(controllerName string, actionName string, context *camModels.Context, w http.ResponseWriter, r *http.Request) []byte {
+func (component *HttpServer) callControllerAction(controllerName string, actionName string, context camBase.ContextInterface, w http.ResponseWriter, r *http.Request) []byte {
 	response := []byte("")
 
 	controllerType := component.controllerDict[controllerName]

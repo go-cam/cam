@@ -21,9 +21,9 @@ type WebsocketServer struct {
 	controllerDict       map[string]reflect.Type    // 控制器反射map
 	controllerActionDict map[string]map[string]bool // 控制器 => 方法 => 是否存在（注册时记录）
 
-	onConnectHandler func(conn *camModels.Context)                     // 自定义方法：有新连接连入
-	onMessageHandler func(conn *camModels.Context, recvMessage []byte) // 自定义方法：收到消息
-	onCloseHandler   func(conn *camModels.Context)                     // 自定义方法：连接被关闭
+	onConnectHandler func(conn camBase.ContextInterface)                     // 自定义方法：有新连接连入
+	onMessageHandler func(conn camBase.ContextInterface, recvMessage []byte) // 自定义方法：收到消息
+	onCloseHandler   func(conn camBase.ContextInterface)                     // 自定义方法：连接被关闭
 
 	// 传输消息解析器
 	// message: 客户端发送过来的消息
@@ -82,17 +82,17 @@ func (component *WebsocketServer) Start() {
 }
 
 // 设置 接受新连接的方法
-func (component *WebsocketServer) OnConnect(handler func(conn *camModels.Context)) {
+func (component *WebsocketServer) OnConnect(handler func(conn camBase.ContextInterface)) {
 	component.onConnectHandler = handler
 }
 
 // 设置 接受消息的方法
-func (component *WebsocketServer) OnMessage(handler func(conn *camModels.Context, recvMessage []byte)) {
+func (component *WebsocketServer) OnMessage(handler func(conn camBase.ContextInterface, recvMessage []byte)) {
 	component.onMessageHandler = handler
 }
 
 // 设置 关闭连接的方法
-func (component *WebsocketServer) OnClose(handler func(conn *camModels.Context)) {
+func (component *WebsocketServer) OnClose(handler func(conn camBase.ContextInterface)) {
 	component.onCloseHandler = handler
 }
 
@@ -104,7 +104,8 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 	}
 
 	session := camModels.NewWebsocketSession(conn)
-	context := camModels.NewContext(session)
+	context := component.config.NewContext()
+	context.SetSession(session)
 	component.callOnConnect(context)
 
 	defer func() {
@@ -134,7 +135,7 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 }
 
 // 使用处理器获取返回数据
-func (component *WebsocketServer) getSendMessageByHandler(context *camModels.Context, recvMessage []byte) (sendMessage []byte) {
+func (component *WebsocketServer) getSendMessageByHandler(context camBase.ContextInterface, recvMessage []byte) (sendMessage []byte) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			sendMessage = camUtils.Json.Encode(rec)
@@ -154,7 +155,7 @@ func (component *WebsocketServer) getSendMessageByHandler(context *camModels.Con
 }
 
 // 获取返回结果
-func (component *WebsocketServer) callControllerAction(context *camModels.Context, recvMessage []byte) []byte {
+func (component *WebsocketServer) callControllerAction(context camBase.ContextInterface, recvMessage []byte) []byte {
 	recvMessageModel := new(camModels.MessageModel)
 	camUtils.Json.DecodeToObj(recvMessage, recvMessageModel)
 	if !recvMessageModel.Validate() {
@@ -207,21 +208,21 @@ func (component *WebsocketServer) callControllerAction(context *camModels.Contex
 }
 
 // 执行 自定义新连接连入方法
-func (component *WebsocketServer) callOnConnect(context *camModels.Context) {
+func (component *WebsocketServer) callOnConnect(context camBase.ContextInterface) {
 	if component.onConnectHandler != nil {
 		component.onConnectHandler(context)
 	}
 }
 
 // 执行 自定义接受到消息方法
-func (component *WebsocketServer) callOnMessage(context *camModels.Context, message []byte) {
+func (component *WebsocketServer) callOnMessage(context camBase.ContextInterface, message []byte) {
 	if component.onMessageHandler != nil {
 		component.onMessageHandler(context, message)
 	}
 }
 
 // 执行 自定义连接关闭的方法
-func (component *WebsocketServer) callOnClose(context *camModels.Context) {
+func (component *WebsocketServer) callOnClose(context camBase.ContextInterface) {
 	if component.onCloseHandler != nil {
 		component.onCloseHandler(context)
 	}

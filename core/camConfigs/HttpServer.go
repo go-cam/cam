@@ -5,6 +5,7 @@ type HttpServer struct {
 	BaseConfig
 	PluginRouter
 	PluginSsl
+	PluginContext
 	Port        uint16
 	SessionName string
 	SessionKey  string

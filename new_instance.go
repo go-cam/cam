@@ -21,6 +21,7 @@ func NewWebsocketServerConfig(port uint16) *camConfigs.WebsocketServer {
 	config.Port = port
 	config.Component = &camComponents.WebsocketServer{}
 	config.MessageParseHandler = nil
+	config.InitPluginContext()
 	config.InitPluginSsl()
 	return config
 }
@@ -37,6 +38,7 @@ func NewHttpServerConfig(port uint16) *camConfigs.HttpServer {
 	config.Port = port
 	config.SessionKey = "cam-key"
 	config.SessionName = "cam"
+	config.InitPluginContext()
 	config.InitPluginSsl()
 	return config
 }
