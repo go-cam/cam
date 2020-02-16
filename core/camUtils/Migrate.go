@@ -5,19 +5,19 @@ import (
 	"time"
 )
 
-var Migrate = new(migrateUtil)
+var Migrate = new(MigrateUtil)
 
 // migrate util
-type migrateUtil struct {
+type MigrateUtil struct {
 }
 
 // generate migration's file id by datetime using system timezone
-func (util *migrateUtil) IdByDatetime() string {
+func (util *MigrateUtil) IdByDatetime() string {
 	now := time.Now()
 	return now.Format("060102_150405")
 }
 
 // generate migration's file id by timestamp
-func (util *migrateUtil) IdByTimestamp() string {
+func (util *MigrateUtil) IdByTimestamp() string {
 	return strconv.FormatInt(time.Now().Unix(), 10)
 }

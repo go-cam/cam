@@ -8,14 +8,14 @@ import (
 )
 
 // 字符串工具
-type stringUtil struct {
+type StringUtil struct {
 }
 
 // 字符串工具实例
-var String = new(stringUtil)
+var String = new(StringUtil)
 
 // 生成uuid
-func (util *stringUtil) UUID() string {
+func (util *StringUtil) UUID() string {
 	timestamp := time.Now().UnixNano()
 	hex := fmt.Sprintf("%X", timestamp)
 	var splice []string
@@ -29,7 +29,7 @@ func (util *stringUtil) UUID() string {
 }
 
 // 获取随机字符串
-func (util *stringUtil) Random(size int) string {
+func (util *StringUtil) Random(size int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)
 	result := []byte{}
@@ -42,7 +42,7 @@ func (util *stringUtil) Random(size int) string {
 
 // underline to hump
 // example：get_user_list => GetUserList
-func (util *stringUtil) UnderToHump(url string) string {
+func (util *StringUtil) UnderToHump(url string) string {
 	words := strings.Split(url, "_")
 	hump := ""
 	for _, word := range words {
@@ -57,7 +57,7 @@ func (util *stringUtil) UnderToHump(url string) string {
 
 // hump to underline
 // example： GetUserList => get_user_list
-func (util *stringUtil) HumpToUnder(hump string) string {
+func (util *StringUtil) HumpToUnder(hump string) string {
 	data := make([]byte, 0, len(hump)*2)
 	j := false
 	num := len(hump)
@@ -79,7 +79,7 @@ func (util *stringUtil) HumpToUnder(hump string) string {
 //		FillZero("12", 2) => "12"
 //		FillZero("9", 2) => "09"
 //		FillZero("129", 2) => "129"
-func (util *stringUtil) FillZero(num string, digit int) string {
+func (util *StringUtil) FillZero(num string, digit int) string {
 	for fillNum := len(num) - digit; fillNum > 0; fillNum-- {
 		num = "0" + num
 	}

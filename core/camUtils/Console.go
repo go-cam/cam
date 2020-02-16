@@ -10,14 +10,14 @@ import (
 	"strings"
 )
 
-var Console = new(consoleUtil)
+var Console = new(ConsoleUtil)
 
-type consoleUtil struct {
+type ConsoleUtil struct {
 }
 
 // runs the command and returns its combined standard
 // output and standard error.
-func (util *consoleUtil) Run(command string) ([]byte, error) {
+func (util *ConsoleUtil) Run(command string) ([]byte, error) {
 	name, args := util.parseCommand(command)
 
 	cmd := exec.Command(name, args...)
@@ -38,7 +38,7 @@ func (util *consoleUtil) Run(command string) ([]byte, error) {
 
 // runs the command and returns its combined standard, and print output content realtime
 // output and standard error.
-func (util *consoleUtil) Start(command string) error {
+func (util *ConsoleUtil) Start(command string) error {
 	name, args := util.parseCommand(command)
 
 	var err error
@@ -70,7 +70,7 @@ func (util *consoleUtil) Start(command string) error {
 }
 
 // 解析命令
-func (util *consoleUtil) parseCommand(command string) (name string, args []string) {
+func (util *ConsoleUtil) parseCommand(command string) (name string, args []string) {
 	splice := strings.Split(command, " ")
 	if len(splice) <= 1 {
 		var args []string
@@ -80,10 +80,10 @@ func (util *consoleUtil) parseCommand(command string) (name string, args []strin
 	return splice[0], splice[1:]
 }
 
-func (util *consoleUtil) IsLinux() bool {
+func (util *ConsoleUtil) IsLinux() bool {
 	return runtime.GOOS == "linux"
 }
 
-func (util *consoleUtil) IsWindows() bool {
+func (util *ConsoleUtil) IsWindows() bool {
 	return runtime.GOOS == "windows"
 }

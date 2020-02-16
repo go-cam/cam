@@ -2,20 +2,20 @@ package camUtils
 
 import "strings"
 
-type envUtil struct {
+type EnvUtil struct {
 	dict map[string]string
 }
 
 var Env = newEnvUtil()
 
-func newEnvUtil() *envUtil {
-	env := new(envUtil)
+func newEnvUtil() *EnvUtil {
+	env := new(EnvUtil)
 	env.autoLoadEnvDict()
 
 	return env
 }
 
-func (util *envUtil) Get(key string) string {
+func (util *EnvUtil) Get(key string) string {
 	value, has := util.dict[key]
 	if has {
 		return value
@@ -23,7 +23,7 @@ func (util *envUtil) Get(key string) string {
 	return ""
 }
 
-func (util *envUtil) autoLoadEnvDict() {
+func (util *EnvUtil) autoLoadEnvDict() {
 	util.dict = map[string]string{}
 
 	envFilename := File.GetRunPath() + "/.env"

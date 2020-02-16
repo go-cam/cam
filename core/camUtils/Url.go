@@ -5,14 +5,14 @@ import (
 )
 
 // url 工具
-type urlUtil struct {
+type UrlUtil struct {
 }
 
-var Url = new(urlUtil)
+var Url = new(UrlUtil)
 
 // 切割url
 // 如： /test/test/abc/222?name=aa&age=cc  将切割成： ["test", "test", "abc", "222", "name=aa&age=cc"]
-func (util *urlUtil) SplitUrl(url string) []string {
+func (util *UrlUtil) SplitUrl(url string) []string {
 	dirs := strings.Split(url, "/")
 	length := len(dirs)
 	lastDirs := strings.Split(dirs[length-1], "?")
@@ -28,7 +28,7 @@ func (util *urlUtil) SplitUrl(url string) []string {
 }
 
 // 将 url 转为 驼峰命名。如：get-user-list => GetUserList
-func (util *urlUtil) UrlToHump(url string) string {
+func (util *UrlUtil) UrlToHump(url string) string {
 	words := strings.Split(url, "-")
 	hump := ""
 	for _, word := range words {
@@ -42,7 +42,7 @@ func (util *urlUtil) UrlToHump(url string) string {
 }
 
 // 将驼峰命名转为url模式。如：GetUserList => get-user-list
-func (util *urlUtil) HumpToUrl(hump string) string {
+func (util *UrlUtil) HumpToUrl(hump string) string {
 	data := make([]byte, 0, len(hump)*2)
 	j := false
 	num := len(hump)
