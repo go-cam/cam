@@ -88,3 +88,8 @@ func NewConsoleConfig() *camConfigs.Console {
 func NewConfigConsole() *camConfigs.Console {
 	return NewConsoleConfig()
 }
+
+// new log config
+func NewLogConfig() *camConfigs.Log {
+	return camConfigs.NewLogConfig()
+}
