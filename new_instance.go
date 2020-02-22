@@ -91,5 +91,7 @@ func NewConfigConsole() *camConfigs.Console {
 
 // new log config
 func NewLogConfig() *camConfigs.Log {
-	return camConfigs.NewLogConfig()
+	config := camConfigs.NewLogConfig()
+	config.Component = new(camComponents.Log)
+	return config
 }

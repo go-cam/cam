@@ -60,7 +60,7 @@ func (component *Log) baseLog(logType string, title string, content string) erro
 		fmt.Println(line)
 	}
 	if component.config.IsWrite {
-		return camUtils.File.AppendFile(filename, []byte(line))
+		return camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
 	return nil
 }
