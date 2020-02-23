@@ -83,18 +83,23 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 
 	dirs := camUtils.Url.SplitUrl(url)
 	dirLength := len(dirs)
+	var controllerName string
+	var actionName string
 	if dirLength == 0 {
 		// TODO default route
 		panic("404")
 	} else if dirLength == 1 {
-		// TODO controller default action
-		panic("404")
+		controllerName = camUtils.Url.UrlToHump(dirs[0])
+		actionName = ""
+	} else {
+		controllerName = camUtils.Url.UrlToHump(dirs[0])
+		actionName = camUtils.Url.UrlToHump(dirs[1])
 	}
 
-	controllerName := camUtils.Url.UrlToHump(dirs[0])
-	actionName := camUtils.Url.UrlToHump(dirs[1])
 	hasAction := false // 动作是否存在
-	if actionDict, has := component.controllerActionDict[controllerName]; has {
+	if actionName == "" {
+		hasAction = true
+	} else if actionDict, has := component.controllerActionDict[controllerName]; has {
 		_, hasAction = actionDict[actionName]
 	}
 
@@ -122,11 +127,17 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 		panic("controller must be implement base.ControllerInterface")
 	}
 
-	// 设置控制器数据
+	// set controller params
 	controllerInterface.Init()
 	controllerInterface.SetApp(component.app)
 	controllerInterface.SetContext(context)
 	controllerInterface.SetHttpValues(w, r)
+	if actionName == "" {
+		actionName = controllerInterface.GetDefaultAction()
+		if actionName == "" {
+			panic("404")
+		}
+	}
 
 	// BeforeAction
 	if !controllerInterface.BeforeAction(actionName) {

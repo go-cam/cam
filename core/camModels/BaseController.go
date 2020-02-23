@@ -2,7 +2,10 @@ package camModels
 
 import (
 	"github.com/go-cam/cam/core/camBase"
+	"io/ioutil"
 	"net/http"
+	"regexp"
+	"strings"
 )
 
 // base controller
@@ -13,55 +16,54 @@ type BaseController struct {
 	context       camBase.ContextInterface
 	values        map[string]interface{}
 	responseBytes []byte
+	// default action name. default value: ""
+	// Example: "Login", "Action".
+	DefaultAction string
 }
 
 // OVERWRITE:
 func (controller *BaseController) Init() {
 	controller.values = map[string]interface{}{}
 	controller.responseBytes = []byte("")
+	controller.DefaultAction = ""
 }
 
-// OVERWRITE:
+// OVERWRITE
 func (controller *BaseController) BeforeAction(action string) bool {
 	return true
 }
 
-// OVERWRITE:
+// OVERWRITE
 func (controller *BaseController) AfterAction(action string, response []byte) []byte {
 	return response
 }
 
-// OVERWRITE:
+// OVERWRITE
 func (controller *BaseController) SetContext(context camBase.ContextInterface) {
 	controller.context = context
 }
 
-// OVERWRITE:
+// OVERWRITE
 func (controller *BaseController) GetContext() camBase.ContextInterface {
 	return controller.context
 }
 
+// OVERWRITE
 // set http values by http.ResponseWriter and http.Request
-// 	Q:	what are the values?
+//	Q:	what are the values?
 //	A:	values are collection of http's get and post data sent by the client
-// OVERWRITE:
 func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.Request) {
-	// 接收 get 和 post 参数
-	_ = r.ParseForm()
-	for key, value := range r.Form {
-		controller.values[key] = value
-	}
-
-	// TODO 处理数组、对象、数组和对象混合的数据
+	controller.parseUrlValues(r)
+	controller.parseFormValues(r)
 }
 
+// OVERWRITE
 // set values
-// OVERWRITE:
 func (controller *BaseController) SetValues(values map[string]interface{}) {
 	controller.values = values
 }
 
-// OVERWRITE:
+// OVERWRITE
 func (controller *BaseController) AddValue(key string, value interface{}) {
 	controller.values[key] = value
 }
@@ -75,8 +77,8 @@ func (controller *BaseController) GetValue(key string) interface{} {
 	return value
 }
 
+// OVERWRITE
 // set app instance
-// OVERWRITE:
 func (controller *BaseController) SetApp(app camBase.ApplicationInterface) {
 	controller.app = app
 }
@@ -91,8 +93,60 @@ func (controller *BaseController) Write(bytes []byte) {
 	controller.responseBytes = bytes
 }
 
+// OVERWRITE
 // return action write
-// OVERWRITE:
 func (controller *BaseController) Read() []byte {
 	return controller.responseBytes
+}
+
+// OVERWRITE
+func (controller *BaseController) GetDefaultAction() string {
+	return controller.DefaultAction
+}
+
+// parse params from request url
+func (controller *BaseController) parseUrlValues(r *http.Request) {
+	_ = r.ParseForm()
+	for key, value := range r.Form {
+		controller.values[key] = value
+	}
+}
+
+// parse params from form data
+func (controller *BaseController) parseFormValues(r *http.Request) {
+	// multipart/form-data; boundary=----WebKitFormBoundaryDumfytNg1NzoZq2r
+	contentType := r.Header.Get("Content-Type")
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
+		boundaries := boundaryRegexp.FindStringSubmatch(contentType)
+		if len(boundaries) < 2 {
+			panic("fail to parse form values")
+		}
+		boundary := "--" + boundaries[1]
+
+		bytes, _ := ioutil.ReadAll(r.Body)
+		bodyStr := string(bytes)
+		paramsStrList := strings.Split(bodyStr, boundary)
+
+		for _, row := range paramsStrList {
+			if row == "" || !strings.Contains(row, "\"") {
+				// exclude row
+				continue
+			}
+
+			repl := "Content-Disposition: form-data; name=\"([0-9a-zA-Z|_]+)\""
+			keyRegexp, _ := regexp.Compile(repl)
+			keyList := keyRegexp.FindStringSubmatch(row)
+			key := keyList[1]
+
+			valueRow := keyRegexp.ReplaceAllString(row, "")
+			value := strings.Trim(valueRow, "\n")
+			value = strings.Trim(value, "\r")
+			value = strings.Trim(value, "\r\n")
+			value = strings.Trim(value, " ")
+
+			controller.AddValue(key, value)
+		}
+	}
+
 }

@@ -11,8 +11,14 @@ type UrlUtil struct {
 var Url = new(UrlUtil)
 
 // split url
-// Example: /test/test/abc/222?name=aa&age=cc  split to:  ["test", "test", "abc", "222", "name=aa&age=cc"]
+// Example: /test/test/abc/222?name=aa&age=cc  split to:  ["test", "test", "abc", "222"]
 func (util *UrlUtil) SplitUrl(url string) []string {
+	// Delete question mark and string after
+	questionMarkIndex := strings.Index(url, "?")
+	if questionMarkIndex != -1 {
+		url = url[:questionMarkIndex]
+	}
+
 	dirs := strings.Split(url, "/")
 	length := len(dirs)
 	lastDirs := strings.Split(dirs[length-1], "?")

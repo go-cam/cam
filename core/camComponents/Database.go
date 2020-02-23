@@ -86,7 +86,6 @@ func (component *Database) MigrateUp() {
 	fmt.Println("Migrate up finished.")
 }
 
-// TODO
 // down last database version
 func (component *Database) MigrateDown() {
 	lastVersion := component.MigrateLastVersion()
@@ -188,7 +187,7 @@ func (component *Database) GetDSN() string {
 	return username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?multiStatements=true&charset=utf8"
 }
 
-// TODO not testing
+// new session
 func (component *Database) NewSession() *xorm.Session {
 	return component.GetEngine().NewSession()
 }

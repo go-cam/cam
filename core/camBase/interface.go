@@ -58,6 +58,8 @@ type ControllerInterface interface {
 	SetApp(app ApplicationInterface)
 	// get action return
 	Read() []byte
+	// get default action
+	GetDefaultAction() string
 }
 
 // context interface
