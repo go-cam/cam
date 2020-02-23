@@ -11,19 +11,19 @@ import (
 	"strconv"
 )
 
-// http服务
+// http server component
 type HttpServer struct {
 	Base
 
 	config *camConfigs.HttpServer
 
-	controllerDict       map[string]reflect.Type    // 控制器反射map
-	controllerActionDict map[string]map[string]bool // 控制器 => 方法 => 是否存在（注册时记录）
+	controllerDict       map[string]reflect.Type    // controller reflect.Type dict
+	controllerActionDict map[string]map[string]bool // map[controllerName]map[actionName]
 
 	store *sessions.FilesystemStore
 }
 
-// 使用配置初始化数据
+// init
 func (component *HttpServer) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
@@ -44,7 +44,7 @@ func (component *HttpServer) Init(configInterface camBase.ConfigComponentInterfa
 	component.store = component.getFilesystemStore()
 }
 
-// 启动
+// start
 func (component *HttpServer) Start() {
 	component.Base.Start()
 
@@ -56,11 +56,12 @@ func (component *HttpServer) Start() {
 	}
 }
 
+// stop
 func (component *HttpServer) Stop() {
 	component.Base.Stop()
 }
 
-// http 处理方法
+// Receive http request, Call controller action, Send http response
 func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
@@ -69,7 +70,6 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 			//_, _ = w.Write([]byte(rec.(string)))
 		}
 	}()
-	// 返回数据
 	response := []byte("")
 
 	url := r.URL.String()
@@ -84,10 +84,10 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	dirs := camUtils.Url.SplitUrl(url)
 	dirLength := len(dirs)
 	if dirLength == 0 {
-		// TODO 默认路由
+		// TODO default route
 		panic("404")
 	} else if dirLength == 1 {
-		// TODO 控制器默认路由
+		// TODO controller default action
 		panic("404")
 	}
 
@@ -111,7 +111,7 @@ func (component *HttpServer) handlerFunc(w http.ResponseWriter, r *http.Request)
 	_, _ = w.Write(response)
 }
 
-// 调用控制器处理
+// call controller action
 func (component *HttpServer) callControllerAction(controllerName string, actionName string, context camBase.ContextInterface, w http.ResponseWriter, r *http.Request) []byte {
 	response := []byte("")
 
@@ -143,7 +143,7 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 	return response
 }
 
-// 获取文件 session store
+// get session store
 func (component *HttpServer) getFilesystemStore() *sessions.FilesystemStore {
 	runtimeDir := camUtils.File.GetRunPath() + "/runtime/session"
 	if !camUtils.File.Exists(runtimeDir) {

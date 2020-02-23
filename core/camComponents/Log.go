@@ -32,7 +32,7 @@ func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
 	}
 	component.config = config
 
-	// 这是日志输出路径
+	// log output path
 	component.logRootDir = camUtils.File.GetRunPath() + "/runtime/log"
 	if !camUtils.File.Exists(component.logRootDir) {
 		err := camUtils.File.Mkdir(component.logRootDir)

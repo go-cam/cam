@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// 基础控制器
+//
 type baseConsoleController struct {
 	camModels.BaseController
 }

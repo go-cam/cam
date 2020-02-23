@@ -17,23 +17,32 @@ type WebsocketServer struct {
 
 	config *camConfigs.WebsocketServer
 
-	upgrader             websocket.Upgrader         // websocket http 升级为 websocket 的方法
-	controllerDict       map[string]reflect.Type    // 控制器反射map
-	controllerActionDict map[string]map[string]bool // 控制器 => 方法 => 是否存在（注册时记录）
+	upgrader             websocket.Upgrader         // struct of http upgrade to websocket
+	controllerDict       map[string]reflect.Type    // controller reflect.Type dict
+	controllerActionDict map[string]map[string]bool // map[controllerName]map[actionName]
 
-	onConnectHandler func(conn camBase.ContextInterface)                     // 自定义方法：有新连接连入
-	onMessageHandler func(conn camBase.ContextInterface, recvMessage []byte) // 自定义方法：收到消息
-	onCloseHandler   func(conn camBase.ContextInterface)                     // 自定义方法：连接被关闭
+	// Deprecated:
+	// on new client connection
+	onConnectHandler func(conn camBase.ContextInterface)
+	// Deprecated:
+	// on receive client message
+	onMessageHandler func(conn camBase.ContextInterface, recvMessage []byte)
+	// Deprecated:
+	// on client connection close
+	onCloseHandler func(conn camBase.ContextInterface)
 
-	// 传输消息解析器
-	// message: 客户端发送过来的消息
-	// controllerName: 控制器名字
-	// actionName: 控制器方法名字
-	// values: 传输的参数
+	// message parse handler
+	//
+	//
+	// message: client send bytes
+	//
+	// controllerName:  controller name
+	// actionName: 		action name
+	// values: 			send data, just like post form data
 	messageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 }
 
-// 使用配置 初始化数据
+// init
 func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
@@ -69,7 +78,7 @@ func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentIn
 	}
 }
 
-// 开始
+// start
 func (component *WebsocketServer) Start() {
 	component.Base.Start()
 
@@ -81,22 +90,22 @@ func (component *WebsocketServer) Start() {
 	}
 }
 
-// 设置 接受新连接的方法
-func (component *WebsocketServer) OnConnect(handler func(conn camBase.ContextInterface)) {
-	component.onConnectHandler = handler
-}
+//// 设置 接受新连接的方法
+//func (component *WebsocketServer) OnConnect(handler func(conn camBase.ContextInterface)) {
+//	component.onConnectHandler = handler
+//}
+//
+//// 设置 接受消息的方法
+//func (component *WebsocketServer) OnMessage(handler func(conn camBase.ContextInterface, recvMessage []byte)) {
+//	component.onMessageHandler = handler
+//}
+//
+//// 设置 关闭连接的方法
+//func (component *WebsocketServer) OnClose(handler func(conn camBase.ContextInterface)) {
+//	component.onCloseHandler = handler
+//}
 
-// 设置 接受消息的方法
-func (component *WebsocketServer) OnMessage(handler func(conn camBase.ContextInterface, recvMessage []byte)) {
-	component.onMessageHandler = handler
-}
-
-// 设置 关闭连接的方法
-func (component *WebsocketServer) OnClose(handler func(conn camBase.ContextInterface)) {
-	component.onCloseHandler = handler
-}
-
-// 处理收到消息的方法
+// new connection
 func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Request) {
 	conn, err := component.upgrader.Upgrade(w, r, nil)
 	if conn == nil || err != nil {
@@ -120,10 +129,9 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 		if err != nil {
 			break
 		}
-		// 常规消息处理
 		if messageType == websocket.TextMessage || messageType == websocket.BinaryMessage {
 			component.callOnMessage(context, recvMessage)
-			// 处理客户端发送的请求并返回数据。如果返回 nil ，则代表不会返回数据给客户端
+			// Use controller or custom message handler to get sendMessage
 			sendMessage := component.getSendMessageByHandler(context, recvMessage)
 			if sendMessage != nil {
 				err = conn.WriteMessage(websocket.TextMessage, sendMessage)
@@ -134,7 +142,7 @@ func (component *WebsocketServer) handlerFunc(w http.ResponseWriter, r *http.Req
 	}
 }
 
-// 使用处理器获取返回数据
+// Use controller or custom message handler to get sendMessage
 func (component *WebsocketServer) getSendMessageByHandler(context camBase.ContextInterface, recvMessage []byte) (sendMessage []byte) {
 	defer func() {
 		if rec := recover(); rec != nil {
@@ -142,35 +150,35 @@ func (component *WebsocketServer) getSendMessageByHandler(context camBase.Contex
 		}
 	}()
 
-	// 使用自定义方法处理
+	// custom message handler
 	component.callOnMessage(context, recvMessage)
 	if sendMessage != nil {
 		return sendMessage
 	}
 
-	// 如果没有数据返回，则使用处理器尝试匹配路由
+	// call controller's action
 	sendMessage = component.callControllerAction(context, recvMessage)
 
 	return sendMessage
 }
 
-// 获取返回结果
+// call controller's action
 func (component *WebsocketServer) callControllerAction(context camBase.ContextInterface, recvMessage []byte) []byte {
-	recvMessageModel := new(camModels.MessageModel)
-	camUtils.Json.DecodeToObj(recvMessage, recvMessageModel)
-	if !recvMessageModel.Validate() {
-		// 不合法的数据。当没有找到匹配的路由处理
-		return nil
-	}
-
-	// 判断路由是否存在
-	routeArr := strings.Split(recvMessageModel.Route, "/")
-	strLen := len(routeArr)
-	if strLen != 2 {
-		return []byte("illegal route. must be like 'controller/action'")
-	}
+	//recvMessageModel := new(camModels.MessageModel)
+	//camUtils.Json.DecodeToObj(recvMessage, recvMessageModel)
+	//if !recvMessageModel.Validate() {
+	//	// 不合法的数据。当没有找到匹配的路由处理
+	//	return nil
+	//}
+	//
+	//// 判断路由是否存在
+	//routeArr := strings.Split(recvMessageModel.Route, "/")
+	//strLen := len(routeArr)
+	//if strLen != 2 {
+	//	return []byte("illegal route. must be like 'controller/action'")
+	//}
 	controllerName, actionName, values := component.messageParseHandler(recvMessage)
-	hasAction := false // 动作是否存在
+	hasAction := false
 	if actionDict, has := component.controllerActionDict[controllerName]; has {
 		if _, has = actionDict[actionName]; has {
 			hasAction = true
@@ -180,7 +188,7 @@ func (component *WebsocketServer) callControllerAction(context camBase.ContextIn
 		return []byte("route not found!")
 	}
 
-	// 判断控制器是否合法
+	// check controller
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
 	controllerInterface := controllerValue.Interface().(camBase.ControllerInterface)
@@ -191,37 +199,37 @@ func (component *WebsocketServer) callControllerAction(context camBase.ContextIn
 	controllerInterface.SetContext(context)
 	controllerInterface.SetValues(values)
 
-	// BeforeAction 一般可用于验证数据
+	// call before action
 	if !controllerInterface.BeforeAction(actionName) {
 		return []byte("illegal request")
 	}
 
-	// 调用控制器对应的方法
+	// call action
 	action := controllerValue.MethodByName(actionName)
 	_ = action.Call([]reflect.Value{})
 	response := controllerInterface.Read()
 
-	// AfterAction 一般可用于对返回数据做进一步的处理
+	// call after action
 	response = controllerInterface.AfterAction(actionName, response)
 
 	return response
 }
 
-// 执行 自定义新连接连入方法
+// Deprecated:
 func (component *WebsocketServer) callOnConnect(context camBase.ContextInterface) {
 	if component.onConnectHandler != nil {
 		component.onConnectHandler(context)
 	}
 }
 
-// 执行 自定义接受到消息方法
+// Deprecated:
 func (component *WebsocketServer) callOnMessage(context camBase.ContextInterface, message []byte) {
 	if component.onMessageHandler != nil {
 		component.onMessageHandler(context, message)
 	}
 }
 
-// 执行 自定义连接关闭的方法
+// Deprecated:
 func (component *WebsocketServer) callOnClose(context camBase.ContextInterface) {
 	if component.onCloseHandler != nil {
 		component.onCloseHandler(context)

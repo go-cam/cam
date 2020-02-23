@@ -1,6 +1,6 @@
 package camConfigs
 
-// http 服务
+// http server config
 type HttpServer struct {
 	BaseConfig
 	PluginRouter
@@ -11,13 +11,13 @@ type HttpServer struct {
 	SessionKey  string
 }
 
-// 设置 session key
+// set session key
 func (config *HttpServer) SetSessionKey(sessionKey string) *HttpServer {
 	config.SessionKey = sessionKey
 	return config
 }
 
-// 设置session name
+// set session name
 func (config *HttpServer) SetSessionName(sessionName string) *HttpServer {
 	config.SessionName = sessionName
 	return config

@@ -10,23 +10,24 @@ type JsonUtil struct {
 
 var Json = new(JsonUtil)
 
-// 将数据转为 字节流
+// encode to bytes
 func (util *JsonUtil) Encode(v interface{}) []byte {
 	jsonBytes, _ := json.Marshal(v)
 	return jsonBytes
 }
 
-// 将数据转为 字符流
+// encode to string
 func (util *JsonUtil) EncodeStr(v interface{}) string {
 	return string(util.Encode(v))
 }
 
-// 将json数据转为对象
+// decode to struct
 func (util *JsonUtil) DecodeToObj(bytes []byte, obj interface{}) {
 	_ = json.Unmarshal(bytes, obj)
 }
 
-// 解析json字符串
+// Deprecated:
+// decode to gjson sturct
 func (util *JsonUtil) DecodeStr(jsonStr string) gjson.Result {
 	return gjson.Parse(jsonStr)
 }

@@ -5,48 +5,46 @@ import (
 	"net/http"
 )
 
-// 所有 handler 的基类。主要处理问题是：统一接口、数据库管理
+// base controller
 type BaseController struct {
 	camBase.ControllerInterface
 
-	// app instance
-	app camBase.ApplicationInterface
-	// 上下文
-	context camBase.ContextInterface
-	// 接收到请求的参数
+	app           camBase.ApplicationInterface // app instance
+	context       camBase.ContextInterface
 	values        map[string]interface{}
 	responseBytes []byte
 }
 
-// 初始化
+// OVERWRITE:
 func (controller *BaseController) Init() {
 	controller.values = map[string]interface{}{}
 	controller.responseBytes = []byte("")
 }
 
-// 执行动作前执行的方法
-// 如果返回 false 将会返回一个错误
+// OVERWRITE:
 func (controller *BaseController) BeforeAction(action string) bool {
 	return true
 }
 
-// 执行动作后执行的方法
-// 过滤返回结果
+// OVERWRITE:
 func (controller *BaseController) AfterAction(action string, response []byte) []byte {
 	return response
 }
 
-// 设置上下文对象
+// OVERWRITE:
 func (controller *BaseController) SetContext(context camBase.ContextInterface) {
 	controller.context = context
 }
 
-// 获取上下文对象
+// OVERWRITE:
 func (controller *BaseController) GetContext() camBase.ContextInterface {
 	return controller.context
 }
 
-// 设置http接收到的参数
+// set http values by http.ResponseWriter and http.Request
+// 	Q:	what are the values?
+//	A:	values are collection of http's get and post data sent by the client
+// OVERWRITE:
 func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.Request) {
 	// 接收 get 和 post 参数
 	_ = r.ParseForm()
@@ -57,17 +55,18 @@ func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.R
 	// TODO 处理数组、对象、数组和对象混合的数据
 }
 
-// 设置接收到的参数
+// set values
+// OVERWRITE:
 func (controller *BaseController) SetValues(values map[string]interface{}) {
 	controller.values = values
 }
 
-// OVERWRITE: 添加参数
+// OVERWRITE:
 func (controller *BaseController) AddValue(key string, value interface{}) {
 	controller.values[key] = value
 }
 
-// 获取参数
+// get value by key
 func (controller *BaseController) GetValue(key string) interface{} {
 	value, has := controller.values[key]
 	if !has {
@@ -77,6 +76,7 @@ func (controller *BaseController) GetValue(key string) interface{} {
 }
 
 // set app instance
+// OVERWRITE:
 func (controller *BaseController) SetApp(app camBase.ApplicationInterface) {
 	controller.app = app
 }
@@ -86,12 +86,13 @@ func (controller *BaseController) GetAppInterface() camBase.ApplicationInterface
 	return controller.app
 }
 
-// set response str
+// set response content
 func (controller *BaseController) Write(bytes []byte) {
 	controller.responseBytes = bytes
 }
 
 // return action write
+// OVERWRITE:
 func (controller *BaseController) Read() []byte {
 	return controller.responseBytes
 }

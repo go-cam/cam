@@ -9,7 +9,7 @@ type PluginSsl struct {
 	IsSslOnly   bool   // Whether only SSL mode is enabled
 }
 
-// 初始化阐述
+// init params
 func (plugin *PluginSsl) InitPluginSsl() {
 	plugin.IsSslOn = false
 	plugin.SslPort = 0

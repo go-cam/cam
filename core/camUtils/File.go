@@ -7,25 +7,26 @@ import (
 	"path/filepath"
 )
 
-// 文件工具
+// file util
 type FileUtil struct {
 }
 
 var File = new(FileUtil)
 
-// 获取运行程序所在的路径
+// Get the path where the program is running
 func (util *FileUtil) GetRunPath() string {
 	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	return dir
 }
 
-// 判断文件是否存在
+// check whether file exists
 func (util *FileUtil) Exists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil || os.IsExist(err)
 }
 
-// 创建目录
+// make dir
+// create dir
 func (util *FileUtil) Mkdir(path string) error {
 	if !util.Exists(path) {
 		err := os.MkdirAll(path, os.ModePerm)
@@ -34,7 +35,7 @@ func (util *FileUtil) Mkdir(path string) error {
 	return nil
 }
 
-// 读取文件内所有数据
+// read all content from file
 func (util *FileUtil) ReadFile(filePath string) ([]byte, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -48,7 +49,7 @@ func (util *FileUtil) ReadFile(filePath string) ([]byte, error) {
 	return bytes, nil
 }
 
-// 写文件
+// write all content to file
 func (util *FileUtil) WriteFile(filename string, content []byte) error {
 	return ioutil.WriteFile(filename, content, 0644)
 }
@@ -72,14 +73,14 @@ func (util *FileUtil) AppendFile(filename string, content []byte) error {
 	return err
 }
 
-// 删除文件
+// delete file
 func (util *FileUtil) DeleteFile(filename string) error {
 	return os.Remove(filename)
 }
 
-// 获取目录下所有的文件列表（仅遍历，非递归）
-// dir 绝对路径
-// withDir 返回结果是否包含文件夹
+// View all files in the folder
+// dir:			absolute path
+// withDir:		Whether the returned result contains folders
 func (util *FileUtil) ScanDir(dir string, withDir bool) ([]os.FileInfo, error) {
 	return ioutil.ReadDir(dir)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/go-cam/cam/core/camBase"
 	"github.com/go-cam/cam/core/camComponents"
 	"github.com/go-cam/cam/core/camConfigs"
+	"github.com/go-cam/cam/core/camConstants"
 	"github.com/go-cam/cam/core/camUtils"
 	"os"
 	"reflect"
@@ -12,37 +13,29 @@ import (
 	"time"
 )
 
-// 服务器全局类
+// framework application global instance struct define
 type application struct {
 	camBase.ApplicationInterface
 
-	// 应用状态（初始化、开始、运行中、停止、销毁）[onInit, onStart, onRun, onStop, onDestroy]
-	status camBase.ApplicationStatus
-	// 应用全部配置
-	config *Config
-	// 应用组件名
-	componentDict map[string]camBase.ComponentInterface
-	// url 路游戏（websocket、http通用）
-	router *router
-
-	// migrations's struct dict
-	migrationDict map[string]camBase.MigrationInterface
-
-	// log component
-	logComponent *camComponents.Log
+	status        camBase.ApplicationStatus // application status[onInit, onStart, onRun, onStop, onDestroy]
+	config        *Config                   // application config
+	router        *router
+	logComponent  *camComponents.Log                    // log component
+	componentDict map[string]camBase.ComponentInterface // components dict
+	migrationDict map[string]camBase.MigrationInterface // migrations's struct dict
 }
 
-// 应用全局实例（只需要一个实例即可操作整个应用）
+// single instance
 var App = newApplication()
 
-// 框架方法
+// new application instance
 func newApplication() *application {
 	app := new(application)
-	app.status = ApplicationStatusInit
+	app.status = camConstants.ApplicationStatusInit
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
-	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.router = newRouter()
+	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.migrationDict = map[string]camBase.MigrationInterface{}
 	return app
 }
@@ -64,17 +57,17 @@ func (app *application) AddConfig(config *Config) {
 	}
 }
 
-// 获取路游戏
+// get router
 func (app *application) GetRouter() *router {
 	return app.router
 }
 
-// 启动应用
+// run application
 func (app *application) Run() {
 	fmt.Println("App: Initializing ...")
 	app.onInit()
 	if len(os.Args) >= 2 {
-		// 如果运行参数大于1个，说明是一个一次单独的命令，不启动服务
+		// It's a console command
 		app.callConsole()
 		return
 	}
@@ -87,20 +80,19 @@ func (app *application) Run() {
 	fmt.Println("App: Stop done. Application was exit.")
 }
 
-// 应用初始化
+// init application and components
 func (app *application) onInit() {
 	camComponents.SetApplication(app)
 
 	// read config component
 	for name, config := range app.config.ComponentDict {
-		// 使用结构体重新创建一个新对象（防止外部修改导致混乱）
 		componentInterface := config.GetComponent()
 		t := reflect.TypeOf(componentInterface)
 		componentType := t.Elem()
 		componentValue := reflect.New(componentType)
 		componentInterface = componentValue.Interface().(camBase.ComponentInterface)
 
-		// 写入插件的数据
+		// input plugin params
 		app.writePluginParams(config)
 
 		componentInterface.Init(config)
@@ -112,32 +104,32 @@ func (app *application) onInit() {
 	app.initCoreComponent()
 }
 
-// 应用开始（初始化组件）
+// startup all components
 func (app *application) onStart() {
 	for _, component := range app.componentDict {
 		go component.Start()
 	}
 }
 
-// 应用向所有组件发送停止信号
+// stop all components
 func (app *application) onStop() {
 	for _, component := range app.componentDict {
 		component.Stop()
 	}
 }
 
-// 等待（不会让程序结束）
+// Wait until the app call Stop()
 func (app *application) wait() {
 	for {
 		time.Sleep(1 * time.Second)
 	}
 }
 
-// 自动写入插件配置
+// input plugin params
 func (app *application) writePluginParams(config camBase.ConfigComponentInterface) {
 	t := reflect.TypeOf(config).Elem()
 	v := reflect.ValueOf(config).Elem()
-	// 写入路由插件数据
+	// router plugin
 	if _, has := t.FieldByName("PluginRouter"); has {
 		pluginRouter := v.FieldByName("PluginRouter").Interface().(camConfigs.PluginRouter)
 		pluginRouter.ControllerList = app.router.controllerList
@@ -145,6 +137,7 @@ func (app *application) writePluginParams(config camBase.ConfigComponentInterfac
 		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
 		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
 	}
+	// migrate plugin
 	if _, has := t.FieldByName("PluginMigrate"); has {
 		pluginMigrate := v.FieldByName("PluginMigrate").Interface().(camConfigs.PluginMigrate)
 		pluginMigrate.MigrationDict = app.migrationDict
@@ -182,7 +175,7 @@ func (app *application) initCoreComponentLog() {
 	}
 }
 
-// 调用命令行组件
+// Call console
 func (app *application) callConsole() {
 	isCallConsole := false
 
@@ -217,13 +210,16 @@ func (app *application) getComponentAndName(v camBase.ComponentInterface) (camBa
 	return componentIns, componentName
 }
 
-// Overwrite: 实现获取组件实例的方法
+// Overwrite:
+// Try to get instance using struct type
 func (app *application) GetComponent(v camBase.ComponentInterface) camBase.ComponentInterface {
 	ins, _ := app.getComponentAndName(v)
 	return ins
 }
 
-// Overwrite: get component instance by name
+// Overwrite:
+// Try to get component instance by name.
+// The name is define in config
 func (app *application) GetComponentByName(name string) camBase.ComponentInterface {
 	componentIns, has := app.componentDict[name]
 	if !has {

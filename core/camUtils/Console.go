@@ -53,7 +53,7 @@ func (util *ConsoleUtil) Start(command string) error {
 	var index int
 	var contentArray = make([]string, 0, 5)
 	contentArray = contentArray[0:0]
-	//实时循环读取输出流中的一行内容
+	// print while command run
 	for {
 
 		bytes, err := reader.ReadBytes('\n')
@@ -69,7 +69,7 @@ func (util *ConsoleUtil) Start(command string) error {
 	return err
 }
 
-// 解析命令
+// parse command
 func (util *ConsoleUtil) parseCommand(command string) (name string, args []string) {
 	splice := strings.Split(command, " ")
 	if len(splice) <= 1 {

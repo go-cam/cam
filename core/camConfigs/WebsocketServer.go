@@ -6,13 +6,15 @@ type WebsocketServer struct {
 	PluginRouter
 	PluginSsl
 	PluginContext
-	Port uint16 // 服务器端口
+	Port uint16 // server port
 
-	// 传输消息解析器
-	// message: 客户端发送过来的消息
-	// controllerName: 控制器名字
-	// actionName: 控制器方法名字
-	// values: 传输的参数
+	// message parse handler
+	//
+	// message: Messages sent by clients
+	//
+	// controllerName:
+	// actionName:
+	// values: send data, just like post form data
 	MessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 }
 

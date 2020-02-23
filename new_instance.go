@@ -27,6 +27,7 @@ func NewWebsocketServerConfig(port uint16) *camConfigs.WebsocketServer {
 }
 
 // Deprecated: instead by NewWebsocketServerConfig()
+// Remove after 1.0.0
 func NewConfigWebsocketServer(port uint16) *camConfigs.WebsocketServer {
 	return NewWebsocketServerConfig(port)
 }
@@ -44,6 +45,7 @@ func NewHttpServerConfig(port uint16) *camConfigs.HttpServer {
 }
 
 // Deprecated: instead by NewHttpServerConfig()
+// Remove after 1.0.0
 func NewConfigHttpServer(port uint16) *camConfigs.HttpServer {
 	return NewHttpServerConfig(port)
 }
@@ -73,6 +75,7 @@ func NewDatabaseConfig(driverName string, host string, port string, name string,
 }
 
 // Deprecated: instead by NewDatabaseConfig()
+// Remove after 1.0.0
 func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
 	return NewDatabaseConfig(driverName, host, port, name, username, password)
 }
@@ -85,6 +88,7 @@ func NewConsoleConfig() *camConfigs.Console {
 }
 
 // Deprecated: instead by NewConsoleConfig()
+// Remove after 1.0.0
 func NewConfigConsole() *camConfigs.Console {
 	return NewConsoleConfig()
 }

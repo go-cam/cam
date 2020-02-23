@@ -3,7 +3,7 @@ package camBase
 import "net/http"
 
 // application interface
-// NODE：Provides interface function to the module inner framework
+// NODE: Provides interface function to the module inner framework
 type ApplicationInterface interface {
 	// get Component instance by reflect
 	GetComponent(v ComponentInterface) ComponentInterface
@@ -13,42 +13,46 @@ type ApplicationInterface interface {
 	GetDBInterface() ComponentInterface
 }
 
-// 组件类型配置接口
+// component config interface
 type ConfigComponentInterface interface {
 	GetComponent() ComponentInterface
 }
 
-// 组件接口
+// Component interface
 type ComponentInterface interface {
-	// 初始化
+	// init
 	Init(configInterface ConfigComponentInterface)
-	// 开始
+	// start
 	Start()
-	// 停止
+	// stop
 	Stop()
 	// set app instance
 	SetApp(app ApplicationInterface)
 }
 
-// 控制器实例
+// controller interface
 type ControllerInterface interface {
-	// 初始化方法
+	// init
 	Init()
-	// 执行动作前执行的方法
+	// before action
 	BeforeAction(action string) bool
-	// 执行动作后执行的方法
+	// after action
 	AfterAction(action string, response []byte) []byte
 
-	// 设置上下文对象
+	// set context
 	SetContext(context ContextInterface)
-	// 获取上下文对象
+	// get context
 	GetContext() ContextInterface
 
-	// 设置 http 请求的参数
+	// set http values by http.ResponseWriter and http.Request
+	// 	Q:	what are the values?
+	//	A:	values are collection of http's get and post data sent by the client
 	SetHttpValues(w http.ResponseWriter, r *http.Request)
-	// 设置 websocket 请求的参数
+	// set values.
+	// it will replace the original values
 	SetValues(values map[string]interface{})
-	// 添加参数
+	// add value
+	// it will add key-value to values
 	AddValue(key string, value interface{})
 	// set app instance
 	SetApp(app ApplicationInterface)
@@ -64,15 +68,15 @@ type ContextInterface interface {
 	GetSession() SessionInterface
 }
 
-// session 接口
+// session interface
 type SessionInterface interface {
-	// 获取 sessionId
+	// get sessionId
 	GetSessionId() string
-	// 设置值
+	// set key-value in session
 	Set(key interface{}, value interface{})
-	// 获取值
+	// get value by key
 	Get(key interface{}) interface{}
-	// 销毁session
+	// destroy session
 	Destroy()
 }
 

@@ -1,7 +1,7 @@
 package camModels
 
 type ResponseModel struct {
-	Code    int                    `json:"c"` // 状态码
-	Message string                 `json:"m"` // 消息
-	Values  map[string]interface{} `json:"v"` // 传输的值
+	Code    int                    `json:"c"` // status code
+	Message string                 `json:"m"` // status message
+	Values  map[string]interface{} `json:"v"` // data transferred
 }

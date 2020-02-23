@@ -7,14 +7,13 @@ import (
 	"time"
 )
 
-// 字符串工具
+// string util
 type StringUtil struct {
 }
 
-// 字符串工具实例
 var String = new(StringUtil)
 
-// 生成uuid
+// generate UUID
 func (util *StringUtil) UUID() string {
 	timestamp := time.Now().UnixNano()
 	hex := fmt.Sprintf("%X", timestamp)
@@ -28,7 +27,7 @@ func (util *StringUtil) UUID() string {
 	return strings.Join(splice, "-")
 }
 
-// 获取随机字符串
+// get random string
 func (util *StringUtil) Random(size int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)
@@ -41,7 +40,7 @@ func (util *StringUtil) Random(size int) string {
 }
 
 // underline to hump
-// example：get_user_list => GetUserList
+// example: get_user_list => GetUserList
 func (util *StringUtil) UnderToHump(url string) string {
 	words := strings.Split(url, "_")
 	hump := ""
@@ -56,7 +55,7 @@ func (util *StringUtil) UnderToHump(url string) string {
 }
 
 // hump to underline
-// example： GetUserList => get_user_list
+// example:  GetUserList => get_user_list
 func (util *StringUtil) HumpToUnder(hump string) string {
 	data := make([]byte, 0, len(hump)*2)
 	j := false

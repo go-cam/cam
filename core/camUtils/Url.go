@@ -4,19 +4,18 @@ import (
 	"strings"
 )
 
-// url 工具
+// utl util
 type UrlUtil struct {
 }
 
 var Url = new(UrlUtil)
 
-// 切割url
-// 如： /test/test/abc/222?name=aa&age=cc  将切割成： ["test", "test", "abc", "222", "name=aa&age=cc"]
+// split url
+// Example: /test/test/abc/222?name=aa&age=cc  split to:  ["test", "test", "abc", "222", "name=aa&age=cc"]
 func (util *UrlUtil) SplitUrl(url string) []string {
 	dirs := strings.Split(url, "/")
 	length := len(dirs)
 	lastDirs := strings.Split(dirs[length-1], "?")
-	// 去收首元素和末元素 （首元素是空字符串，末元素已解析为 lastDirs ）
 	dirs = dirs[:length-1]
 	dirs = dirs[1:]
 
@@ -27,7 +26,8 @@ func (util *UrlUtil) SplitUrl(url string) []string {
 	return dirs
 }
 
-// 将 url 转为 驼峰命名。如：get-user-list => GetUserList
+// url to Hump.
+// Example: get-user-list => GetUserList
 func (util *UrlUtil) UrlToHump(url string) string {
 	words := strings.Split(url, "-")
 	hump := ""
@@ -41,7 +41,8 @@ func (util *UrlUtil) UrlToHump(url string) string {
 	return hump
 }
 
-// 将驼峰命名转为url模式。如：GetUserList => get-user-list
+// Hump to url.
+// Example: GetUserList => get-user-list
 func (util *UrlUtil) HumpToUrl(hump string) string {
 	data := make([]byte, 0, len(hump)*2)
 	j := false

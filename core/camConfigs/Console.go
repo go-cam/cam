@@ -1,6 +1,6 @@
 package camConfigs
 
-// 控制台配置
+// console config
 type Console struct {
 	BaseConfig
 	PluginRouter

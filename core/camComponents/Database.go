@@ -12,7 +12,7 @@ import (
 	"xorm.io/xorm"
 )
 
-// 数据库组件
+// database component
 type Database struct {
 	Base
 
@@ -20,7 +20,7 @@ type Database struct {
 	engine *xorm.Engine
 }
 
-// 初始化
+// init
 func (component *Database) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 	var done bool
@@ -31,7 +31,7 @@ func (component *Database) Init(configInterface camBase.ConfigComponentInterface
 	component.engine = nil
 }
 
-// 启动
+// start
 func (component *Database) Start() {
 	component.Base.Start()
 	if component.config.AutoMigrate {
@@ -39,7 +39,7 @@ func (component *Database) Start() {
 	}
 }
 
-// 结束
+// stop
 func (component *Database) Stop() {
 	component.Base.Stop()
 }

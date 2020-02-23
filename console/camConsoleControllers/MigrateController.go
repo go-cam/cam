@@ -14,27 +14,25 @@ import (
 	"time"
 )
 
-// 数据库版本管理控制器
+//
 type MigrateController struct {
 	baseConsoleController
 }
 
-// 创建一个数据库升级文件
+// create migration's file
 func (controller *MigrateController) CreateBak() {
 	var err error
 
-	// 生成路径
+	// generate dir
 	migrateDir := controller.GetValue("migrateDir").(string)
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
 		camUtils.Error.Panic(err)
 	}
 
-	// 生成id
 	timestamp := time.Now().Unix()
 	timestampStr := strconv.FormatInt(timestamp, 10)
 
-	// 名字
 	name := "new_migrate"
 	if len(os.Args) >= 3 {
 		name = os.Args[2]

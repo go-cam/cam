@@ -7,28 +7,28 @@ import (
 	"strings"
 )
 
-// 组件内通用的方法
+// component common function
 var common = newCommonFunc()
 
-// 设置app
+// set app instance
 func SetApplication(app camBase.ApplicationInterface) {
 	common.app = app
 }
 
-// 组件内通用的方法封装
+// component share function
 type commonFunc struct {
-	excludeDict map[string]bool
-	app         camBase.ApplicationInterface
+	excludeDict map[string]bool              // exclude controller names
+	app         camBase.ApplicationInterface // app instance
 }
 
-//
+// new instance
 func newCommonFunc() *commonFunc {
 	cf := new(commonFunc)
 	cf.excludeDict = nil
 	return cf
 }
 
-// 获取控制器记录map
+// get controller and action dict
 func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
 	controllerDict := map[string]reflect.Type{}
 	controllerActionDict := map[string]map[string]bool{}
@@ -37,7 +37,7 @@ func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInter
 
 	for _, controllerInterface := range controllerList {
 		t := reflect.TypeOf(controllerInterface)
-		controllerType := t.Elem() // 获取实体
+		controllerType := t.Elem()
 		controllerName := controllerType.Name()
 		controllerName = strings.TrimSuffix(controllerName, "Controller")
 		controllerDict[controllerName] = t
@@ -48,15 +48,15 @@ func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInter
 			panic(controllerName + " must be implement base.ControllerInterface")
 		}
 
-		// 保存控制器啊所有方法名字
+		// save all action of controller
 		controllerActionDict[controllerName] = map[string]bool{}
 		methodLen := t.NumMethod()
 		for i := 0; i < methodLen; i++ {
 			method := t.Method(i)
 			methodName := method.Name
 
-			// 判断是否是排除的方法名字
 			if _, exclude := excludeMethodNameDict[methodName]; exclude {
+				// exclude action
 				continue
 			}
 
@@ -67,7 +67,7 @@ func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInter
 	return controllerDict, controllerActionDict
 }
 
-// 获取控制器排除的方法名字
+// get controller exclude action dict
 func (cf *commonFunc) getControllerExcludeMethodNameDict() map[string]bool {
 	if cf.excludeDict == nil {
 		cf.excludeDict = map[string]bool{}

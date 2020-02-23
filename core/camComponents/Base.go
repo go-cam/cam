@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-// 所有组件的基类
+// base component struct
 type Base struct {
 	camBase.ComponentInterface
 
@@ -20,22 +20,22 @@ func (component *Base) SetApp(app camBase.ApplicationInterface) {
 	component.app = app
 }
 
-// 使用配置初始化数据
+// init config
 func (component *Base) Init(configInterface camBase.ConfigComponentInterface) {
 	component.name = component.getComponentName(configInterface.GetComponent())
 }
 
-// 开始
+// start
 func (component *Base) Start() {
 
 }
 
-// 结束
+// stop
 func (component *Base) Stop() {
 
 }
 
-// 获取组件名字
+// get component struct name
 func (component *Base) getComponentName(componentInterface camBase.ComponentInterface) string {
 	t := reflect.TypeOf(componentInterface)
 	return t.Elem().Name()

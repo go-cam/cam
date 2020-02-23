@@ -4,13 +4,13 @@ import (
 	"github.com/go-cam/cam/core/camBase"
 )
 
-// 基础配置
+// base config
 type BaseConfig struct {
 	camBase.ConfigComponentInterface
-	Component camBase.ComponentInterface // 需要初始化的组件实例
+	Component camBase.ComponentInterface // Instance of corresponding component
 }
 
-// 获取配置需要初始化的组件
+// get component instance
 func (config *BaseConfig) GetComponent() camBase.ComponentInterface {
 	return config.Component
 }

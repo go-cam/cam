@@ -10,17 +10,17 @@ import (
 	"strings"
 )
 
-// 命令行组件
+// command component
 type Console struct {
 	Base
 
 	config *camConfigs.Console
 
-	controllerDict       map[string]reflect.Type    // 控制器反射map
-	controllerActionDict map[string]map[string]bool // 控制器 => 方法 => 是否存在（注册时记录）
+	controllerDict       map[string]reflect.Type    // controller reflect.Type dict
+	controllerActionDict map[string]map[string]bool // map[controllerName]map[actionName]
 }
 
-// 初始化方法
+// init
 func (component *Console) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
@@ -36,11 +36,14 @@ func (component *Console) Init(configInterface camBase.ConfigComponentInterface)
 	}
 	component.config = config
 
-	// 注册处理器（控制器）
+	// register controller
 	component.controllerDict, component.controllerActionDict = common.getControllerDict(config.ConsoleControllerList)
 }
 
-// 运行控制台命令
+// run command
+// Example:
+//	# go build cam.go
+//	# ./cam controllerName/actionName param1 param2
 func (component *Console) RunAction() {
 	if len(os.Args) < 2 {
 		fmt.Println("please input route")
@@ -69,17 +72,3 @@ func (component *Console) RunAction() {
 
 	controllerInterface.AfterAction(actionName, nil)
 }
-
-//// 注入控制器参数
-//func (component *Console) injectControllerValues(controllerIns base.ControllerInterface) {
-//	controllerName := utils.Reflect.GetStructName(controllerIns)
-//	if controllerName == "MigrateController" {
-//		databaseComponentIns := common.app.GetComponent(new(Database))
-//		if databaseComponentIns == nil {
-//			return
-//		}
-//		databaseComponent := databaseComponentIns.(*Database)
-//
-//		controllerIns.AddValue("migrateDir", databaseComponent.config.GetMigrateDir())
-//	}
-//}
