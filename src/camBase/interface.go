@@ -11,6 +11,8 @@ type ApplicationInterface interface {
 	GetComponentByName(name string) ComponentInterface
 	// get default db component's interface
 	GetDBInterface() ComponentInterface
+	// stop application
+	Stop()
 }
 
 // component config interface

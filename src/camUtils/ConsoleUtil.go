@@ -101,3 +101,8 @@ func (util *ConsoleUtil) IsPressY() bool {
 
 	return true
 }
+
+// check is run by command mode.
+func (util *ConsoleUtil) IsRunByCommand() bool {
+	return len(os.Args) >= 2
+}

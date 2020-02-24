@@ -1,13 +1,11 @@
 package cam
 
 import (
-	"fmt"
 	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camConfigs"
 	"github.com/go-cam/cam/camConstants"
 	"github.com/go-cam/cam/camUtils"
-	"os"
 	"reflect"
 	"strconv"
 	"time"
@@ -17,10 +15,11 @@ import (
 type application struct {
 	camBase.ApplicationInterface
 
-	status        camBase.ApplicationStatus // application status[onInit, onStart, onRun, onStop, onDestroy]
-	config        *Config                   // application config
-	router        *router
+	status        camBase.ApplicationStatus             // application status[onInit, onStart, onRun, onStop, onDestroy]
+	config        *Config                               // application config
+	router        *router                               // register controller and define custom route
 	logComponent  *camComponents.Log                    // log component
+	waitChan      chan bool                             // wait until call application.Stop()'s sign
 	componentDict map[string]camBase.ComponentInterface // components dict
 	migrationDict map[string]camBase.MigrationInterface // migrations's struct dict
 }
@@ -35,6 +34,7 @@ func newApplication() *application {
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
 	app.router = newRouter()
+	app.waitChan = make(chan bool)
 	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.migrationDict = map[string]camBase.MigrationInterface{}
 	return app
@@ -64,26 +64,21 @@ func (app *application) GetRouter() *router {
 
 // run application
 func (app *application) Run() {
-	fmt.Println("App: Initializing ...")
-	app.onInit()
-	if len(os.Args) >= 2 {
-		// It's a console command
+	if camUtils.Console.IsRunByCommand() {
+		app.onInit()
 		app.callConsole()
-		return
+	} else {
+		app.onInit()
+		app.onStart()
+		select {
+		case <-app.waitChan:
+			app.onStop()
+		}
 	}
-	fmt.Println("App: Starting up ...")
-	app.onStart()
-	fmt.Println("App: Startup done.")
-	app.wait()
-	fmt.Println("App: Stop now...")
-	app.onStop()
-	fmt.Println("App: Stop done. Application was exit.")
 }
 
 // init application and components
 func (app *application) onInit() {
-	camComponents.SetApplication(app)
-
 	// read config component
 	for name, config := range app.config.ComponentDict {
 		componentInterface := config.GetComponent()
@@ -99,23 +94,26 @@ func (app *application) onInit() {
 		componentInterface.SetApp(app)
 		app.componentDict[name] = componentInterface
 	}
-
 	// init core component
 	app.initCoreComponent()
 }
 
 // startup all components
 func (app *application) onStart() {
-	for _, component := range app.componentDict {
+	for name, component := range app.componentDict {
 		go component.Start()
+		_ = app.Info("runtime", "start component:"+name)
 	}
+	_ = app.Info("runtime", "Application start finished.")
 }
 
 // stop all components
 func (app *application) onStop() {
-	for _, component := range app.componentDict {
+	for name, component := range app.componentDict {
 		component.Stop()
+		_ = app.Info("runtime", "stop component:"+name)
 	}
+	_ = app.Info("runtime", "Application stop finished.")
 }
 
 // Wait until the app call Stop()
@@ -147,7 +145,6 @@ func (app *application) writePluginParams(config camBase.ConfigComponentInterfac
 
 // init core component
 func (app *application) initCoreComponent() {
-
 	app.initCoreComponentLog()
 }
 
@@ -166,7 +163,7 @@ func (app *application) initCoreComponentLog() {
 			_, has = app.componentDict[name]
 		}
 
-		logConfig := new(camConfigs.Log)
+		logConfig := camConfigs.NewLogConfig()
 		logComponent = new(camComponents.Log)
 		logConfig.Component = logComponent
 		logComponent.Init(logConfig)
@@ -189,7 +186,7 @@ func (app *application) callConsole() {
 	}
 
 	if !isCallConsole {
-		fmt.Println("the console component is not enabled.")
+		_ = app.Info("runtime-console", "the console component is not enabled.")
 	}
 }
 
@@ -271,4 +268,9 @@ func (app *application) Error(title string, content string) error {
 // get one .evn file values
 func (app *application) GetEvn(key string) string {
 	return camUtils.Env.Get(key)
+}
+
+// stop application
+func (app *application) Stop() {
+	app.waitChan <- true
 }

@@ -9,7 +9,7 @@ type Log struct {
 
 func NewLogConfig() *Log {
 	config := new(Log)
-	config.IsPrint = false
+	config.IsPrint = true
 	config.IsWrite = true
 	return config
 }

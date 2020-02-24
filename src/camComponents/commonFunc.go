@@ -10,15 +10,9 @@ import (
 // component common function
 var common = newCommonFunc()
 
-// set app instance
-func SetApplication(app camBase.ApplicationInterface) {
-	common.app = app
-}
-
 // component share function
 type commonFunc struct {
-	excludeDict map[string]bool              // exclude controller names
-	app         camBase.ApplicationInterface // app instance
+	excludeDict map[string]bool // exclude controller names
 }
 
 // new instance
