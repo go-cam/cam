@@ -44,6 +44,19 @@ func (component *Database) Stop() {
 	component.Base.Stop()
 }
 
+// get migrate up version list.
+func (component *Database) GetMigrateUpVersionList() []string {
+	lastVersion := component.MigrateLastVersion()
+	var versionList []string
+	for version, _ := range component.config.MigrationDict {
+		if version <= lastVersion {
+			continue
+		}
+		versionList = append(versionList, version)
+	}
+	return versionList
+}
+
 // up all database version
 func (component *Database) MigrateUp() {
 	fmt.Println("Migrate up start.")

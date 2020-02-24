@@ -1,17 +1,13 @@
 package camConsoleControllers
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"github.com/go-cam/cam/camModels/camModelsTpls"
 	"github.com/go-cam/cam/camUtils"
 	"html/template"
-	"os"
 	"regexp"
-	"strconv"
 	"strings"
-	"time"
 )
 
 //
@@ -20,54 +16,6 @@ type MigrateController struct {
 }
 
 // create migration's file
-func (controller *MigrateController) CreateBak() {
-	var err error
-
-	// generate dir
-	migrateDir := controller.GetValue("migrateDir").(string)
-	if !camUtils.File.Exists(migrateDir) {
-		err = camUtils.File.Mkdir(migrateDir)
-		camUtils.Error.Panic(err)
-	}
-
-	timestamp := time.Now().Unix()
-	timestampStr := strconv.FormatInt(timestamp, 10)
-
-	name := "new_migrate"
-	if len(os.Args) >= 3 {
-		name = os.Args[2]
-
-	}
-	upFilename := migrateDir + "/" + timestampStr + "_" + name + ".up.sql"
-	downFilename := migrateDir + "/" + timestampStr + "_" + name + ".down.sql"
-
-	fmt.Println("General filename...")
-	fmt.Println("\t" + downFilename)
-	fmt.Println("\t" + upFilename)
-	fmt.Print("Do you want to create the following two file?[Y/N]:")
-	input := bufio.NewScanner(os.Stdin)
-	if !input.Scan() {
-		return
-	}
-	str := strings.ToLower(input.Text())
-	if str != "y" {
-		return
-	}
-
-	if !camUtils.File.Exists(migrateDir) {
-		err = camUtils.File.Mkdir(migrateDir)
-		camUtils.Error.Panic(err)
-	}
-
-	err = camUtils.File.WriteFile(downFilename, []byte{})
-	camUtils.Error.Panic(err)
-	err = camUtils.File.WriteFile(upFilename, []byte{})
-	camUtils.Error.Panic(err)
-
-	fmt.Println("")
-	fmt.Println("Done: migrations's files created.")
-}
-
 func (controller *MigrateController) Create() {
 	name := controller.GetArgv(0)
 	if len(name) == 0 {
@@ -80,26 +28,29 @@ func (controller *MigrateController) Create() {
 
 	var err error
 
-	filename := controller.getFilename(name)
-	fmt.Println("General filename...")
-	fmt.Println("\t" + filename)
-	fmt.Print("Do you want to create the following two file?[Y/N]:")
-	input := bufio.NewScanner(os.Stdin)
-	if !input.Scan() {
-		return
-	}
-	str := strings.ToLower(input.Text())
-	if str != "y" {
-		return
-	}
-
 	db := controller.GetDatabaseComponent()
 	migrateDir := db.GetMigrateDir()
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
 		camUtils.Error.Panic(err)
 	}
+	filename := controller.getFilename(name)
 	absFilename := migrateDir + "/" + filename
+	fmt.Println("General filename...")
+	fmt.Println("\t" + filename)
+	fmt.Print("Do you want to create the following two file?[Y/N]:")
+	if !camUtils.Console.IsPressY() {
+		return
+	}
+	//input := bufio.NewScanner(os.Stdin)
+	//if !input.Scan() {
+	//	return
+	//}
+	//str := strings.ToLower(input.Text())
+	//if str != "y" {
+	//	return
+	//}
+
 	content := controller.getMigrationContent(filename)
 	err = camUtils.File.WriteFile(absFilename, content)
 	camUtils.Error.Panic(err)
@@ -113,6 +64,22 @@ func (controller *MigrateController) Up() {
 	if db == nil {
 		panic("no database.")
 	}
+
+	versionList := db.GetMigrateUpVersionList()
+	if len(versionList) == 0 {
+		fmt.Println("No new versions need to be up")
+		return
+	}
+
+	fmt.Println("List of versions:")
+	for _, version := range versionList {
+		fmt.Println("\t" + version)
+	}
+	fmt.Println("Do you want to create the following two file?[Y/N]:")
+	if !camUtils.Console.IsPressY() {
+		return
+	}
+
 	db.MigrateUp()
 }
 

@@ -3,7 +3,6 @@ module github.com/go-cam/cam
 go 1.13
 
 require (
-	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
 	github.com/tidwall/gjson v1.3.4

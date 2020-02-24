@@ -87,3 +87,17 @@ func (util *ConsoleUtil) IsLinux() bool {
 func (util *ConsoleUtil) IsWindows() bool {
 	return runtime.GOOS == "windows"
 }
+
+// check user whether press y
+func (util *ConsoleUtil) IsPressY() bool {
+	input := bufio.NewScanner(os.Stdin)
+	if !input.Scan() {
+		return false
+	}
+	str := strings.ToLower(input.Text())
+	if str != "y" {
+		return false
+	}
+
+	return true
+}
