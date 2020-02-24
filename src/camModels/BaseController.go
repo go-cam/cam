@@ -19,6 +19,9 @@ type BaseController struct {
 	// default action name. default value: ""
 	// Example: "Login", "Action".
 	DefaultAction string
+
+	httpResponseWriter http.ResponseWriter
+	httpRequest        *http.Request
 }
 
 // OVERWRITE:
@@ -53,14 +56,21 @@ func (controller *BaseController) GetContext() camBase.ContextInterface {
 //	Q:	what are the values?
 //	A:	values are collection of http's get and post data sent by the client
 func (controller *BaseController) SetHttpValues(w http.ResponseWriter, r *http.Request) {
-	controller.parseUrlValues(r)
-	controller.parseFormValues(r)
+	controller.httpResponseWriter = w
+	controller.httpRequest = r
+	controller.parseUrlValues()
+	controller.parseFormValues()
 }
 
 // OVERWRITE
 // set values
 func (controller *BaseController) SetValues(values map[string]interface{}) {
 	controller.values = values
+}
+
+// get all values
+func (controller *BaseController) GetValues() map[string]interface{} {
+	return controller.values
 }
 
 // OVERWRITE
@@ -105,17 +115,17 @@ func (controller *BaseController) GetDefaultAction() string {
 }
 
 // parse params from request url
-func (controller *BaseController) parseUrlValues(r *http.Request) {
-	_ = r.ParseForm()
-	for key, value := range r.Form {
+func (controller *BaseController) parseUrlValues() {
+	_ = controller.httpRequest.ParseForm()
+	for key, value := range controller.httpRequest.Form {
 		controller.values[key] = value
 	}
 }
 
 // parse params from form data
-func (controller *BaseController) parseFormValues(r *http.Request) {
+func (controller *BaseController) parseFormValues() {
 	// multipart/form-data; boundary=----WebKitFormBoundaryDumfytNg1NzoZq2r
-	contentType := r.Header.Get("Content-Type")
+	contentType := controller.httpRequest.Header.Get("Content-Type")
 	if strings.HasPrefix(contentType, "multipart/form-data") {
 		boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
 		boundaries := boundaryRegexp.FindStringSubmatch(contentType)
@@ -124,7 +134,7 @@ func (controller *BaseController) parseFormValues(r *http.Request) {
 		}
 		boundary := "--" + boundaries[1]
 
-		bytes, _ := ioutil.ReadAll(r.Body)
+		bytes, _ := ioutil.ReadAll(controller.httpRequest.Body)
 		bodyStr := string(bytes)
 		paramsStrList := strings.Split(bodyStr, boundary)
 
@@ -149,4 +159,14 @@ func (controller *BaseController) parseFormValues(r *http.Request) {
 		}
 	}
 
+}
+
+// Only support on http request
+func (controller *BaseController) GetHttpResponseWrite() http.ResponseWriter {
+	return controller.httpResponseWriter
+}
+
+// Only support on http request
+func (controller *BaseController) GetHttpRequest() *http.Request {
+	return controller.httpRequest
 }
