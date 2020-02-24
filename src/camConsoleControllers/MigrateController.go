@@ -37,8 +37,8 @@ func (controller *MigrateController) Create() {
 	filename := controller.getFilename(name)
 	absFilename := migrateDir + "/" + filename
 	fmt.Println("General filename...")
-	fmt.Println("\t" + filename)
-	fmt.Print("Do you want to create the following two file?[Y/N]:")
+	fmt.Println("\t" + absFilename)
+	fmt.Print("Do you want to create the above files?[Y/N]:")
 	if !camUtils.Console.IsPressY() {
 		return
 	}
@@ -75,7 +75,7 @@ func (controller *MigrateController) Up() {
 	for _, version := range versionList {
 		fmt.Println("\t" + version)
 	}
-	fmt.Println("Do you want to create the following two file?[Y/N]:")
+	fmt.Println("Do you want to up the above version?[Y/N]:")
 	if !camUtils.Console.IsPressY() {
 		return
 	}
@@ -105,7 +105,7 @@ func (controller *MigrateController) getTpl() string {
 
 import (
 	"github.com/go-cam/cam"
-	"github.com/go-cam/cam/models"
+	"github.com/go-cam/cam/camModels"
 )
 
 func init() {
@@ -114,7 +114,7 @@ func init() {
 }
 
 type {{ .ClassName}} struct {
-	models.Migration
+	camModels.Migration
 }
 
 // up
