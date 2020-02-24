@@ -7,7 +7,7 @@ import (
 
 func init() {
 	m := new(m191118_073955_init)
-	core.App.AddMigration(m)
+	cam.App.AddMigration(m)
 }
 
 type m191118_073955_init struct {
