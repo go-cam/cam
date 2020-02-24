@@ -7,5 +7,5 @@ import (
 
 func main() {
 	config.LoadConfig()
-	cam.App.Run()
+	core.App.Run()
 }

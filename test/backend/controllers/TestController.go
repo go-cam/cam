@@ -6,7 +6,7 @@ import (
 
 // text controller
 type TestController struct {
-	cam.BaseController
+	core.BaseController
 }
 
 func (controller *TestController) Init() {
@@ -17,7 +17,7 @@ func (controller *TestController) Init() {
 
 // test action
 func (controller *TestController) Test() {
-	_ = cam.App.Info("title", "content")
+	_ = core.App.Info("title", "content")
 	controller.Write([]byte("done"))
 }
 

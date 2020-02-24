@@ -11,16 +11,16 @@ import (
 // 加载配置
 func LoadConfig() {
 	// load common's config
-	cam.App.AddConfig(config.GetApp())
-	cam.App.AddConfig(config.GetAppLocal())
+	core.App.AddConfig(config.GetApp())
+	core.App.AddConfig(config.GetAppLocal())
 	// load module's config
-	cam.App.AddConfig(GetApp())
+	core.App.AddConfig(GetApp())
 
 	routeConfig()
 }
 
 // 路由设置
 func routeConfig() {
-	router := cam.App.GetRouter()
+	router := core.App.GetRouter()
 	router.Register(new(controllers.TestController))
 }

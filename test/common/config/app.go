@@ -5,7 +5,7 @@ import (
 )
 
 // 获取默认配置
-func GetApp() *cam.Config {
-	config := cam.NewConfig()
+func GetApp() *core.Config {
+	config := core.NewConfig()
 	return config
 }
