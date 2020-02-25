@@ -3,9 +3,9 @@ package camConfigs
 // http server config
 type HttpServer struct {
 	BaseConfig
-	PluginRouter
-	PluginSsl
-	PluginContext
+	RouterPlugin
+	SslPlugin
+	ContextPlugin
 	Port        uint16
 	SessionName string
 	SessionKey  string
@@ -23,14 +23,14 @@ func (config *HttpServer) SetSessionName(sessionName string) *HttpServer {
 	return config
 }
 
-// listen PluginSsl
+// listen SslPlugin
 func (config *HttpServer) ListenSsl(port uint16, certFile string, keyFile string) *HttpServer {
-	config.PluginSsl.ListenSsl(port, certFile, keyFile)
+	config.SslPlugin.ListenSsl(port, certFile, keyFile)
 	return config
 }
 
 // only SSl mode.
 func (config *HttpServer) SslOnly() *HttpServer {
-	config.PluginSsl.SslOnly()
+	config.SslPlugin.SslOnly()
 	return config
 }

@@ -128,18 +128,18 @@ func (app *application) writePluginParams(config camBase.ConfigComponentInterfac
 	t := reflect.TypeOf(config).Elem()
 	v := reflect.ValueOf(config).Elem()
 	// router plugin
-	if _, has := t.FieldByName("PluginRouter"); has {
-		pluginRouter := v.FieldByName("PluginRouter").Interface().(camConfigs.PluginRouter)
+	if _, has := t.FieldByName("RouterPlugin"); has {
+		pluginRouter := v.FieldByName("RouterPlugin").Interface().(camConfigs.RouterPlugin)
 		pluginRouter.ControllerList = app.router.controllerList
 		pluginRouter.ConsoleControllerList = app.router.consoleControllerList
 		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
-		v.FieldByName("PluginRouter").Set(reflect.ValueOf(pluginRouter))
+		v.FieldByName("RouterPlugin").Set(reflect.ValueOf(pluginRouter))
 	}
 	// migrate plugin
-	if _, has := t.FieldByName("PluginMigrate"); has {
-		pluginMigrate := v.FieldByName("PluginMigrate").Interface().(camConfigs.PluginMigrate)
+	if _, has := t.FieldByName("MigratePlugin"); has {
+		pluginMigrate := v.FieldByName("MigratePlugin").Interface().(camConfigs.MigratePlugin)
 		pluginMigrate.MigrationDict = app.migrationDict
-		v.FieldByName("PluginMigrate").Set(reflect.ValueOf(pluginMigrate))
+		v.FieldByName("MigratePlugin").Set(reflect.ValueOf(pluginMigrate))
 	}
 }
 

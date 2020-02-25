@@ -7,15 +7,15 @@ import (
 )
 
 // HTTP and websocket service custom context
-type PluginContext struct {
+type ContextPlugin struct {
 	contextType reflect.Type
 }
 
-func (plugin *PluginContext) InitPluginContext() {
+func (plugin *ContextPlugin) InitContextPlugin() {
 	plugin.SetContextStruct(new(camModels.BaseContext))
 }
 
-func (plugin *PluginContext) SetContextStruct(v interface{}) {
+func (plugin *ContextPlugin) SetContextStruct(v interface{}) {
 	plugin.contextType = reflect.TypeOf(v)
 	if plugin.contextType.Kind() == reflect.Ptr {
 		plugin.contextType = plugin.contextType.Elem()
@@ -27,7 +27,7 @@ func (plugin *PluginContext) SetContextStruct(v interface{}) {
 	}
 }
 
-func (plugin *PluginContext) NewContext() camBase.ContextInterface {
+func (plugin *ContextPlugin) NewContext() camBase.ContextInterface {
 	contextValue := reflect.New(plugin.contextType)
 	return contextValue.Interface().(camBase.ContextInterface)
 }

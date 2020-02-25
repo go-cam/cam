@@ -5,7 +5,7 @@ import "strings"
 // database config
 type Database struct {
 	BaseConfig
-	PluginMigrate
+	MigratePlugin
 
 	DriverName      string // driver name. Example: "mysql", "sqlite"
 	Host            string // database hostname

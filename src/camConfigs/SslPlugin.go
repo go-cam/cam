@@ -1,7 +1,7 @@
 package camConfigs
 
-// PluginSsl config
-type PluginSsl struct {
+// SslPlugin config
+type SslPlugin struct {
 	IsSslOn     bool   // enable SSL mod
 	SslPort     uint16 // SSL listen port
 	SslCertFile string // absolute cert's filename
@@ -10,7 +10,7 @@ type PluginSsl struct {
 }
 
 // init params
-func (plugin *PluginSsl) InitPluginSsl() {
+func (plugin *SslPlugin) InitSslPlugin() {
 	plugin.IsSslOn = false
 	plugin.SslPort = 0
 	plugin.SslCertFile = ""
@@ -18,8 +18,8 @@ func (plugin *PluginSsl) InitPluginSsl() {
 	plugin.IsSslOnly = false
 }
 
-// listen PluginSsl
-func (plugin *PluginSsl) ListenSsl(port uint16, certFile string, keyFile string) *PluginSsl {
+// listen SslPlugin
+func (plugin *SslPlugin) ListenSsl(port uint16, certFile string, keyFile string) *SslPlugin {
 	plugin.IsSslOn = true
 	plugin.SslPort = port
 	plugin.SslCertFile = certFile
@@ -28,7 +28,7 @@ func (plugin *PluginSsl) ListenSsl(port uint16, certFile string, keyFile string)
 }
 
 // only SSl mode.
-func (plugin *PluginSsl) SslOnly() *PluginSsl {
+func (plugin *SslPlugin) SslOnly() *SslPlugin {
 	plugin.IsSslOnly = true
 	return plugin
 }

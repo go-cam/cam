@@ -3,9 +3,9 @@ package camConfigs
 // websocket server 所需的配置
 type WebsocketServer struct {
 	BaseConfig
-	PluginRouter
-	PluginSsl
-	PluginContext
+	RouterPlugin
+	SslPlugin
+	ContextPlugin
 	Port uint16 // server port
 
 	// message parse handler
@@ -18,14 +18,14 @@ type WebsocketServer struct {
 	MessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 }
 
-// listen PluginSsl
+// listen SslPlugin
 func (config *WebsocketServer) ListenSsl(port uint16, certFile string, keyFile string) *WebsocketServer {
-	config.PluginSsl.ListenSsl(port, certFile, keyFile)
+	config.SslPlugin.ListenSsl(port, certFile, keyFile)
 	return config
 }
 
 // only SSl mode.
 func (config *WebsocketServer) SslOnly() *WebsocketServer {
-	config.PluginSsl.SslOnly()
+	config.SslPlugin.SslOnly()
 	return config
 }
