@@ -9,7 +9,7 @@ type Config struct {
 	camModels.Config
 }
 
-// new Config
+// new RouterPluginConfig
 func NewConfig() *Config {
 	config := new(Config)
 	configModel := new(camModels.Config)

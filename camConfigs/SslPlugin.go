@@ -1,6 +1,7 @@
 package camConfigs
 
 // SslPlugin config
+// Deprecated: remove on v0.3.0
 type SslPlugin struct {
 	IsSslOn     bool   // enable SSL mod
 	SslPort     uint16 // SSL listen port

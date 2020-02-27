@@ -8,11 +8,11 @@ import (
 )
 
 // component Common function
-// Deprecated: instead by camPlugins.Plugin
+// Deprecated: instead by camPlugins.RouterPlugin
 var Common = newCommonFunc()
 
 // component share function
-// Deprecated: instead by camPlugins.Plugin
+// Deprecated: instead by camPlugins.RouterPlugin
 type commonFunc struct {
 	excludeDict map[string]bool // exclude controller names
 }
@@ -25,7 +25,7 @@ func newCommonFunc() *commonFunc {
 }
 
 // get controller and action dict
-// Deprecated: instead by camPlugins.Plugin
+// Deprecated: instead by camPlugins.RouterPlugin
 func (cf *commonFunc) GetControllerDict(controllerList []camBase.ControllerBakInterface) (map[string]reflect.Type, map[string]map[string]bool) {
 	controllerDict := map[string]reflect.Type{}
 	controllerActionDict := map[string]map[string]bool{}
@@ -65,7 +65,7 @@ func (cf *commonFunc) GetControllerDict(controllerList []camBase.ControllerBakIn
 }
 
 // get controller exclude action dict
-// Deprecated: instead by camPlugins.Plugin
+// Deprecated: instead by camPlugins.RouterPlugin
 func (cf *commonFunc) GetControllerExcludeMethodNameDict() map[string]bool {
 	if cf.excludeDict == nil {
 		cf.excludeDict = map[string]bool{}

@@ -6,6 +6,7 @@ import (
 )
 
 // migrate plugin
+// Deprecated: remove on v0.3.0
 type MigratePlugin struct {
 	MigrationDict map[string]camBase.MigrationInterface
 }

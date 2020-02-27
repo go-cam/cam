@@ -2,10 +2,10 @@ package cam
 
 import (
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camConsole"
 )
 
 // router
+// Deprecated: remove on v0.3.0
 type router struct {
 	controllerList            []camBase.ControllerBakInterface
 	consoleControllerList     []camBase.ControllerBakInterface
@@ -13,6 +13,7 @@ type router struct {
 }
 
 // new router
+// Deprecated: remove on v0.3.0
 func newRouter() *router {
 	r := new(router)
 	r.controllerList = []camBase.ControllerBakInterface{}
@@ -22,18 +23,18 @@ func newRouter() *router {
 	return r
 }
 
-//
+// Deprecated: remove on v0.3.0
 func (r *router) registerDefaultConsoleController() {
-	r.RegisterConsole(new(camConsole.MigrateController))
-	r.RegisterConsole(new(camConsole.XormController))
+	//r.RegisterConsole(new(camConsole.MigrateController))
+	//r.RegisterConsole(new(camConsole.XormController))
 }
 
-//
+// Deprecated: remove on v0.3.0
 func (r *router) Register(controller camBase.ControllerBakInterface) {
 	r.controllerList = append(r.controllerList, controller)
 }
 
-//
+// Deprecated: remove on v0.3.0
 func (r *router) RegisterConsole(controller camBase.ControllerBakInterface) {
 	r.consoleControllerList = append(r.consoleControllerList, controller)
 }

@@ -10,23 +10,23 @@ import (
 )
 
 // command component
-type Component struct {
+type ConsoleComponent struct {
 	camComponents.Base
-	camPluginRouter.Plugin
+	camPluginRouter.RouterPlugin
 
-	config *ComponentConfig
+	config *ConsoleComponentConfig
 }
 
 // init
-func (component *Component) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *ConsoleComponent) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
-	var config *ComponentConfig
+	var config *ConsoleComponentConfig
 	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*ComponentConfig)
+		config = configValue.Interface().(*ConsoleComponentConfig)
 	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(ComponentConfig)
+		configStruct := configValue.Interface().(ConsoleComponentConfig)
 		config = &configStruct
 	} else {
 		panic("illegal config")
@@ -37,14 +37,16 @@ func (component *Component) Init(configInterface camBase.ConfigComponentInterfac
 	//component.controllerDict, component.controllerActionDict = camComponents.Common.GetControllerDict(config.ControllerList)
 
 	// init router plugin
-	component.Plugin.Init(&config.PluginConfig)
+	config.RouterPluginConfig.Register(&MigrateController{})
+	config.RouterPluginConfig.Register(&XormController{})
+	component.RouterPlugin.Init(&config.RouterPluginConfig)
 }
 
 // run command
 // Example:
 //	# go build cam.go
 //	# ./cam controllerName/actionName param1 param2
-func (component *Component) RunAction() {
+func (component *ConsoleComponent) RunAction() {
 	if len(os.Args) < 2 {
 		fmt.Println("please input route")
 		return

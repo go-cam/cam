@@ -7,6 +7,7 @@ import (
 )
 
 // HTTP and websocket service custom context
+// Deprecated: remove on v0.3.0
 type ContextPlugin struct {
 	contextType reflect.Type
 }

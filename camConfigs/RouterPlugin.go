@@ -6,6 +6,7 @@ import (
 
 // router plugin.
 // It save controller and action config
+// Deprecated: remove on v0.3.0
 type RouterPlugin struct {
 	ControllerList []camBase.ControllerBakInterface // controller list
 	// Deprecated:

@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-type Plugin struct {
+type RouterPlugin struct {
 	camBase.PluginInterface
 
-	config *PluginConfig // plugin config
+	config *RouterPluginConfig // plugin config
 
 	controllerDict       map[string]reflect.Type    // controller reflect.Type dict
 	controllerActionDict map[string]map[string]bool // map[controllerName]map[actionName]
 }
 
-func (plugin *Plugin) Init(config *PluginConfig) {
+func (plugin *RouterPlugin) Init(config *RouterPluginConfig) {
 	plugin.config = config
 	plugin.controllerDict = map[string]reflect.Type{}
 	plugin.controllerActionDict = map[string]map[string]bool{}
@@ -25,7 +25,7 @@ func (plugin *Plugin) Init(config *PluginConfig) {
 }
 
 // parse controller List
-func (plugin *Plugin) parseController() {
+func (plugin *RouterPlugin) parseController() {
 	excludeMethodNameDict := plugin.getExcludeActionDict()
 
 	for _, controllerInterface := range plugin.config.ControllerList {
@@ -70,7 +70,7 @@ func (plugin *Plugin) parseController() {
 //						return nil if action not exists
 // controllerName: 		Example: "User"
 // actionName: 			Example: "RegisterAndLogin"
-func (plugin *Plugin) GetControllerAction(route string) (controller camBase.ControllerInterface, action camBase.ControllerActionInterface, controllerName string, actionName string) {
+func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBase.ControllerInterface, action camBase.ControllerActionInterface, controllerName string, actionName string) {
 	tmpArr := strings.Split(route, "/")
 
 	controllerName = camUtils.Url.UrlToHump(tmpArr[0])
@@ -101,7 +101,7 @@ func (plugin *Plugin) GetControllerAction(route string) (controller camBase.Cont
 }
 
 // exclude the camModels.BaseController method, this is not a user callable action
-func (plugin *Plugin) getExcludeActionDict() map[string]bool {
+func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 	excludeDict := map[string]bool{}
 
 	t := reflect.TypeOf(new(Controller))

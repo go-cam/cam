@@ -33,7 +33,7 @@ type ComponentInterface interface {
 }
 
 // controller interface
-// Deprecated: remove on v0.3.0
+// Deprecated: remove on vv0.3.0
 type ControllerBakInterface interface {
 	// init
 	Init()
