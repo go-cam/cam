@@ -3,6 +3,7 @@ package cam
 import (
 	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camConfigs"
+	"github.com/go-cam/cam/camConsole"
 	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camUtils"
 )
@@ -27,7 +28,7 @@ func NewWebsocketServerConfig(port uint16) *camConfigs.WebsocketServer {
 }
 
 // Deprecated: instead by NewWebsocketServerConfig()
-// Remove after 1.0.0
+// Remove after 0.3.0
 func NewConfigWebsocketServer(port uint16) *camConfigs.WebsocketServer {
 	return NewWebsocketServerConfig(port)
 }
@@ -45,7 +46,7 @@ func NewHttpServerConfig(port uint16) *camConfigs.HttpServer {
 }
 
 // Deprecated: instead by NewHttpServerConfig()
-// Remove after 1.0.0
+// Remove after 0.3.0
 func NewConfigHttpServer(port uint16) *camConfigs.HttpServer {
 	return NewHttpServerConfig(port)
 }
@@ -75,21 +76,19 @@ func NewDatabaseConfig(driverName string, host string, port string, name string,
 }
 
 // Deprecated: instead by NewDatabaseConfig()
-// Remove after 1.0.0
+// Remove after 0.3.0
 func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
 	return NewDatabaseConfig(driverName, host, port, name, username, password)
 }
 
-// new Console config
-func NewConsoleConfig() *camConfigs.Console {
-	config := new(camConfigs.Console)
-	config.Component = &camComponents.Console{}
-	return config
+// new Component config
+func NewConsoleConfig() *camConsole.ComponentConfig {
+	return camConsole.NewComponentConfig()
 }
 
-// Deprecated: instead by NewConsoleConfig()
-// Remove after 1.0.0
-func NewConfigConsole() *camConfigs.Console {
+// Deprecated: instead by NewConfig()
+// Remove after 0.3.0
+func NewConfigConsole() *camConsole.ComponentConfig {
 	return NewConsoleConfig()
 }
 

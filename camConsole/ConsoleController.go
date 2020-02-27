@@ -1,18 +1,18 @@
-package camConsoleControllers
+package camConsole
 
 import (
 	"github.com/go-cam/cam/camComponents"
-	"github.com/go-cam/cam/camModels"
+	"github.com/go-cam/cam/camPluginRouter"
 	"os"
 )
 
 //
-type baseConsoleController struct {
-	camModels.BaseController
+type ConsoleController struct {
+	camPluginRouter.Controller
 }
 
 // get database component instance
-func (controller *baseConsoleController) GetDatabaseComponent() *camComponents.Database {
+func (controller *ConsoleController) GetDatabaseComponent() *camComponents.Database {
 	ins := controller.GetAppInterface().GetComponentByName("db")
 	if ins == nil {
 		return nil
@@ -28,7 +28,7 @@ func (controller *baseConsoleController) GetDatabaseComponent() *camComponents.D
 //		controller.GetArgv(1) => "argv1"
 //		controller.GetArgv(2) => ""
 //		controller.GetArgv(-1) => ""
-func (controller *baseConsoleController) GetArgv(key int) string {
+func (controller *ConsoleController) GetArgv(key int) string {
 	key += 2
 	if key < 2 {
 		return ""

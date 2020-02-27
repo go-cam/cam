@@ -11,13 +11,13 @@ type Base struct {
 
 	// component name
 	name string
-	// app instance
-	app camBase.ApplicationInterface
+	// App instance
+	App camBase.ApplicationInterface
 }
 
-// set app instance
+// set App instance
 func (component *Base) SetApp(app camBase.ApplicationInterface) {
-	component.app = app
+	component.App = app
 }
 
 // init config

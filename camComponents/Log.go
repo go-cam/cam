@@ -16,7 +16,7 @@ type Log struct {
 	logRootDir string
 }
 
-// on app init
+// on App init
 func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
 	component.Base.Init(configInterface)
 
@@ -41,12 +41,12 @@ func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
 
 }
 
-// on app start
+// on App start
 func (component *Log) Start() {
 	component.Base.Start()
 }
 
-// before app destroy
+// before App destroy
 func (component *Log) Stop() {
 	component.Base.Stop()
 }
@@ -54,7 +54,7 @@ func (component *Log) Stop() {
 func (component *Log) baseLog(logType string, title string, content string) error {
 	datetime := camUtils.Time.NowDateTime()
 	line := "[" + datetime + " " + logType + " " + title + "] " + content
-	filename := component.logRootDir + "/app.log"
+	filename := component.logRootDir + "/App.log"
 
 	if component.config.IsPrint {
 		fmt.Println(line)

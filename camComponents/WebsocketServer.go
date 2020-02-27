@@ -71,7 +71,7 @@ func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentIn
 	component.config = config
 
 	// 注册处理器（控制器）
-	component.controllerDict, component.controllerActionDict = common.getControllerDict(config.ControllerList)
+	component.controllerDict, component.controllerActionDict = Common.GetControllerDict(config.ControllerList)
 	component.onMessageHandler = config.OnWebsocketMessageHandler
 	if config.MessageParseHandler != nil {
 		component.messageParseHandler = config.MessageParseHandler
@@ -191,11 +191,11 @@ func (component *WebsocketServer) callControllerAction(context camBase.ContextIn
 	// check controller
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
-	controllerInterface := controllerValue.Interface().(camBase.ControllerInterface)
+	controllerInterface := controllerValue.Interface().(camBase.ControllerBakInterface)
 
 	// init controller
 	controllerInterface.Init()
-	controllerInterface.SetApp(component.app)
+	controllerInterface.SetApp(component.App)
 	controllerInterface.SetContext(context)
 	controllerInterface.SetValues(values)
 

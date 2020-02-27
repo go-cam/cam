@@ -9,8 +9,9 @@ import (
 )
 
 // base controller
+// Deprecated: instead by camModels.Controller. Remove on v0.3.0
 type BaseController struct {
-	camBase.ControllerInterface
+	camBase.ControllerBakInterface
 
 	app           camBase.ApplicationInterface // app instance
 	context       camBase.ContextInterface

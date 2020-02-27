@@ -1,4 +1,4 @@
-package camConsoleControllers
+package camConsole
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 
 //
 type MigrateController struct {
-	baseConsoleController
+	ConsoleController
 }
 
 // create migration's file

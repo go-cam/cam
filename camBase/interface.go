@@ -33,7 +33,8 @@ type ComponentInterface interface {
 }
 
 // controller interface
-type ControllerInterface interface {
+// Deprecated: remove on v0.3.0
+type ControllerBakInterface interface {
 	// init
 	Init()
 	// before action
@@ -64,6 +65,41 @@ type ControllerInterface interface {
 	GetDefaultAction() string
 }
 
+// controller interface
+type ControllerInterface interface {
+	// init
+	Init()
+	// before action
+	BeforeAction(action ControllerActionInterface) bool
+	// after action
+	AfterAction(action ControllerActionInterface, response []byte) []byte
+	// set context
+	SetContext(context ContextInterface)
+	// get context
+	GetContext() ContextInterface
+	// set values.
+	// it will replace the original values
+	SetValues(values map[string]interface{})
+	// append values to values. new value replace old value
+	AppendValues(values map[string]interface{})
+	// set app instance
+	SetApp(app ApplicationInterface)
+	// get default action
+	GetDefaultActionName() string
+	// set response
+	SetResponse([]byte)
+	// get response
+	GetResponse() []byte
+}
+
+// controller action interface
+type ControllerActionInterface interface {
+	// controller route
+	Route() string
+	// call action
+	Call()
+}
+
 // context interface
 type ContextInterface interface {
 	// set session
@@ -92,4 +128,12 @@ type MigrationInterface interface {
 	Down()
 	// get up sql list
 	GetSqlList() []string
+}
+
+type PluginConfigInterface interface {
+	Init()
+}
+
+type PluginInterface interface {
+	Init(configInterface PluginConfigInterface)
 }

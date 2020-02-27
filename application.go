@@ -4,6 +4,7 @@ import (
 	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camConfigs"
+	"github.com/go-cam/cam/camConsole"
 	"github.com/go-cam/cam/camConstants"
 	"github.com/go-cam/cam/camUtils"
 	"reflect"
@@ -128,12 +129,12 @@ func (app *application) writePluginParams(config camBase.ConfigComponentInterfac
 	t := reflect.TypeOf(config).Elem()
 	v := reflect.ValueOf(config).Elem()
 	// router plugin
-	if _, has := t.FieldByName("RouterPlugin"); has {
-		pluginRouter := v.FieldByName("RouterPlugin").Interface().(camConfigs.RouterPlugin)
+	if _, has := t.FieldByName("Plugin"); has {
+		pluginRouter := v.FieldByName("Plugin").Interface().(camConfigs.RouterPlugin)
 		pluginRouter.ControllerList = app.router.controllerList
 		pluginRouter.ConsoleControllerList = app.router.consoleControllerList
 		pluginRouter.OnWebsocketMessageHandler = app.router.onWebsocketMessageHandler
-		v.FieldByName("RouterPlugin").Set(reflect.ValueOf(pluginRouter))
+		v.FieldByName("Plugin").Set(reflect.ValueOf(pluginRouter))
 	}
 	// migrate plugin
 	if _, has := t.FieldByName("MigratePlugin"); has {
@@ -178,9 +179,9 @@ func (app *application) callConsole() {
 
 	for _, componentIns := range app.componentDict {
 		name := camUtils.Reflect.GetStructName(componentIns)
-		if name == "Console" {
+		if name == "Component" {
 			isCallConsole = true
-			consoleComponent := componentIns.(*camComponents.Console)
+			consoleComponent := componentIns.(*camConsole.Component)
 			consoleComponent.RunAction()
 		}
 	}

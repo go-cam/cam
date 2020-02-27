@@ -40,7 +40,7 @@ func (component *HttpServer) Init(configInterface camBase.ConfigComponentInterfa
 
 	component.name = component.getComponentName(configInterface.GetComponent())
 	component.config = config
-	component.controllerDict, component.controllerActionDict = common.getControllerDict(component.config.ControllerList)
+	component.controllerDict, component.controllerActionDict = Common.GetControllerDict(component.config.ControllerList)
 	component.store = component.getFilesystemStore()
 }
 
@@ -122,14 +122,14 @@ func (component *HttpServer) callControllerAction(controllerName string, actionN
 
 	controllerType := component.controllerDict[controllerName]
 	controllerValue := reflect.New(controllerType.Elem())
-	controllerInterface := controllerValue.Interface().(camBase.ControllerInterface)
+	controllerInterface := controllerValue.Interface().(camBase.ControllerBakInterface)
 	if controllerInterface == nil {
-		panic("controller must be implement base.ControllerInterface")
+		panic("controller must be implement base.ControllerBakInterface")
 	}
 
 	// set controller params
 	controllerInterface.Init()
-	controllerInterface.SetApp(component.app)
+	controllerInterface.SetApp(component.App)
 	controllerInterface.SetContext(context)
 	controllerInterface.SetHttpValues(w, r)
 	if actionName == "" {

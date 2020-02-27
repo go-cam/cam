@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
-// component common function
-var common = newCommonFunc()
+// component Common function
+// Deprecated: instead by camPlugins.Plugin
+var Common = newCommonFunc()
 
 // component share function
+// Deprecated: instead by camPlugins.Plugin
 type commonFunc struct {
 	excludeDict map[string]bool // exclude controller names
 }
@@ -23,11 +25,12 @@ func newCommonFunc() *commonFunc {
 }
 
 // get controller and action dict
-func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInterface) (map[string]reflect.Type, map[string]map[string]bool) {
+// Deprecated: instead by camPlugins.Plugin
+func (cf *commonFunc) GetControllerDict(controllerList []camBase.ControllerBakInterface) (map[string]reflect.Type, map[string]map[string]bool) {
 	controllerDict := map[string]reflect.Type{}
 	controllerActionDict := map[string]map[string]bool{}
 
-	excludeMethodNameDict := cf.getControllerExcludeMethodNameDict()
+	excludeMethodNameDict := cf.GetControllerExcludeMethodNameDict()
 
 	for _, controllerInterface := range controllerList {
 		t := reflect.TypeOf(controllerInterface)
@@ -37,9 +40,9 @@ func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInter
 		controllerDict[controllerName] = t
 
 		controllerValue := reflect.New(controllerType)
-		controllerInterface := controllerValue.Interface().(camBase.ControllerInterface)
+		controllerInterface := controllerValue.Interface().(camBase.ControllerBakInterface)
 		if controllerInterface == nil {
-			panic(controllerName + " must be implement base.ControllerInterface")
+			panic(controllerName + " must be implement base.ControllerBakInterface")
 		}
 
 		// save all action of controller
@@ -62,7 +65,8 @@ func (cf *commonFunc) getControllerDict(controllerList []camBase.ControllerInter
 }
 
 // get controller exclude action dict
-func (cf *commonFunc) getControllerExcludeMethodNameDict() map[string]bool {
+// Deprecated: instead by camPlugins.Plugin
+func (cf *commonFunc) GetControllerExcludeMethodNameDict() map[string]bool {
 	if cf.excludeDict == nil {
 		cf.excludeDict = map[string]bool{}
 

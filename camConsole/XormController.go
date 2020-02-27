@@ -1,4 +1,4 @@
-package camConsoleControllers
+package camConsole
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 // xorm's console controller
 type XormController struct {
-	baseConsoleController
+	ConsoleController
 }
 
 // install github.com/go-xorm/cmd/xorm
