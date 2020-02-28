@@ -84,3 +84,8 @@ func (util *FileUtil) DeleteFile(filename string) error {
 func (util *FileUtil) ScanDir(dir string, withDir bool) ([]os.FileInfo, error) {
 	return ioutil.ReadDir(dir)
 }
+
+// get parent dir
+func (util *FileUtil) Dir(dir string) string {
+	return filepath.Dir(dir)
+}

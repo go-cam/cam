@@ -1,16 +1,15 @@
-package camPluginRouter
+package camBase
 
 import (
-	"github.com/go-cam/cam/camBase"
 	"net/http"
 )
 
 // base controller
 type Controller struct {
-	camBase.ControllerInterface
+	ControllerInterface
 
-	app     camBase.ApplicationInterface // app instance
-	context camBase.ContextInterface
+	app     ApplicationInterface // app instance
+	context ContextInterface
 
 	values            map[string]interface{} // controller values
 	responseBytes     []byte                 // response bytes
@@ -28,22 +27,22 @@ func (controller *Controller) Init() {
 }
 
 // OVERWRITE
-func (controller *Controller) BeforeAction(action camBase.ControllerActionInterface) bool {
+func (controller *Controller) BeforeAction(action ControllerActionInterface) bool {
 	return true
 }
 
 // OVERWRITE
-func (controller *Controller) AfterAction(action camBase.ControllerActionInterface, response []byte) []byte {
+func (controller *Controller) AfterAction(action ControllerActionInterface, response []byte) []byte {
 	return response
 }
 
 // OVERWRITE
-func (controller *Controller) SetContext(context camBase.ContextInterface) {
+func (controller *Controller) SetContext(context ContextInterface) {
 	controller.context = context
 }
 
 // OVERWRITE
-func (controller *Controller) GetContext() camBase.ContextInterface {
+func (controller *Controller) GetContext() ContextInterface {
 	return controller.context
 }
 
@@ -74,12 +73,12 @@ func (controller *Controller) GetValue(key string) interface{} {
 
 // OVERWRITE
 // set app instance
-func (controller *Controller) SetApp(app camBase.ApplicationInterface) {
+func (controller *Controller) SetApp(app ApplicationInterface) {
 	controller.app = app
 }
 
 // Return app instance
-func (controller *Controller) GetAppInterface() camBase.ApplicationInterface {
+func (controller *Controller) GetApp() ApplicationInterface {
 	return controller.app
 }
 

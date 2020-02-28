@@ -1,6 +1,6 @@
 module github.com/go-cam/cam
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gorilla/sessions v1.2.0

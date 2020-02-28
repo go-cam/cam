@@ -1,6 +1,7 @@
 package camHttp
 
 import (
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camConfigs"
 	"github.com/go-cam/cam/camPluginContext"
 	"github.com/go-cam/cam/camPluginRouter"
@@ -8,7 +9,7 @@ import (
 
 // http server config
 type HttpComponentConfig struct {
-	camConfigs.BaseConfig
+	camBase.Config
 	camConfigs.RouterPlugin
 	camConfigs.SslPlugin
 	camConfigs.ContextPlugin

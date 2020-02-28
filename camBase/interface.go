@@ -1,6 +1,9 @@
 package camBase
 
-import "net/http"
+import (
+	"net/http"
+	"xorm.io/xorm"
+)
 
 // application interface
 // NODE: Provides interface function to the module inner framework
@@ -10,7 +13,7 @@ type ApplicationInterface interface {
 	// get Component instance by component name
 	GetComponentByName(name string) ComponentInterface
 	// get default db component's interface
-	GetDBInterface() ComponentInterface
+	GetDB() DatabaseComponentInterface
 	// stop application
 	Stop()
 }
@@ -136,4 +139,26 @@ type PluginConfigInterface interface {
 
 type PluginInterface interface {
 	Init(configInterface PluginConfigInterface)
+}
+
+// database interface
+type DatabaseComponentInterface interface {
+	// get data source name.
+	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
+	GetDSN() string
+	// xorm template dir
+	// you can find the base file on cam/_templates/xorm
+	GetXormTemplateDir() string
+	// database dir.
+	GetDatabaseDir() string
+	// get migrate need up versions
+	GetMigrateUpVersionList() []string
+	// up database version
+	MigrateUp()
+	// down database version
+	MigrateDown()
+	// get engine
+	GetEngine() *xorm.Engine
+	// get xorm session
+	NewSession() *xorm.Session
 }

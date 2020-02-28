@@ -3,7 +3,6 @@ package camConsole
 import (
 	"fmt"
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camPluginRouter"
 	"os"
 	"reflect"
@@ -11,7 +10,7 @@ import (
 
 // command component
 type ConsoleComponent struct {
-	camComponents.Base
+	camBase.Component
 	camPluginRouter.RouterPlugin
 
 	config *ConsoleComponentConfig
@@ -19,7 +18,7 @@ type ConsoleComponent struct {
 
 // init
 func (component *ConsoleComponent) Init(configInterface camBase.ConfigComponentInterface) {
-	component.Base.Init(configInterface)
+	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
 	var config *ConsoleComponentConfig
@@ -37,8 +36,6 @@ func (component *ConsoleComponent) Init(configInterface camBase.ConfigComponentI
 	//component.controllerDict, component.controllerActionDict = camComponents.Common.GetControllerDict(config.ControllerList)
 
 	// init router plugin
-	config.RouterPluginConfig.Register(&MigrateController{})
-	config.RouterPluginConfig.Register(&XormController{})
 	component.RouterPlugin.Init(&config.RouterPluginConfig)
 }
 

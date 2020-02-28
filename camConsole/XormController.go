@@ -2,12 +2,13 @@ package camConsole
 
 import (
 	"fmt"
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
 )
 
 // xorm's console controller
 type XormController struct {
-	ConsoleController
+	camBase.ConsoleController
 }
 
 // install github.com/go-xorm/cmd/xorm
@@ -29,10 +30,15 @@ func (controller *XormController) InstallCmdXorm() {
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
 func (controller *XormController) Generate() {
-	db := controller.GetDatabaseComponent()
+	db := controller.GetApp().GetDB()
+	if db == nil {
+		panic("no database.")
+	}
+
 	dsn := db.GetDSN()
 	tplDir := db.GetXormTemplateDir()
-	modelsDir := db.GetXormModelDir()
+	dbDir := db.GetDatabaseDir()
+	modelsDir := dbDir + "/models"
 	if !camUtils.File.Exists(modelsDir) {
 		err := camUtils.File.Mkdir(modelsDir)
 		camUtils.Error.Panic(err)

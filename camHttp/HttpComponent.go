@@ -2,7 +2,6 @@ package camHttp
 
 import (
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camPluginContext"
 	"github.com/go-cam/cam/camPluginRouter"
@@ -18,7 +17,7 @@ import (
 
 // http server component
 type HttpComponent struct {
-	camComponents.Base
+	camBase.Component
 	camPluginRouter.RouterPlugin
 	camPluginContext.ContextPlugin
 
@@ -28,7 +27,7 @@ type HttpComponent struct {
 
 // init
 func (component *HttpComponent) Init(configInterface camBase.ConfigComponentInterface) {
-	component.Base.Init(configInterface)
+	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
 	var config *HttpComponentConfig
@@ -51,7 +50,7 @@ func (component *HttpComponent) Init(configInterface camBase.ConfigComponentInte
 
 // start
 func (component *HttpComponent) Start() {
-	component.Base.Start()
+	component.Component.Start()
 
 	if !component.config.IsSslOnly {
 		go component.listenAndServe()
@@ -63,7 +62,7 @@ func (component *HttpComponent) Start() {
 
 // stop
 func (component *HttpComponent) Stop() {
-	component.Base.Stop()
+	component.Component.Stop()
 }
 
 // Receive http request, Call controller action, Send http response

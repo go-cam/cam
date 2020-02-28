@@ -229,6 +229,7 @@ func (app *application) GetComponentByName(name string) camBase.ComponentInterfa
 }
 
 // get default db component's interface
+// Deprecated:
 func (app *application) GetDBInterface() camBase.ComponentInterface {
 	componentIns := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
 	if componentIns == nil {
@@ -238,13 +239,18 @@ func (app *application) GetDBInterface() camBase.ComponentInterface {
 }
 
 // get default db component
-func (app *application) GetDB() *camComponents.Database {
-	ins := app.GetDBInterface()
-	var db *camComponents.Database = nil
-	if ins != nil {
-		db = ins.(*camComponents.Database)
+func (app *application) GetDB() camBase.DatabaseComponentInterface {
+	dbCompI := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
+	if dbCompI == nil {
+		return nil
 	}
-	return db
+
+	dbComp, ok := dbCompI.(camBase.DatabaseComponentInterface)
+	if !ok {
+		return nil
+	}
+
+	return dbComp
 }
 
 // add migration struct

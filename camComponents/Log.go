@@ -10,7 +10,7 @@ import (
 
 // log components
 type Log struct {
-	Base
+	camBase.Component
 	config *camConfigs.Log
 
 	logRootDir string
@@ -18,7 +18,7 @@ type Log struct {
 
 // on App init
 func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
-	component.Base.Init(configInterface)
+	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
 	var config *camConfigs.Log
@@ -43,12 +43,12 @@ func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
 
 // on App start
 func (component *Log) Start() {
-	component.Base.Start()
+	component.Component.Start()
 }
 
 // before App destroy
 func (component *Log) Stop() {
-	component.Base.Stop()
+	component.Component.Stop()
 }
 
 func (component *Log) baseLog(logType string, title string, content string) error {

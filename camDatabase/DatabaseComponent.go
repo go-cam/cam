@@ -1,51 +1,48 @@
-package camComponents
+package camDatabase
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camConfigs"
 	"github.com/go-cam/cam/camModels/camModelsTables"
 	"github.com/go-cam/cam/camUtils"
-	"os"
-	"strings"
 	"xorm.io/xorm"
 )
 
 // database component
-type Database struct {
-	Base
+type DatabaseComponent struct {
+	camBase.Component
+	camBase.DatabaseComponentInterface
 
-	config *camConfigs.Database
+	config *DatabaseComponentConfig
 	engine *xorm.Engine
 }
 
 // init
-func (component *Database) Init(configInterface camBase.ConfigComponentInterface) {
-	component.Base.Init(configInterface)
+func (component *DatabaseComponent) Init(configInterface camBase.ConfigComponentInterface) {
+	component.Component.Init(configInterface)
 	var done bool
-	component.config, done = configInterface.(*camConfigs.Database)
+	component.config, done = configInterface.(*DatabaseComponentConfig)
 	if !done {
-		panic("configInterface type error. need [*configs.Database]")
+		panic("configInterface type error. need [*configs.DatabaseComponent]")
 	}
 	component.engine = nil
 }
 
 // start
-func (component *Database) Start() {
-	component.Base.Start()
+func (component *DatabaseComponent) Start() {
+	component.Component.Start()
 	if component.config.AutoMigrate {
 		component.MigrateUp()
 	}
 }
 
 // stop
-func (component *Database) Stop() {
-	component.Base.Stop()
+func (component *DatabaseComponent) Stop() {
+	component.Component.Stop()
 }
 
 // get migrate up version list.
-func (component *Database) GetMigrateUpVersionList() []string {
+func (component *DatabaseComponent) GetMigrateUpVersionList() []string {
 	lastVersion := component.MigrateLastVersion()
 	var versionList []string
 	for version, _ := range component.config.MigrationDict {
@@ -58,7 +55,7 @@ func (component *Database) GetMigrateUpVersionList() []string {
 }
 
 // up all database version
-func (component *Database) MigrateUp() {
+func (component *DatabaseComponent) MigrateUp() {
 	fmt.Println("Migrate up start.")
 
 	lastVersion := component.MigrateLastVersion()
@@ -100,7 +97,7 @@ func (component *Database) MigrateUp() {
 }
 
 // down last database version
-func (component *Database) MigrateDown() {
+func (component *DatabaseComponent) MigrateDown() {
 	lastVersion := component.MigrateLastVersion()
 	m, has := component.config.MigrationDict[lastVersion]
 	if !has {
@@ -111,13 +108,9 @@ func (component *Database) MigrateDown() {
 		}
 		return
 	}
-	fmt.Print("Do you want to down this version: " + lastVersion + " ?[Y/N]:")
-	input := bufio.NewScanner(os.Stdin)
-	if !input.Scan() {
-		return
-	}
-	str := strings.ToLower(input.Text())
-	if str != "y" {
+	fmt.Println("version: " + lastVersion)
+	fmt.Print("Do you want to down this version ?[Y/N]:")
+	if !camUtils.Console.IsPressY() {
 		return
 	}
 
@@ -146,11 +139,11 @@ func (component *Database) MigrateDown() {
 	_, err = session.ID(lastVersion).Delete(camModelsTables.Migration{})
 	camUtils.Error.Panic(err)
 
-	fmt.Println("\tdone.")
+	fmt.Println(" done.")
 }
 
 // get last version
-func (component *Database) MigrateLastVersion() string {
+func (component *DatabaseComponent) MigrateLastVersion() string {
 	session := component.NewSession()
 	exists, err := session.IsTableExist(new(camModelsTables.Migration))
 	camUtils.Error.Panic(err)
@@ -172,14 +165,14 @@ func (component *Database) MigrateLastVersion() string {
 }
 
 // create migrations's version record table
-func (component *Database) createMigrateVersionTable() error {
+func (component *DatabaseComponent) createMigrateVersionTable() error {
 	session := component.NewSession()
 	migration := new(camModelsTables.Migration)
 	return session.Sync2(migration)
 }
 
 // get xorm engine
-func (component *Database) GetEngine() *xorm.Engine {
+func (component *DatabaseComponent) GetEngine() *xorm.Engine {
 	if component.engine == nil {
 		var err error
 		component.engine, err = xorm.NewEngine(component.config.DriverName, component.GetDSN())
@@ -190,7 +183,7 @@ func (component *Database) GetEngine() *xorm.Engine {
 
 // get data source name.
 // [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-func (component *Database) GetDSN() string {
+func (component *DatabaseComponent) GetDSN() string {
 	host := component.config.Host
 	port := component.config.Port
 	name := component.config.Name
@@ -201,20 +194,24 @@ func (component *Database) GetDSN() string {
 }
 
 // new session
-func (component *Database) NewSession() *xorm.Session {
+func (component *DatabaseComponent) NewSession() *xorm.Session {
 	return component.GetEngine().NewSession()
 }
 
 // get xorm models's dir
-func (component *Database) GetXormModelDir() string {
+func (component *DatabaseComponent) GetXormModelDir() string {
 	return component.config.DBFileDir + "/models"
 }
 
-func (component *Database) GetMigrateDir() string {
+func (component *DatabaseComponent) GetMigrateDir() string {
 	return component.config.DBFileDir + "/migrations"
 }
 
 // get xorm template dir
-func (component *Database) GetXormTemplateDir() string {
+func (component *DatabaseComponent) GetXormTemplateDir() string {
 	return component.config.XormTemplateDir
+}
+
+func (component *DatabaseComponent) GetDatabaseDir() string {
+	return component.config.DBFileDir
 }

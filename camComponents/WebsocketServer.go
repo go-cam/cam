@@ -13,7 +13,7 @@ import (
 )
 
 type WebsocketServer struct {
-	Base
+	camBase.Component
 
 	config *camConfigs.WebsocketServer
 
@@ -44,7 +44,7 @@ type WebsocketServer struct {
 
 // init
 func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentInterface) {
-	component.Base.Init(configInterface)
+	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
 	var config *camConfigs.WebsocketServer
@@ -80,7 +80,7 @@ func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentIn
 
 // start
 func (component *WebsocketServer) Start() {
-	component.Base.Start()
+	component.Component.Start()
 
 	if !component.config.IsSslOnly {
 		go component.listenAndServe()

@@ -1,13 +1,13 @@
 package camConsole
 
 import (
-	"github.com/go-cam/cam/camConfigs"
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camPluginRouter"
 )
 
 // console config
 type ConsoleComponentConfig struct {
-	camConfigs.BaseConfig
+	camBase.Config
 	camPluginRouter.RouterPluginConfig
 }
 
@@ -16,5 +16,7 @@ func NewConsoleComponentConfig() *ConsoleComponentConfig {
 	config := new(ConsoleComponentConfig)
 	config.Component = &ConsoleComponent{}
 	config.RouterPluginConfig.Init()
+	config.RouterPluginConfig.Register(&MigrateController{})
+	config.RouterPluginConfig.Register(&XormController{})
 	return config
 }

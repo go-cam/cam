@@ -1,23 +1,12 @@
-package camConsole
+package camBase
 
 import (
-	"github.com/go-cam/cam/camComponents"
-	"github.com/go-cam/cam/camPluginRouter"
 	"os"
 )
 
 //
 type ConsoleController struct {
-	camPluginRouter.Controller
-}
-
-// get database component instance
-func (controller *ConsoleController) GetDatabaseComponent() *camComponents.Database {
-	ins := controller.GetAppInterface().GetComponentByName("db")
-	if ins == nil {
-		return nil
-	}
-	return ins.(*camComponents.Database)
+	Controller
 }
 
 // get params

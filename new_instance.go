@@ -4,9 +4,9 @@ import (
 	"github.com/go-cam/cam/camComponents"
 	"github.com/go-cam/cam/camConfigs"
 	"github.com/go-cam/cam/camConsole"
+	"github.com/go-cam/cam/camDatabase"
 	"github.com/go-cam/cam/camHttp"
 	"github.com/go-cam/cam/camModels"
-	"github.com/go-cam/cam/camUtils"
 )
 
 // new application config
@@ -45,33 +45,14 @@ func NewConfigHttpServer(port uint16) *camHttp.HttpComponentConfig {
 	return NewHttpServerConfig(port)
 }
 
-// new Database config
-func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
-	config := new(camConfigs.Database)
-	config.Component = &camComponents.Database{}
-	config.DriverName = driverName
-	config.Host = host
-	config.Port = port
-	config.Name = name
-	config.Username = username
-	config.Password = password
-	config.SetDBFileDir(camUtils.File.GetRunPath() + "/database")
-	rootPath := App.GetEvn("ROOT_PATH")
-	templateDir := App.config.AppConfig.DefaultTemplatesDir
-	if rootPath != "" && templateDir != "" {
-		//config.SetXormTemplateDir("D:\\workspace\\cin\\core\\templates\\xorm")
-		xormTemplateDir := rootPath + "/" + templateDir + "/xorm"
-		if camUtils.File.Exists(xormTemplateDir) {
-			config.SetXormTemplateDir(xormTemplateDir)
-		}
-	}
-	config.AutoMigrate = false
-	return config
+// new DatabaseComponent config
+func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *camDatabase.DatabaseComponentConfig {
+	return camDatabase.NewDatabaseComponentConfig(driverName, host, port, name, username, password)
 }
 
 // Deprecated: instead by NewDatabaseConfig()
 // Remove after 0.3.0
-func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camConfigs.Database {
+func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camDatabase.DatabaseComponentConfig {
 	return NewDatabaseConfig(driverName, host, port, name, username, password)
 }
 

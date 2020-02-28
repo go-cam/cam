@@ -3,6 +3,7 @@ package camConsole
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camModels/camModelsTpls"
 	"github.com/go-cam/cam/camUtils"
 	"html/template"
@@ -12,7 +13,7 @@ import (
 
 //
 type MigrateController struct {
-	ConsoleController
+	camBase.ConsoleController
 }
 
 // create migration's file
@@ -28,8 +29,12 @@ func (controller *MigrateController) Create() {
 
 	var err error
 
-	db := controller.GetDatabaseComponent()
-	migrateDir := db.GetMigrateDir()
+	db := controller.GetApp().GetDB()
+	if db == nil {
+		panic("no database.")
+	}
+	dbDir := db.GetDatabaseDir()
+	migrateDir := dbDir + "/migrations"
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
 		camUtils.Error.Panic(err)
@@ -42,14 +47,6 @@ func (controller *MigrateController) Create() {
 	if !camUtils.Console.IsPressY() {
 		return
 	}
-	//input := bufio.NewScanner(os.Stdin)
-	//if !input.Scan() {
-	//	return
-	//}
-	//str := strings.ToLower(input.Text())
-	//if str != "y" {
-	//	return
-	//}
 
 	content := controller.getMigrationContent(filename)
 	err = camUtils.File.WriteFile(absFilename, content)
@@ -60,7 +57,7 @@ func (controller *MigrateController) Create() {
 
 // migrate up
 func (controller *MigrateController) Up() {
-	db := controller.GetDatabaseComponent()
+	db := controller.GetApp().GetDB()
 	if db == nil {
 		panic("no database.")
 	}
@@ -85,7 +82,7 @@ func (controller *MigrateController) Up() {
 
 // migrate down
 func (controller *MigrateController) Down() {
-	db := controller.GetDatabaseComponent()
+	db := controller.GetApp().GetDB()
 	if db == nil {
 		panic("no database.")
 	}

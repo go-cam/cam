@@ -1,11 +1,13 @@
 package cam
 
-import "github.com/go-cam/cam/camPluginRouter"
+import (
+	"github.com/go-cam/cam/camBase"
+)
 
 type Controller struct {
-	camPluginRouter.Controller
+	camBase.Controller
 }
 
 type ControllerAction struct {
-	camPluginRouter.ControllerAction
+	camBase.ControllerAction
 }
