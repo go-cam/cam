@@ -3,7 +3,6 @@ package camConsole
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-cam/cam/camModels/camModelsTpls"
 	"github.com/go-cam/cam/camUtils"
 	"html/template"
 	"regexp"
@@ -103,7 +102,7 @@ func init() {
 }
 
 type {{ .ClassName}} struct {
-	camModels.Migration
+	camModels.MigrationTpl
 }
 
 // up
@@ -127,7 +126,7 @@ func (controller *MigrateController) getMigrationContent(filename string) []byte
 	filename = strings.TrimSuffix(filename, ".go")
 	className := filename
 	buf := bytes.NewBuffer(retBytes)
-	data := camModelsTpls.Migration{ClassName: className}
+	data := MigrationTpl{ClassName: className}
 	err = t.Execute(buf, data)
 	camUtils.Error.Panic(err)
 

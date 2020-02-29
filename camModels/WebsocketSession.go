@@ -8,8 +8,6 @@ import (
 // Deprecated:
 // websocket 使用的 session 。没有发送的功能。必须依赖 WebsocketServer 进行发送
 type WebsocketSession struct {
-	BaseModel
-
 	conn      *websocket.Conn             // websocket 链接
 	sessionId string                      // sessionId 用于记录记录链接的sessionId
 	values    map[interface{}]interface{} // session 存储的 key value 数据

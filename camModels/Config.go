@@ -7,7 +7,6 @@ import (
 // config struct
 // config can merge in application
 type Config struct {
-	BaseModel
 	camBase.AppConfigInterface
 	// Application config
 	AppConfig *AppConfig

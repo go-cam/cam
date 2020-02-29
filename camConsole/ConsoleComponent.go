@@ -3,7 +3,6 @@ package camConsole
 import (
 	"fmt"
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camModels/camModelsTables"
 	"github.com/go-cam/cam/camPluginRouter"
 	"github.com/go-cam/cam/camUtils"
 	"os"
@@ -83,7 +82,7 @@ func (component *ConsoleComponent) GetMigrateUpVersionList() []string {
 
 func (component *ConsoleComponent) MigrateLastVersion() string {
 	session := component.getDBSession()
-	exists, err := session.IsTableExist(new(camModelsTables.Migration))
+	exists, err := session.IsTableExist(new(Migration))
 	camUtils.Error.Panic(err)
 	if !exists {
 		err = component.createMigrateVersionTable()
@@ -91,7 +90,7 @@ func (component *ConsoleComponent) MigrateLastVersion() string {
 		return ""
 	}
 
-	migration := new(camModelsTables.Migration)
+	migration := new(Migration)
 	has, err := session.Desc("version").Get(migration)
 	camUtils.Error.Panic(err)
 
@@ -105,7 +104,7 @@ func (component *ConsoleComponent) MigrateLastVersion() string {
 // create migrations's version record table
 func (component *ConsoleComponent) createMigrateVersionTable() error {
 	session := component.getDBSession()
-	migration := new(camModelsTables.Migration)
+	migration := new(Migration)
 	return session.Sync2(migration)
 }
 
@@ -135,7 +134,7 @@ func (component *ConsoleComponent) MigrateUp() {
 				panic(err)
 			}
 		}
-		migration := new(camModelsTables.Migration)
+		migration := new(Migration)
 		migration.Version = version
 		_, err := session.Insert(migration)
 		if err != nil {
@@ -191,7 +190,7 @@ func (component *ConsoleComponent) MigrateDown() {
 		}
 	}
 
-	_, err = session.ID(lastVersion).Delete(camModelsTables.Migration{})
+	_, err = session.ID(lastVersion).Delete(Migration{})
 	camUtils.Error.Panic(err)
 
 	fmt.Println(" done.")

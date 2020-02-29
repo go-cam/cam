@@ -1,4 +1,4 @@
-package camModelsTables
+package camConsole
 
 import "time"
 

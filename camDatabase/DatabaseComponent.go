@@ -2,7 +2,7 @@ package camDatabase
 
 import (
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camModels/camModelsTables"
+	"github.com/go-cam/cam/camConsole"
 	"github.com/go-cam/cam/camUtils"
 	"xorm.io/xorm"
 )
@@ -40,7 +40,7 @@ func (component *DatabaseComponent) Stop() {
 // create migrations's version record table
 func (component *DatabaseComponent) createMigrateVersionTable() error {
 	session := component.NewSession()
-	migration := new(camModelsTables.Migration)
+	migration := new(camConsole.Migration)
 	return session.Sync2(migration)
 }
 
