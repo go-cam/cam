@@ -84,7 +84,7 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	} else {
 		route = dirs[0] + "/" + dirs[1]
 	}
-	controller, action, _, _ := component.RouterPlugin.GetControllerAction(route)
+	controller, action := component.RouterPlugin.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("404")
 	}

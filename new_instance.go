@@ -7,6 +7,7 @@ import (
 	"github.com/go-cam/cam/camDatabase"
 	"github.com/go-cam/cam/camHttp"
 	"github.com/go-cam/cam/camModels"
+	"github.com/go-cam/cam/camWebsocket"
 )
 
 // new application config
@@ -17,21 +18,9 @@ func NewAppConfig() *camModels.AppConfig {
 	return appConfig
 }
 
-// new WebsocketServer config
-func NewWebsocketServerConfig(port uint16) *camConfigs.WebsocketServer {
-	config := new(camConfigs.WebsocketServer)
-	config.Port = port
-	config.Component = &camComponents.WebsocketServer{}
-	config.MessageParseHandler = nil
-	config.InitContextPlugin()
-	config.InitSslPlugin()
-	return config
-}
-
-// Deprecated: instead by NewWebsocketServerConfig()
-// Remove after 0.3.0
-func NewConfigWebsocketServer(port uint16) *camConfigs.WebsocketServer {
-	return NewWebsocketServerConfig(port)
+// new WebsocketComponent config
+func NewWebsocketConfig(port uint16) *camWebsocket.WebsocketComponentConfig {
+	return camWebsocket.NewWebsocketComponentConfig(port)
 }
 
 // new ConsoleComponent config
@@ -39,32 +28,14 @@ func NewHttpServerConfig(port uint16) *camHttp.HttpComponentConfig {
 	return camHttp.NewHttpComponentConfig(port)
 }
 
-// Deprecated: instead by NewHttpServerConfig()
-// Remove after 0.3.0
-func NewConfigHttpServer(port uint16) *camHttp.HttpComponentConfig {
-	return NewHttpServerConfig(port)
-}
-
 // new DatabaseComponent config
 func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *camDatabase.DatabaseComponentConfig {
 	return camDatabase.NewDatabaseComponentConfig(driverName, host, port, name, username, password)
 }
 
-// Deprecated: instead by NewDatabaseConfig()
-// Remove after 0.3.0
-func NewConfigDatabase(driverName string, host string, port string, name string, username string, password string) *camDatabase.DatabaseComponentConfig {
-	return NewDatabaseConfig(driverName, host, port, name, username, password)
-}
-
 // new ConsoleComponent config
 func NewConsoleConfig() *camConsole.ConsoleComponentConfig {
 	return camConsole.NewConsoleComponentConfig()
-}
-
-// Deprecated: instead by NewConsoleComponentConfig()
-// Remove after 0.3.0
-func NewConfigConsole() *camConsole.ConsoleComponentConfig {
-	return NewConsoleConfig()
 }
 
 // new log config

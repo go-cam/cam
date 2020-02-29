@@ -70,17 +70,36 @@ func (plugin *RouterPlugin) parseController() {
 //						return nil if action not exists
 // controllerName: 		Example: "User"
 // actionName: 			Example: "RegisterAndLogin"
-func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBase.ControllerInterface, action camBase.ControllerActionInterface, controllerName string, actionName string) {
+func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
+	controllerName, actionName := plugin.GetControllerActionName(route)
+
+	controllerType, has := plugin.controllerDict[controllerName]
+	if !has {
+		return nil, nil
+	}
+
+	controllerValue := reflect.New(controllerType)
+	controller = controllerValue.Interface().(camBase.ControllerInterface)
+
+	actionValue := controllerValue.MethodByName(actionName)
+	if !actionValue.IsValid() { // method not exists
+		return controller, nil
+	}
+	action = camBase.NewControllerAction(route, &actionValue)
+
+	return controller, action
+}
+
+func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerName string, actionName string) {
 	tmpArr := strings.Split(route, "/")
 
 	controllerName = camUtils.Url.UrlToHump(tmpArr[0])
 	controllerType, has := plugin.controllerDict[controllerName]
 	if !has {
-		return nil, nil, controllerName, ""
+		return "", ""
 	}
 
 	controllerValue := reflect.New(controllerType)
-	controller = controllerValue.Interface().(camBase.ControllerInterface)
 
 	actionName = ""
 
@@ -88,16 +107,11 @@ func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBas
 	if tmpArrLen >= 2 {
 		actionName = camUtils.Url.UrlToHump(tmpArr[1])
 	} else if tmpArrLen == 1 {
+		controller := controllerValue.Interface().(camBase.ControllerInterface)
 		actionName = controller.GetDefaultActionName()
 	}
 
-	actionValue := controllerValue.MethodByName(actionName)
-	if !actionValue.IsValid() { // method not exists
-		return controller, nil, controllerName, actionName
-	}
-	action = camBase.NewControllerAction(route, &actionValue)
-
-	return controller, action, controllerName, actionName
+	return controllerName, actionName
 }
 
 // exclude the camModels.BaseController method, this is not a user callable action

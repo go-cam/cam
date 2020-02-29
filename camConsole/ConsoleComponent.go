@@ -50,7 +50,7 @@ func (component *ConsoleComponent) RunAction() {
 	}
 
 	route := os.Args[1]
-	controller, action, _, _ := component.GetControllerAction(route)
+	controller, action := component.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("route not found: " + route)
 	}
