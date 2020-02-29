@@ -14,8 +14,26 @@ type ApplicationInterface interface {
 	GetComponentByName(name string) ComponentInterface
 	// get default db component's interface
 	GetDB() DatabaseComponentInterface
+	// run application
+	Run()
 	// stop application
 	Stop()
+	// add migration struct
+	AddMigration(m MigrationInterface)
+	// log info
+	Debug(title string, content string)
+	// log info
+	Info(title string, content string)
+	// log info
+	Warn(title string, content string)
+	// log info
+	Error(title string, content string)
+	// Add config
+	AddConfig(config AppConfigInterface)
+	// get value form .evn file
+	GetEvn(key string) string
+	// get migrate dict
+	GetMigrateDict() map[string]MigrationInterface
 }
 
 // component config interface
@@ -141,24 +159,24 @@ type PluginInterface interface {
 	Init(configInterface PluginConfigInterface)
 }
 
-// database interface
+// database component interface
 type DatabaseComponentInterface interface {
 	// get data source name.
 	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
 	GetDSN() string
-	// xorm template dir
-	// you can find the base file on cam/_templates/xorm
-	GetXormTemplateDir() string
-	// database dir.
-	GetDatabaseDir() string
-	// get migrate need up versions
-	GetMigrateUpVersionList() []string
-	// up database version
-	MigrateUp()
-	// down database version
-	MigrateDown()
 	// get engine
 	GetEngine() *xorm.Engine
 	// get xorm session
 	NewSession() *xorm.Session
+}
+
+// console component interface
+type ConsoleComponentInterface interface {
+	// get database dir
+	GetDatabaseDir() string
+	// get xorm template dir
+	GetXormTemplateDir() string
+}
+
+type AppConfigInterface interface {
 }

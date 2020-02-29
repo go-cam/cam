@@ -3,7 +3,6 @@ package camConsole
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camModels/camModelsTpls"
 	"github.com/go-cam/cam/camUtils"
 	"html/template"
@@ -13,7 +12,7 @@ import (
 
 //
 type MigrateController struct {
-	camBase.ConsoleController
+	ConsoleController
 }
 
 // create migration's file
@@ -29,11 +28,8 @@ func (controller *MigrateController) Create() {
 
 	var err error
 
-	db := controller.GetApp().GetDB()
-	if db == nil {
-		panic("no database.")
-	}
-	dbDir := db.GetDatabaseDir()
+	console := controller.GetConsoleComponent()
+	dbDir := console.config.DatabaseDir
 	migrateDir := dbDir + "/migrations"
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
@@ -62,7 +58,7 @@ func (controller *MigrateController) Up() {
 		panic("no database.")
 	}
 
-	versionList := db.GetMigrateUpVersionList()
+	versionList := controller.GetConsoleComponent().GetMigrateUpVersionList()
 	if len(versionList) == 0 {
 		fmt.Println("No new versions need to be up")
 		return
@@ -77,16 +73,12 @@ func (controller *MigrateController) Up() {
 		return
 	}
 
-	db.MigrateUp()
+	controller.GetConsoleComponent().MigrateUp()
 }
 
 // migrate down
 func (controller *MigrateController) Down() {
-	db := controller.GetApp().GetDB()
-	if db == nil {
-		panic("no database.")
-	}
-	db.MigrateDown()
+	controller.GetConsoleComponent().MigrateDown()
 }
 
 // get migration's filename. only filename, not absolute filename

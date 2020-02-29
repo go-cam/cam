@@ -2,13 +2,12 @@ package camConsole
 
 import (
 	"fmt"
-	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
 )
 
 // xorm's console controller
 type XormController struct {
-	camBase.ConsoleController
+	ConsoleController
 }
 
 // install github.com/go-xorm/cmd/xorm
@@ -36,8 +35,9 @@ func (controller *XormController) Generate() {
 	}
 
 	dsn := db.GetDSN()
-	tplDir := db.GetXormTemplateDir()
-	dbDir := db.GetDatabaseDir()
+	console := controller.GetConsoleComponent()
+	tplDir := console.config.XormTemplateDir
+	dbDir := console.config.DatabaseDir
 	modelsDir := dbDir + "/models"
 	if !camUtils.File.Exists(modelsDir) {
 		err := camUtils.File.Mkdir(modelsDir)

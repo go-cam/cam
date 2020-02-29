@@ -8,8 +8,8 @@ type BaseController struct {
 	camModels.BaseController
 }
 
-// get application instance
+// get Application instance
 // Deprecated: instead by camModels.Controller. Remove on v0.3.0
-func (controller *BaseController) GetApp() *application {
-	return controller.GetAppInterface().(*application)
+func (controller *BaseController) GetApp() *Application {
+	return controller.GetAppInterface().(*Application)
 }

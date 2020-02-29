@@ -1,12 +1,13 @@
-package camBase
+package camConsole
 
 import (
+	"github.com/go-cam/cam/camBase"
 	"os"
 )
 
 //
 type ConsoleController struct {
-	Controller
+	camBase.Controller
 }
 
 // get params
@@ -26,4 +27,14 @@ func (controller *ConsoleController) GetArgv(key int) string {
 		return ""
 	}
 	return os.Args[key]
+}
+
+// get console component
+func (controller *ConsoleController) GetConsoleComponent() *ConsoleComponent {
+	componentI := camBase.App.GetComponent(&ConsoleComponent{})
+	console, ok := componentI.(*ConsoleComponent)
+	if !ok {
+		panic("console component is not enable")
+	}
+	return console
 }

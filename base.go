@@ -4,16 +4,9 @@ import (
 	"github.com/go-cam/cam/camModels"
 )
 
-// module config status
-type Config struct {
-	camModels.Config
-}
-
 // new RouterPluginConfig
-func NewConfig() *Config {
-	config := new(Config)
-	configModel := new(camModels.Config)
-	configModel.Init()
-	config.Config = *configModel
+func NewConfig() *camModels.Config {
+	config := new(camModels.Config)
+	config.Init()
 	return config
 }
