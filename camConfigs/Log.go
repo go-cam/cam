@@ -3,7 +3,7 @@ package camConfigs
 import "github.com/go-cam/cam/camBase"
 
 type Log struct {
-	camBase.Config
+	camBase.ComponentConfig
 
 	IsPrint bool // Whether print log to console
 	IsWrite bool // Whether write log to file

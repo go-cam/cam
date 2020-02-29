@@ -17,7 +17,7 @@ type ConsoleComponent struct {
 }
 
 // init
-func (component *ConsoleComponent) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *ConsoleComponent) Init(configInterface camBase.ComponentConfigInterface) {
 	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)

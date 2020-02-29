@@ -127,7 +127,7 @@ func (app *application) wait() {
 
 // input plugin params
 // Deprecated: remove on v0.3.0
-func (app *application) writePluginParams(config camBase.ConfigComponentInterface) {
+func (app *application) writePluginParams(config camBase.ComponentConfigInterface) {
 	t := reflect.TypeOf(config).Elem()
 	v := reflect.ValueOf(config).Elem()
 	// router plugin

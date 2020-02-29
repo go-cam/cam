@@ -43,7 +43,7 @@ type WebsocketServer struct {
 }
 
 // init
-func (component *WebsocketServer) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *WebsocketServer) Init(configInterface camBase.ComponentConfigInterface) {
 	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)

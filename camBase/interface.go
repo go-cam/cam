@@ -19,14 +19,14 @@ type ApplicationInterface interface {
 }
 
 // component config interface
-type ConfigComponentInterface interface {
+type ComponentConfigInterface interface {
 	GetComponent() ComponentInterface
 }
 
 // Component interface
 type ComponentInterface interface {
 	// init
-	Init(configInterface ConfigComponentInterface)
+	Init(configInterface ComponentConfigInterface)
 	// start
 	Start()
 	// stop

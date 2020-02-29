@@ -9,7 +9,7 @@ import (
 
 // database config
 type DatabaseComponentConfig struct {
-	camBase.Config
+	camBase.ComponentConfig
 	camConfigs.MigratePlugin
 
 	DriverName      string // driver name. Example: "mysql", "sqlite"

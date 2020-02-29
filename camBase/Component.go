@@ -20,7 +20,7 @@ func (component *Component) SetApp(app ApplicationInterface) {
 }
 
 // init config
-func (component *Component) Init(configInterface ConfigComponentInterface) {
+func (component *Component) Init(configInterface ComponentConfigInterface) {
 	component.name = component.getComponentName(configInterface.GetComponent())
 }
 

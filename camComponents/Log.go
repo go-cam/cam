@@ -17,7 +17,7 @@ type Log struct {
 }
 
 // on App init
-func (component *Log) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *Log) Init(configInterface camBase.ComponentConfigInterface) {
 	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)

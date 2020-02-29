@@ -4,7 +4,7 @@ import "github.com/go-cam/cam/camBase"
 
 // websocket server 所需的配置
 type WebsocketServer struct {
-	camBase.Config
+	camBase.ComponentConfig
 	RouterPlugin
 	SslPlugin
 	ContextPlugin

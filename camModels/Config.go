@@ -13,12 +13,12 @@ type Config struct {
 	// Params required by the business logic
 	Params map[string]interface{}
 	// Components's config
-	ComponentDict map[string]camBase.ConfigComponentInterface
+	ComponentDict map[string]camBase.ComponentConfigInterface
 }
 
 // init params
 func (config *Config) Init() {
 	config.AppConfig = nil
-	config.ComponentDict = map[string]camBase.ConfigComponentInterface{}
+	config.ComponentDict = map[string]camBase.ComponentConfigInterface{}
 	config.Params = map[string]interface{}{}
 }

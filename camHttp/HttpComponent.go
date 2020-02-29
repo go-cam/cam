@@ -26,7 +26,7 @@ type HttpComponent struct {
 }
 
 // init
-func (component *HttpComponent) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *HttpComponent) Init(configInterface camBase.ComponentConfigInterface) {
 	component.Component.Init(configInterface)
 
 	configValue := reflect.ValueOf(configInterface)
@@ -52,7 +52,7 @@ func (component *HttpComponent) Init(configInterface camBase.ConfigComponentInte
 func (component *HttpComponent) Start() {
 	component.Component.Start()
 
-	if !component.config.IsSslOnly {
+	if !component.config.SslOnly {
 		go component.listenAndServe()
 	}
 	if component.config.IsSslOn {

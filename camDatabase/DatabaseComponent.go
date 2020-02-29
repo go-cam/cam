@@ -18,7 +18,7 @@ type DatabaseComponent struct {
 }
 
 // init
-func (component *DatabaseComponent) Init(configInterface camBase.ConfigComponentInterface) {
+func (component *DatabaseComponent) Init(configInterface camBase.ComponentConfigInterface) {
 	component.Component.Init(configInterface)
 	var done bool
 	component.config, done = configInterface.(*DatabaseComponentConfig)

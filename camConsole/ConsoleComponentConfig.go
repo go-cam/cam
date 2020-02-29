@@ -7,7 +7,7 @@ import (
 
 // console config
 type ConsoleComponentConfig struct {
-	camBase.Config
+	camBase.ComponentConfig
 	camPluginRouter.RouterPluginConfig
 }
 
@@ -16,7 +16,13 @@ func NewConsoleComponentConfig() *ConsoleComponentConfig {
 	config := new(ConsoleComponentConfig)
 	config.Component = &ConsoleComponent{}
 	config.RouterPluginConfig.Init()
+
+	config.registerFrameworkController()
+	return config
+}
+
+// register controller in the framework
+func (config *ConsoleComponentConfig) registerFrameworkController() {
 	config.RouterPluginConfig.Register(&MigrateController{})
 	config.RouterPluginConfig.Register(&XormController{})
-	return config
 }
