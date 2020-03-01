@@ -6,6 +6,8 @@ import (
 	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
 	"reflect"
+	"strconv"
+	"time"
 )
 
 // log components
@@ -13,8 +15,9 @@ type LogComponent struct {
 	camBase.Component
 	config *LogComponentConfig
 
-	logRootDir  string
-	levelLabels map[camBase.LogLevel]string
+	logRootDir             string                      // file log dir
+	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
+	lastCheckFileTimestamp int64                       // last check file time
 }
 
 // on App init
@@ -40,6 +43,7 @@ func (component *LogComponent) Init(configInterface camBase.ComponentConfigInter
 		camUtils.Error.Panic(err)
 	}
 	component.initLevelLabels()
+	component.lastCheckFileTimestamp = 0
 
 }
 
@@ -61,12 +65,13 @@ func (component *LogComponent) base(level camBase.LogLevel, title string, conten
 
 	datetime := camUtils.Time.NowDateTime()
 	line := "[" + datetime + " " + levelLabel + " " + title + "] " + content
-	filename := component.logRootDir + "/App.log"
+	filename := component.getLogFilename()
 
 	if component.isOutputLevel(level, component.config.PrintLevel) {
 		fmt.Println(line)
 	}
 	if component.isOutputLevel(level, component.config.WriteLevel) {
+		component.checkAndRenameFile()
 		return camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
 	return nil
@@ -115,4 +120,28 @@ func (component *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outpu
 // Whether level is basic level (debug, info, warn, error)
 func (component *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
 	return level == LevelDebug || level == LevelInfo || level == LevelWarn || level == LevelError
+}
+
+// Check if the file exceeds the configured size
+func (component *LogComponent) checkAndRenameFile() {
+	now := time.Now().Unix()
+	if now < component.lastCheckFileTimestamp+10 {
+		return
+	}
+	component.lastCheckFileTimestamp = now
+
+	filename := component.getLogFilename()
+	fileSize := camUtils.File.Size(filename)
+	if fileSize >= component.config.FileMaxSize {
+		newFilename := component.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
+		err := camUtils.File.Rename(filename, newFilename)
+		if err != nil {
+			_ = component.Error("LogComponent.checkAndRenameFile", err.Error())
+		}
+	}
+}
+
+// get log absolute filename
+func (component *LogComponent) getLogFilename() string {
+	return component.logRootDir + "/app.log"
 }

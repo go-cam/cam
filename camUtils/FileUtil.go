@@ -61,6 +61,10 @@ func (util *FileUtil) AppendFile(filename string, content []byte) error {
 	}
 
 	file, err := os.OpenFile(filename, os.O_WRONLY, 0644)
+	defer func() {
+		_ = file.Close()
+	}()
+
 	if err != nil {
 		return err
 	}
@@ -88,4 +92,23 @@ func (util *FileUtil) ScanDir(dir string, withDir bool) ([]os.FileInfo, error) {
 // get parent dir
 func (util *FileUtil) Dir(dir string) string {
 	return filepath.Dir(dir)
+}
+
+// get file size in bytes. only support file
+func (util *FileUtil) Size(filename string) int64 {
+	fileInfo, err := os.Stat(filename)
+	if err != nil {
+		return 0
+	}
+	if fileInfo.IsDir() {
+		return 0
+	}
+
+	size := fileInfo.Size()
+	return size
+}
+
+// rename file or dir
+func (util *FileUtil) Rename(oldPath, newPath string) error {
+	return os.Rename(oldPath, newPath)
 }

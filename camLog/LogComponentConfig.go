@@ -18,11 +18,15 @@ type LogComponentConfig struct {
 	// Binary switch used
 	// constant defined in constant.go and cam.constant.go
 	WriteLevel camBase.LogLevel
+	// log file max size
+	// When the log file exceeds this size, a new file will be created. Old file will be renamed
+	FileMaxSize int64
 }
 
 func NewLogConfig() *LogComponentConfig {
 	config := new(LogComponentConfig)
 	config.PrintLevel = LevelDebug | LevelInfo | LevelWarn | LevelError
 	config.WriteLevel = LevelInfo | LevelWarn | LevelError
+	config.FileMaxSize = 10 * 1024 * 1024
 	return config
 }
