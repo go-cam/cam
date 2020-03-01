@@ -8,10 +8,12 @@ import (
 	"github.com/gorilla/sessions"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 // http server component
@@ -42,8 +44,6 @@ func (component *HttpComponent) Init(configInterface camBase.ComponentConfigInte
 	component.config = config
 	component.RouterPlugin.Init(&config.RouterPluginConfig)
 	component.ContextPlugin.Init(&config.ContextPluginConfig)
-
-	//component.controllerDict, component.controllerActionDict = camComponents.Common.GetControllerDict(component.config.ControllerList)
 	component.store = component.getFilesystemStore()
 }
 
@@ -88,18 +88,15 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 		panic("404")
 	}
 
-	session, err := component.store.Get(request, component.config.SessionName)
-	if err != nil {
-		panic("get session fail:" + err.Error())
-	}
-	sessionModel := NewHttpSession(session)
-	contextModel := component.NewContext()
-	contextModel.SetSession(sessionModel)
+	storeSession := component.getStoreSession(request)
+	session := NewHttpSession(storeSession)
+	context := component.NewContext()
+	context.SetSession(session)
 	values := component.getRequestValues(request)
 
 	controller.Init()
 	controller.SetApp(component.App)
-	controller.SetContext(contextModel)
+	controller.SetContext(context)
 	controller.SetValues(values)
 
 	if !controller.BeforeAction(action) {
@@ -108,7 +105,7 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	action.Call()
 	response := controller.AfterAction(action, controller.GetResponse())
 
-	err = session.Save(request, responseWriter)
+	err := storeSession.Save(request, responseWriter)
 	if err != nil {
 		panic(err)
 	}
@@ -203,4 +200,26 @@ func (component *HttpComponent) getRequestValues(request *http.Request) map[stri
 	}
 
 	return values
+}
+
+// get http session
+func (component *HttpComponent) getStoreSession(request *http.Request) *sessions.Session {
+	session, err := component.store.Get(request, component.config.SessionName)
+	if err != nil {
+		osPathErr, ok := err.(*os.PathError)
+		if !ok {
+			panic(err.Error())
+		}
+		syscallErr, ok := osPathErr.Err.(syscall.Errno)
+		if !ok {
+			panic(osPathErr.Err.Error())
+		}
+
+		// allow error: syscall.ERROR_FILE_NOT_FOUND
+		if syscallErr != syscall.ERROR_FILE_NOT_FOUND {
+			panic(syscallErr.Error())
+		}
+	}
+
+	return session
 }

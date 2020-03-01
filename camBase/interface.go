@@ -1,7 +1,6 @@
 package camBase
 
 import (
-	"net/http"
 	"xorm.io/xorm"
 )
 
@@ -53,39 +52,6 @@ type ComponentInterface interface {
 	Stop()
 	// set app instance
 	SetApp(app ApplicationInterface)
-}
-
-// controller interface
-// Deprecated: remove on vv0.3.0
-type ControllerBakInterface interface {
-	// init
-	Init()
-	// before action
-	BeforeAction(action string) bool
-	// after action
-	AfterAction(action string, response []byte) []byte
-
-	// set context
-	SetContext(context ContextInterface)
-	// get context
-	GetContext() ContextInterface
-
-	// set http values by http.ResponseWriter and http.Request
-	// 	Q:	what are the values?
-	//	A:	values are collection of http's get and post data sent by the client
-	SetHttpValues(w http.ResponseWriter, r *http.Request)
-	// set values.
-	// it will replace the original values
-	SetValues(values map[string]interface{})
-	// add value
-	// it will add key-value to values
-	AddValue(key string, value interface{})
-	// set app instance
-	SetApp(app ApplicationInterface)
-	// get action return
-	Read() []byte
-	// get default action
-	GetDefaultAction() string
 }
 
 // controller interface

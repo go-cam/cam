@@ -12,9 +12,8 @@ type Controller struct {
 	app     camBase.ApplicationInterface // app instance
 	context camBase.ContextInterface
 
-	values            map[string]interface{} // controller values
-	responseBytes     []byte                 // response bytes
-	defaultActionName string
+	values        map[string]interface{} // controller values
+	responseBytes []byte                 // response bytes
 
 	httpResponseWriter http.ResponseWriter
 	httpRequest        *http.Request
@@ -24,7 +23,6 @@ type Controller struct {
 func (controller *Controller) Init() {
 	controller.values = map[string]interface{}{}
 	controller.responseBytes = []byte("")
-	controller.defaultActionName = ""
 }
 
 // OVERWRITE
@@ -94,13 +92,9 @@ func (controller *Controller) GetResponse() []byte {
 	return controller.responseBytes
 }
 
-func (controller *Controller) SetDefaultActionName(actionName string) {
-	controller.defaultActionName = actionName
-}
-
 // OVERWRITE
 func (controller *Controller) GetDefaultActionName() string {
-	return controller.defaultActionName
+	return ""
 }
 
 // Only support on http request

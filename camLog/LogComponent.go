@@ -1,6 +1,7 @@
 package camLog
 
 import (
+	"errors"
 	"fmt"
 	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
@@ -12,7 +13,8 @@ type LogComponent struct {
 	camBase.Component
 	config *LogComponentConfig
 
-	logRootDir string
+	logRootDir  string
+	levelLabels map[camBase.LogLevel]string
 }
 
 // on App init
@@ -37,6 +39,7 @@ func (component *LogComponent) Init(configInterface camBase.ComponentConfigInter
 		err := camUtils.File.Mkdir(component.logRootDir)
 		camUtils.Error.Panic(err)
 	}
+	component.initLevelLabels()
 
 }
 
@@ -49,33 +52,67 @@ func (component *LogComponent) Start() {
 func (component *LogComponent) Stop() {
 	component.Component.Stop()
 }
+func (component *LogComponent) base(level camBase.LogLevel, title string, content string) error {
+	if !component.isBaseLevel(level) {
+		return errors.New("level is not basic level")
+	}
 
-func (component *LogComponent) baseLog(logType string, title string, content string) error {
+	levelLabel := component.getLevelLabels(level)
+
 	datetime := camUtils.Time.NowDateTime()
-	line := "[" + datetime + " " + logType + " " + title + "] " + content
+	line := "[" + datetime + " " + levelLabel + " " + title + "] " + content
 	filename := component.logRootDir + "/App.log"
 
-	if component.config.IsPrint {
+	if component.isOutputLevel(level, component.config.PrintLevel) {
 		fmt.Println(line)
 	}
-	if component.config.IsWrite {
+	if component.isOutputLevel(level, component.config.WriteLevel) {
 		return camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
 	return nil
 }
 
 func (component *LogComponent) Debug(title string, content string) error {
-	return component.baseLog("debug", title, content)
+	return component.base(LevelDebug, title, content)
 }
 
 func (component *LogComponent) Info(title string, content string) error {
-	return component.baseLog("info", title, content)
+	return component.base(LevelInfo, title, content)
 }
 
 func (component *LogComponent) Warn(title string, content string) error {
-	return component.baseLog("warning", title, content)
+	return component.base(LevelWarn, title, content)
 }
 
 func (component *LogComponent) Error(title string, content string) error {
-	return component.baseLog("error", title, content)
+	return component.base(LevelError, title, content)
+}
+
+// init level labels
+func (component *LogComponent) initLevelLabels() {
+	component.levelLabels = map[camBase.LogLevel]string{
+		LevelDebug: "D",
+		LevelInfo:  "I",
+		LevelWarn:  "W",
+		LevelError: "E",
+	}
+}
+
+// get level labels
+func (component *LogComponent) getLevelLabels(level camBase.LogLevel) string {
+	label, has := component.levelLabels[level]
+	if !has {
+		return ""
+	}
+	return label
+}
+
+// Whether output is required for detection level
+func (component *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outputLevel camBase.LogLevel) bool {
+	return targetLevel&outputLevel == targetLevel
+}
+
+// Whether level is basic level (debug, info, warn, error)
+func (component *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
+	return level == LevelDebug || level == LevelInfo || level == LevelWarn || level == LevelError
 }
