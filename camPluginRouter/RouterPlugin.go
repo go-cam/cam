@@ -85,7 +85,7 @@ func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBas
 	if !actionValue.IsValid() { // method not exists
 		return controller, nil
 	}
-	action = camBase.NewControllerAction(route, &actionValue)
+	action = NewControllerAction(route, &actionValue)
 
 	return controller, action
 }
@@ -118,7 +118,7 @@ func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerNam
 func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 	excludeDict := map[string]bool{}
 
-	t := reflect.TypeOf(new(camBase.Controller))
+	t := reflect.TypeOf(new(Controller))
 	methodLen := t.NumMethod()
 	for i := 0; i < methodLen; i++ {
 		method := t.Method(i)

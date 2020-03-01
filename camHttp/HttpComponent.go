@@ -2,7 +2,6 @@ package camHttp
 
 import (
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camPluginContext"
 	"github.com/go-cam/cam/camPluginRouter"
 	"github.com/go-cam/cam/camUtils"
@@ -93,7 +92,7 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	if err != nil {
 		panic("get session fail:" + err.Error())
 	}
-	sessionModel := camModels.NewHttpSession(session)
+	sessionModel := NewHttpSession(session)
 	contextModel := component.NewContext()
 	contextModel.SetSession(sessionModel)
 	values := component.getRequestValues(request)

@@ -32,6 +32,8 @@ type ApplicationInterface interface {
 	AddConfig(config AppConfigInterface)
 	// get value form .evn file
 	GetEvn(key string) string
+	// get params form camAppConfig.Config.Params
+	GetParam(key string) interface{}
 	// get migrate dict
 	GetMigrateDict() map[string]MigrationInterface
 }

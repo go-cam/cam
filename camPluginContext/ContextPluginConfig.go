@@ -12,7 +12,7 @@ type ContextPluginConfig struct {
 }
 
 func (config *ContextPluginConfig) Init() {
-	config.SetContextStruct(&camBase.Context{})
+	config.SetContextStruct(&Context{})
 }
 
 // set Context type

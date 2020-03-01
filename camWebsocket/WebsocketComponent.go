@@ -2,7 +2,6 @@ package camWebsocket
 
 import (
 	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camPluginContext"
 	"github.com/go-cam/cam/camPluginRouter"
 	"github.com/go-cam/cam/camUtils"
@@ -20,9 +19,7 @@ type WebsocketComponent struct {
 
 	config *WebsocketComponentConfig
 
-	upgrader             websocket.Upgrader         // struct of http upgrade to websocket
-	controllerDict       map[string]reflect.Type    // controller reflect.Type dict
-	controllerActionDict map[string]map[string]bool // map[controllerName]map[actionName]
+	upgrader websocket.Upgrader // struct of http upgrade to websocket
 
 	// message parse handler
 	//
@@ -55,9 +52,7 @@ func (component *WebsocketComponent) Init(configInterface camBase.ComponentConfi
 			return true
 		},
 	}
-	component.controllerDict = map[string]reflect.Type{}
-	component.controllerActionDict = map[string]map[string]bool{}
-	component.messageParseHandler = component.defaultRouteParseHandler
+	component.messageParseHandler = component.defaultMessageParseHandler
 	component.config = config
 	component.RouterPlugin.Init(&config.RouterPluginConfig)
 	component.ContextPlugin.Init(&config.ContextPluginConfig)
@@ -97,7 +92,7 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 		return
 	}
 
-	session := camModels.NewWebsocketSession(conn)
+	session := NewWebsocketSession(conn)
 	context := component.NewContext()
 	context.SetSession(session)
 
@@ -166,9 +161,9 @@ func (component *WebsocketComponent) callControllerAction(context camBase.Contex
 
 // default router parser.
 // Parse the received data to: controllerName、actionName、values
-func (component *WebsocketComponent) defaultRouteParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
-	messageModel := new(camModels.MessageModel)
-	responseModel := new(camModels.ResponseModel)
+func (component *WebsocketComponent) defaultMessageParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
+	messageModel := new(Message)
+	responseModel := new(Response)
 	camUtils.Json.DecodeToObj(message, messageModel)
 	camUtils.Json.DecodeToObj([]byte(messageModel.Data), responseModel)
 

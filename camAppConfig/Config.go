@@ -1,4 +1,4 @@
-package camModels
+package camAppConfig
 
 import (
 	"github.com/go-cam/cam/camBase"
@@ -10,15 +10,18 @@ type Config struct {
 	camBase.AppConfigInterface
 	// Application config
 	AppConfig *AppConfig
-	// Params required by the business logic
+	// Params.
+	// You can get value by cam.App.Param(key string)
 	Params map[string]interface{}
 	// Components's config
 	ComponentDict map[string]camBase.ComponentConfigInterface
 }
 
-// init params
-func (config *Config) Init() {
+// new config
+func NewConfig() *Config {
+	config := new(Config)
 	config.AppConfig = nil
 	config.ComponentDict = map[string]camBase.ComponentConfigInterface{}
 	config.Params = map[string]interface{}{}
+	return config
 }

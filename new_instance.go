@@ -1,19 +1,18 @@
 package cam
 
 import (
+	"github.com/go-cam/cam/camAppConfig"
 	"github.com/go-cam/cam/camConsole"
 	"github.com/go-cam/cam/camDatabase"
 	"github.com/go-cam/cam/camHttp"
 	"github.com/go-cam/cam/camLog"
-	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camWebsocket"
 )
 
 // new Application config
-func NewAppConfig() *camModels.AppConfig {
-	appConfig := new(camModels.AppConfig)
+func NewAppConfig() *camAppConfig.AppConfig {
+	appConfig := new(camAppConfig.AppConfig)
 	appConfig.DefaultDBName = "db"
-	appConfig.DefaultTemplatesDir = "common/templates"
 	return appConfig
 }
 
@@ -42,4 +41,9 @@ func NewLogConfig() *camLog.LogComponentConfig {
 	config := camLog.NewLogConfig()
 	config.Component = new(camLog.LogComponent)
 	return config
+}
+
+// new config
+func NewConfig() *camAppConfig.Config {
+	return camAppConfig.NewConfig()
 }

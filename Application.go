@@ -1,11 +1,11 @@
 package cam
 
 import (
+	"github.com/go-cam/cam/camAppConfig"
 	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camConsole"
 	"github.com/go-cam/cam/camConstants"
 	"github.com/go-cam/cam/camLog"
-	"github.com/go-cam/cam/camModels"
 	"github.com/go-cam/cam/camUtils"
 	"reflect"
 	"strconv"
@@ -17,7 +17,7 @@ type Application struct {
 	camBase.ApplicationInterface
 
 	status        camBase.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config        *camModels.Config                     // Application config
+	config        *camAppConfig.Config                  // Application config
 	logComponent  *camLog.LogComponent                  // log component
 	waitChan      chan bool                             // wait until call Application.Stop()'s sign
 	componentDict map[string]camBase.ComponentInterface // components dict
@@ -27,12 +27,12 @@ type Application struct {
 var App camBase.ApplicationInterface
 
 func init() {
-	camBase.App = newApplication()
+	camBase.App = NewApplication()
 	App = camBase.App
 }
 
 // new Application instance
-func newApplication() *Application {
+func NewApplication() *Application {
 	app := new(Application)
 	app.status = camConstants.ApplicationStatusInit
 	app.config = NewConfig()
@@ -48,7 +48,7 @@ func newApplication() *Application {
 //
 // config: new config
 func (app *Application) AddConfig(configI camBase.AppConfigInterface) {
-	config, ok := configI.(*camModels.Config)
+	config, ok := configI.(*camAppConfig.Config)
 	if !ok {
 		panic("Wrong type. need: *camModels.Config")
 	}
@@ -269,4 +269,13 @@ func (app *Application) Stop() {
 
 func (app *Application) GetMigrateDict() map[string]camBase.MigrationInterface {
 	return app.migrationDict
+}
+
+// get value form app.config.Params.
+func (app *Application) GetParam(key string) interface{} {
+	i, has := app.config.Params[key]
+	if !has {
+		return nil
+	}
+	return i
 }

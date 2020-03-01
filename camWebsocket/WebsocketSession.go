@@ -1,4 +1,4 @@
-package camModels
+package camWebsocket
 
 import (
 	"github.com/go-cam/cam/camUtils"
@@ -13,6 +13,7 @@ type WebsocketSession struct {
 	values    map[interface{}]interface{} // session 存储的 key value 数据
 }
 
+// Deprecated:
 func NewWebsocketSession(conn *websocket.Conn) *WebsocketSession {
 	model := new(WebsocketSession)
 	model.conn = conn

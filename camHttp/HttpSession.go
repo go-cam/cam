@@ -1,4 +1,4 @@
-package camModels
+package camHttp
 
 import (
 	"github.com/go-cam/cam/camBase"
