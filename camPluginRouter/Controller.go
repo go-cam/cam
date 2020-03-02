@@ -9,8 +9,8 @@ import (
 type Controller struct {
 	camBase.ControllerInterface
 
-	app     camBase.ApplicationInterface // app instance
 	context camBase.ContextInterface
+	session camBase.SessionInterface
 
 	values        map[string]interface{} // controller values
 	responseBytes []byte                 // response bytes
@@ -46,6 +46,16 @@ func (controller *Controller) GetContext() camBase.ContextInterface {
 }
 
 // OVERWRITE
+func (controller *Controller) SetSession(session camBase.SessionInterface) {
+	controller.session = session
+}
+
+// OVERWRITE
+func (controller *Controller) GetSession() camBase.SessionInterface {
+	return controller.session
+}
+
+// OVERWRITE
 // set values
 func (controller *Controller) SetValues(values map[string]interface{}) {
 	controller.values = values
@@ -68,17 +78,6 @@ func (controller *Controller) GetValue(key string) interface{} {
 		value = nil
 	}
 	return value
-}
-
-// OVERWRITE
-// set app instance
-func (controller *Controller) SetApp(app camBase.ApplicationInterface) {
-	controller.app = app
-}
-
-// Return app instance
-func (controller *Controller) GetApp() camBase.ApplicationInterface {
-	return controller.app
 }
 
 // set response content

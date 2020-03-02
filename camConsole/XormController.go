@@ -2,6 +2,7 @@ package camConsole
 
 import (
 	"fmt"
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
 )
 
@@ -29,7 +30,7 @@ func (controller *XormController) InstallCmdXorm() {
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
 func (controller *XormController) Generate() {
-	db := controller.GetApp().GetDB()
+	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}

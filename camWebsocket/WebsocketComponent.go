@@ -29,7 +29,7 @@ type WebsocketComponent struct {
 	// controllerName:  controller name
 	// actionName: 		action name
 	// values: 			send data, just like post form data
-	messageParseHandler camBase.WebsocketComponentMessageParseHandler
+	messageParseHandler camBase.WebsocketMessageParseHandler
 }
 
 // init
@@ -63,9 +63,11 @@ func (component *WebsocketComponent) Start() {
 	component.Component.Start()
 
 	if !component.config.SslOnly {
+		camBase.App.Info("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(component.config.Port), 10))
 		go component.listenAndServe()
 	}
 	if component.config.IsSslOn {
+		camBase.App.Info("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(component.config.SslPort), 10))
 		go component.listenAndServeTLS()
 	}
 }
@@ -103,25 +105,27 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 	}
 }
 
-// Use controller or custom message handler to get sendMessage
-func (component *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) (sendMessage []byte) {
+// call controller's action
+func (component *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) []byte {
 	defer func() {
 		if rec := recover(); rec != nil {
 			panic(rec)
 		}
 	}()
 
-	// call controller's action
-	sendMessage = component.callControllerAction(session, recvMessage)
-
-	return sendMessage
-}
-
-// call controller's action
-func (component *WebsocketComponent) callControllerAction(session camBase.SessionInterface, recvMessage []byte) []byte {
 	controllerName, actionName, values := component.messageParseHandler(recvMessage)
 
 	route := camUtils.Url.HumpToUrl(controllerName) + "/" + camUtils.Url.HumpToUrl(actionName)
+
+	handler := component.getCustomHandler(route)
+	if handler != nil {
+		websocketSession, ok := session.(*WebsocketSession)
+		if !ok {
+			panic("session cannot convert to *WebsocketSession")
+		}
+		return handler(websocketSession.GetConn())
+	}
+
 	controller, action := component.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("404")
@@ -185,4 +189,13 @@ func (component *WebsocketComponent) listenAndServeTLS() {
 	}
 	err := server.ListenAndServeTLS(component.config.SslCertFile, component.config.SslKeyFile)
 	camUtils.Error.Panic(err)
+}
+
+// get custom route handler
+func (component *WebsocketComponent) getCustomHandler(route string) camBase.WebsocketRouteHandler {
+	handler, has := component.config.routeHandlerDict[route]
+	if !has {
+		return nil
+	}
+	return handler
 }

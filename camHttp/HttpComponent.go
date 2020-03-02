@@ -52,9 +52,11 @@ func (component *HttpComponent) Start() {
 	component.Component.Start()
 
 	if !component.config.SslOnly {
+		camBase.App.Info("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(component.config.Port), 10))
 		go component.listenAndServe()
 	}
 	if component.config.IsSslOn {
+		camBase.App.Info("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(component.config.SslPort), 10))
 		go component.listenAndServeTLS()
 	}
 }
@@ -68,9 +70,7 @@ func (component *HttpComponent) Stop() {
 func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
-			responseWriter.WriteHeader(500)
 			panic(rec)
-			//_, _ = responseWriter.Write([]byte(rec.(string)))
 		}
 	}()
 
@@ -83,7 +83,13 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	} else {
 		route = dirs[0] + "/" + dirs[1]
 	}
-	controller, action := component.RouterPlugin.GetControllerAction(route)
+	handler := component.getCustomRoute(route)
+	if handler != nil {
+		handler(responseWriter, request)
+		return
+	}
+
+	controller, action := component.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("404")
 	}
@@ -221,4 +227,13 @@ func (component *HttpComponent) getStoreSession(request *http.Request) *sessions
 	}
 
 	return session
+}
+
+// get custom route handler
+func (component *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
+	handler, has := component.config.routeHandlerDict[route]
+	if !has {
+		return nil
+	}
+	return handler
 }

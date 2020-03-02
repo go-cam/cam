@@ -3,6 +3,7 @@ package camConsole
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-cam/cam/camBase"
 	"github.com/go-cam/cam/camUtils"
 	"html/template"
 	"regexp"
@@ -52,7 +53,7 @@ func (controller *MigrateController) Create() {
 
 // migrate up
 func (controller *MigrateController) Up() {
-	db := controller.GetApp().GetDB()
+	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}

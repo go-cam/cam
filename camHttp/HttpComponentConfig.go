@@ -17,6 +17,8 @@ type HttpComponentConfig struct {
 	Port        uint16
 	SessionName string
 	SessionKey  string
+
+	routeHandlerDict map[string]camBase.HttpRouteHandler
 }
 
 // new config
@@ -26,8 +28,15 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 	config.Port = port
 	config.SessionName = "cam"
 	config.SessionKey = "cam"
+	config.routeHandlerDict = map[string]camBase.HttpRouteHandler{}
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
 	config.ContextPluginConfig.Init()
 	return config
+}
+
+// add custom route handler.
+// its priority is higher than the controller.
+func (config *HttpComponentConfig) AddRoute(route string, handler camBase.HttpRouteHandler) {
+	config.routeHandlerDict[route] = handler
 }

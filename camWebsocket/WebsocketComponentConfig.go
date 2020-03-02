@@ -15,7 +15,6 @@ type WebsocketComponentConfig struct {
 	camPluginContext.ContextPluginConfig
 
 	Port uint16 // server port
-
 	// message parse handler
 	//
 	// message: Messages sent by clients
@@ -23,7 +22,9 @@ type WebsocketComponentConfig struct {
 	// controllerName:
 	// actionName:
 	// values: send data, just like post form data
-	MessageParseHandler camBase.WebsocketComponentMessageParseHandler
+	MessageParseHandler camBase.WebsocketMessageParseHandler
+
+	routeHandlerDict map[string]camBase.WebsocketRouteHandler
 }
 
 // new websocket component
@@ -31,8 +32,15 @@ func NewWebsocketComponentConfig(port uint16) *WebsocketComponentConfig {
 	config := new(WebsocketComponentConfig)
 	config.Component = &WebsocketComponent{}
 	config.Port = port
+	config.routeHandlerDict = map[string]camBase.WebsocketRouteHandler{}
 	config.SslPluginConfig.Init()
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
 	return config
+}
+
+// add custom route handler.
+// its priority is higher than the controller.
+func (config *WebsocketComponentConfig) AddRoute(route string, handler camBase.WebsocketRouteHandler) {
+	config.routeHandlerDict[route] = handler
 }

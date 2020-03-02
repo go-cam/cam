@@ -90,6 +90,7 @@ func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBas
 	return controller, action
 }
 
+// get controllerName and actionName
 func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerName string, actionName string) {
 	tmpArr := strings.Split(route, "/")
 
@@ -104,9 +105,9 @@ func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerNam
 	actionName = ""
 
 	tmpArrLen := len(tmpArr)
-	if tmpArrLen >= 2 {
+	if tmpArrLen >= 2 && tmpArr[1] != "" {
 		actionName = camUtils.Url.UrlToHump(tmpArr[1])
-	} else if tmpArrLen == 1 {
+	} else if tmpArrLen == 1 || (tmpArrLen >= 2 && tmpArr[1] == "") {
 		controller := controllerValue.Interface().(camBase.ControllerInterface)
 		actionName = controller.GetDefaultActionName()
 	}

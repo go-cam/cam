@@ -12,10 +12,10 @@ type HttpSession struct {
 	session *sessions.Session
 }
 
-func NewHttpSession(session *sessions.Session) *HttpSession {
-	model := new(HttpSession)
-	model.session = session
-	return model
+func NewHttpSession(storeSession *sessions.Session) *HttpSession {
+	session := new(HttpSession)
+	session.session = storeSession
+	return session
 }
 
 // set sessionId

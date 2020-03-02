@@ -7,6 +7,7 @@ import (
 	"github.com/go-cam/cam/camUtils"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,7 @@ type LogComponent struct {
 	logRootDir             string                      // file log dir
 	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
 	lastCheckFileTimestamp int64                       // last check file time
+	titleMaxLen            int                         // title max len
 }
 
 // on App init
@@ -44,6 +46,7 @@ func (component *LogComponent) Init(configInterface camBase.ComponentConfigInter
 	}
 	component.initLevelLabels()
 	component.lastCheckFileTimestamp = 0
+	component.titleMaxLen = 20
 
 }
 
@@ -64,7 +67,8 @@ func (component *LogComponent) base(level camBase.LogLevel, title string, conten
 	levelLabel := component.getLevelLabels(level)
 
 	datetime := camUtils.Time.NowDateTime()
-	line := "[" + datetime + " " + levelLabel + " " + title + "] " + content
+	spaceTitle := component.addSpaceToTitle(title)
+	line := "[" + datetime + " " + levelLabel + " " + spaceTitle + "] " + content
 	filename := component.getLogFilename()
 
 	if component.isOutputLevel(level, component.config.PrintLevel) {
@@ -144,4 +148,27 @@ func (component *LogComponent) checkAndRenameFile() {
 // get log absolute filename
 func (component *LogComponent) getLogFilename() string {
 	return component.logRootDir + "/app.log"
+}
+
+// add space before title
+func (component *LogComponent) addSpaceToTitle(title string) string {
+
+	titleLen := len(title)
+	if titleLen > component.titleMaxLen {
+		component.titleMaxLen = titleLen
+	}
+
+	strArr := make([]string, component.titleMaxLen)
+	spaceNum := component.titleMaxLen - titleLen
+	i := 0
+	for ; i < spaceNum; i++ {
+		strArr[i] = " "
+	}
+	titleArr := strings.Split(title, "")
+	for j := 0; j < titleLen; j++ {
+		index := i + j
+		strArr[index] = titleArr[j]
+	}
+
+	return strings.Join(strArr, "")
 }
