@@ -57,7 +57,6 @@ func (component *ConsoleComponent) RunAction() {
 		panic("route not found: " + route)
 	}
 	controller.Init()
-	controller.SetApp(component.App)
 	if !controller.BeforeAction(action) {
 		panic("invalid call")
 		return

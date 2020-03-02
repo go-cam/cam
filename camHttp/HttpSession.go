@@ -19,18 +19,18 @@ func NewHttpSession(session *sessions.Session) *HttpSession {
 }
 
 // set sessionId
-func (model *HttpSession) GetSessionId() string {
-	return model.session.ID
+func (session *HttpSession) GetSessionId() string {
+	return session.session.ID
 }
 
 // set key-value
-func (model *HttpSession) Set(key interface{}, value interface{}) {
-	model.session.Values[key] = value
+func (session *HttpSession) Set(key interface{}, value interface{}) {
+	session.session.Values[key] = value
 }
 
 // get value by key
-func (model *HttpSession) Get(key interface{}) interface{} {
-	value, has := model.session.Values[key]
+func (session *HttpSession) Get(key interface{}) interface{} {
+	value, has := session.session.Values[key]
 	if !has {
 		return nil
 	}
@@ -38,6 +38,6 @@ func (model *HttpSession) Get(key interface{}) interface{} {
 }
 
 // destroy session
-func (model *HttpSession) Destroy() {
-	model.session.Values = map[interface{}]interface{}{}
+func (session *HttpSession) Destroy() {
+	session.session.Values = map[interface{}]interface{}{}
 }

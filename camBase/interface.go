@@ -66,6 +66,10 @@ type ControllerInterface interface {
 	SetContext(context ContextInterface)
 	// get context
 	GetContext() ContextInterface
+	// set session
+	SetSession(session SessionInterface)
+	// get session
+	GetSession() SessionInterface
 	// set values.
 	// it will replace the original values
 	SetValues(values map[string]interface{})
@@ -91,10 +95,6 @@ type ControllerActionInterface interface {
 
 // context interface
 type ContextInterface interface {
-	// set session
-	SetSession(session SessionInterface)
-	// get session
-	GetSession() SessionInterface
 }
 
 // session interface

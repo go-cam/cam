@@ -89,14 +89,13 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	}
 
 	storeSession := component.getStoreSession(request)
-	session := NewHttpSession(storeSession)
 	context := component.NewContext()
-	context.SetSession(session)
+	session := NewHttpSession(storeSession)
 	values := component.getRequestValues(request)
 
 	controller.Init()
-	controller.SetApp(component.App)
 	controller.SetContext(context)
+	controller.SetSession(session)
 	controller.SetValues(values)
 
 	if !controller.BeforeAction(action) {

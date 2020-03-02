@@ -70,21 +70,6 @@ func (component *WebsocketComponent) Start() {
 	}
 }
 
-//// 设置 接受新连接的方法
-//func (component *WebsocketComponent) OnConnect(handler func(conn camBase.ContextInterface)) {
-//	component.onConnectHandler = handler
-//}
-//
-//// 设置 接受消息的方法
-//func (component *WebsocketComponent) OnMessage(handler func(conn camBase.ContextInterface, recvMessage []byte)) {
-//	component.onMessageHandler = handler
-//}
-//
-//// 设置 关闭连接的方法
-//func (component *WebsocketComponent) OnClose(handler func(conn camBase.ContextInterface)) {
-//	component.onCloseHandler = handler
-//}
-
 // new connection
 func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Request) {
 	conn, err := component.upgrader.Upgrade(w, r, nil)
@@ -93,8 +78,6 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 	}
 
 	session := NewWebsocketSession(conn)
-	context := component.NewContext()
-	context.SetSession(session)
 
 	defer func() {
 		session.Destroy()
@@ -107,9 +90,10 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 		if err != nil {
 			break
 		}
+
 		if messageType == websocket.TextMessage || messageType == websocket.BinaryMessage {
 			// Use controller or custom message handler to get sendMessage
-			sendMessage := component.getSendMessage(context, recvMessage)
+			sendMessage := component.getSendMessage(session, recvMessage)
 			if sendMessage != nil {
 				err = conn.WriteMessage(websocket.TextMessage, sendMessage)
 				if err != nil {
@@ -120,7 +104,7 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 }
 
 // Use controller or custom message handler to get sendMessage
-func (component *WebsocketComponent) getSendMessage(context camBase.ContextInterface, recvMessage []byte) (sendMessage []byte) {
+func (component *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) (sendMessage []byte) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			panic(rec)
@@ -128,13 +112,13 @@ func (component *WebsocketComponent) getSendMessage(context camBase.ContextInter
 	}()
 
 	// call controller's action
-	sendMessage = component.callControllerAction(context, recvMessage)
+	sendMessage = component.callControllerAction(session, recvMessage)
 
 	return sendMessage
 }
 
 // call controller's action
-func (component *WebsocketComponent) callControllerAction(context camBase.ContextInterface, recvMessage []byte) []byte {
+func (component *WebsocketComponent) callControllerAction(session camBase.SessionInterface, recvMessage []byte) []byte {
 	controllerName, actionName, values := component.messageParseHandler(recvMessage)
 
 	route := camUtils.Url.HumpToUrl(controllerName) + "/" + camUtils.Url.HumpToUrl(actionName)
@@ -143,10 +127,12 @@ func (component *WebsocketComponent) callControllerAction(context camBase.Contex
 		panic("404")
 	}
 
+	context := component.NewContext()
+
 	// init controller
 	controller.Init()
-	controller.SetApp(component.App)
 	controller.SetContext(context)
+	controller.SetSession(session)
 	controller.SetValues(values)
 
 	// call before action
