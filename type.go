@@ -1,9 +1,9 @@
 package cam
 
 import (
-	"github.com/go-cam/cam/camConsole"
-	"github.com/go-cam/cam/camPluginContext"
-	"github.com/go-cam/cam/camPluginRouter"
+	"github.com/go-cam/cam/component/camConsole"
+	"github.com/go-cam/cam/plugin/camPluginContext"
+	"github.com/go-cam/cam/plugin/camPluginRouter"
 )
 
 type Controller struct {

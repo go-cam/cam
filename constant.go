@@ -1,6 +1,6 @@
 package cam
 
-import "github.com/go-cam/cam/camLog"
+import "github.com/go-cam/cam/component/camLog"
 
 // package camLog
 const (

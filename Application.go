@@ -1,12 +1,12 @@
 package cam
 
 import (
-	"github.com/go-cam/cam/camAppConfig"
-	"github.com/go-cam/cam/camBase"
-	"github.com/go-cam/cam/camConsole"
-	"github.com/go-cam/cam/camConstants"
-	"github.com/go-cam/cam/camLog"
-	"github.com/go-cam/cam/camUtils"
+	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camConfig"
+	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component/camConsole"
+	"github.com/go-cam/cam/component/camLog"
 	"reflect"
 	"strconv"
 	"time"
@@ -17,7 +17,7 @@ type Application struct {
 	camBase.ApplicationInterface
 
 	status        camBase.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config        *camAppConfig.Config                  // Application config
+	config        *camConfig.Config                     // Application config
 	logComponent  *camLog.LogComponent                  // log component
 	waitChan      chan bool                             // wait until call Application.Stop()'s sign
 	componentDict map[string]camBase.ComponentInterface // components dict
@@ -48,7 +48,7 @@ func NewApplication() *Application {
 //
 // config: new config
 func (app *Application) AddConfig(configI camBase.AppConfigInterface) {
-	config, ok := configI.(*camAppConfig.Config)
+	config, ok := configI.(*camConfig.Config)
 	if !ok {
 		panic("Wrong type. need: *camModels.Config")
 	}
