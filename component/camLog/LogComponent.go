@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camUtils"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -23,20 +23,14 @@ type LogComponent struct {
 }
 
 // on App init
-func (component *LogComponent) Init(configInterface camBase.ComponentConfigInterface) {
-	component.Component.Init(configInterface)
+func (component *LogComponent) Init(configI camBase.ComponentConfigInterface) {
+	component.Component.Init(configI)
 
-	configValue := reflect.ValueOf(configInterface)
-	var config *LogComponentConfig
-	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*LogComponentConfig)
-	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(LogComponentConfig)
-		config = &configStruct
-	} else {
-		panic("illegal config")
+	var ok bool
+	component.config, ok = configI.(*LogComponentConfig)
+	if !ok {
+		camBase.App.Error("LogComponent", "invalid config")
 	}
-	component.config = config
 
 	// log output path
 	component.logRootDir = camUtils.File.GetRunPath() + "/runtime/log"
@@ -82,28 +76,28 @@ func (component *LogComponent) base(level camBase.LogLevel, title string, conten
 }
 
 func (component *LogComponent) Debug(title string, content string) error {
-	return component.base(LevelDebug, title, content)
+	return component.base(camConstants.LevelDebug, title, content)
 }
 
 func (component *LogComponent) Info(title string, content string) error {
-	return component.base(LevelInfo, title, content)
+	return component.base(camConstants.LevelInfo, title, content)
 }
 
 func (component *LogComponent) Warn(title string, content string) error {
-	return component.base(LevelWarn, title, content)
+	return component.base(camConstants.LevelWarn, title, content)
 }
 
 func (component *LogComponent) Error(title string, content string) error {
-	return component.base(LevelError, title, content)
+	return component.base(camConstants.LevelError, title, content)
 }
 
 // init level labels
 func (component *LogComponent) initLevelLabels() {
 	component.levelLabels = map[camBase.LogLevel]string{
-		LevelDebug: "D",
-		LevelInfo:  "I",
-		LevelWarn:  "W",
-		LevelError: "E",
+		camConstants.LevelDebug: "D",
+		camConstants.LevelInfo:  "I",
+		camConstants.LevelWarn:  "W",
+		camConstants.LevelError: "E",
 	}
 }
 
@@ -123,7 +117,7 @@ func (component *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outpu
 
 // Whether level is basic level (debug, info, warn, error)
 func (component *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
-	return level == LevelDebug || level == LevelInfo || level == LevelWarn || level == LevelError
+	return level == camConstants.LevelDebug || level == camConstants.LevelInfo || level == camConstants.LevelWarn || level == camConstants.LevelError
 }
 
 // Check if the file exceeds the configured size

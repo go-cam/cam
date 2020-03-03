@@ -6,10 +6,10 @@ import (
 )
 
 // app status
-type ApplicationStatus uint8
+type ApplicationStatus int
 
 // CamModule type
-type CamModuleType uint8
+type CamModuleType int
 
 // websocket component message parse handler
 type WebsocketMessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})

@@ -17,12 +17,12 @@ type DatabaseComponent struct {
 }
 
 // init
-func (component *DatabaseComponent) Init(configInterface camBase.ComponentConfigInterface) {
-	component.Component.Init(configInterface)
-	var done bool
-	component.config, done = configInterface.(*DatabaseComponentConfig)
-	if !done {
-		panic("configInterface type error. need [*configs.DatabaseComponent]")
+func (component *DatabaseComponent) Init(configI camBase.ComponentConfigInterface) {
+	component.Component.Init(configI)
+	var ok bool
+	component.config, ok = configI.(*DatabaseComponentConfig)
+	if !ok {
+		camBase.App.Error("DatabaseComponent", "invalid config")
 	}
 	component.engine = nil
 }

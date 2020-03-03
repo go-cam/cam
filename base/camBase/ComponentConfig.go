@@ -1,5 +1,9 @@
 package camBase
 
+import (
+	"reflect"
+)
+
 // base config
 type ComponentConfig struct {
 	ComponentConfigInterface
@@ -7,8 +11,17 @@ type ComponentConfig struct {
 }
 
 // get component instance
-func (config *ComponentConfig) GetComponent() ComponentInterface {
-	return config.Component
+func (config *ComponentConfig) NewComponent() ComponentInterface {
+	if config.Component == nil {
+		return nil
+	}
+
+	t := reflect.TypeOf(config.Component)
+	componentType := t.Elem()
+	componentValue := reflect.New(componentType)
+	componentI := componentValue.Interface().(ComponentInterface)
+
+	return componentI
 }
 
 // init all pluginConfig in configInterface

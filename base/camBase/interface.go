@@ -36,11 +36,13 @@ type ApplicationInterface interface {
 	GetParam(key string) interface{}
 	// get migrate dict
 	GetMigrateDict() map[string]MigrationInterface
+	// get cache engine
+	GetCache() CacheComponentInterface
 }
 
 // component config interface
 type ComponentConfigInterface interface {
-	GetComponent() ComponentInterface
+	NewComponent() ComponentInterface
 }
 
 // Component interface
@@ -154,15 +156,15 @@ type AppConfigInterface interface {
 // cache config interface
 type CacheComponentInterface interface {
 	// set cache storage default duration
-	Put(key string, value interface{}) error
+	Set(key string, value interface{}) error
 	// set cache storage custom duration
-	PutDuration(key string, value interface{}, duration time.Duration) error
-	// is the key exists
+	SetDuration(key string, value interface{}, duration time.Duration) error
+	// whether the key exists
 	Exists(key string) bool
 	// get value by key
 	Get(key string) interface{}
 	// delete cache
-	Delete(key string) error
+	Del(keys ...string) error
 	// delete all cache
 	Flush() error
 }

@@ -1,13 +1,22 @@
 package cam
 
-import "github.com/go-cam/cam/component/camLog"
+import (
+	"github.com/go-cam/cam/base/camConstants"
+)
 
-// package camLog
+// app
 const (
-	LogLevelDebug = camLog.LevelDebug // debug log
-	LogLevelInfo  = camLog.LevelInfo  // info log
-	LogLevelWarn  = camLog.LevelWarn  // warning log
-	LogLevelError = camLog.LevelError // error log
+	AppStatusInit  = camConstants.AppStatusInit
+	AppStatusStart = camConstants.AppStatusStart
+	AppStatusStop  = camConstants.AppStatusStop
+)
+
+// Log
+const (
+	LogLevelDebug = camConstants.LevelDebug // debug log
+	LogLevelInfo  = camConstants.LevelInfo  // info log
+	LogLevelWarn  = camConstants.LevelWarn  // warning log
+	LogLevelError = camConstants.LevelError // error log
 
 	LogLevelNone    = 0                                                           // none level
 	LogLevelSuggest = LogLevelInfo | LogLevelWarn | LogLevelError                 // suggest level

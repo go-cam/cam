@@ -10,18 +10,11 @@ type Component struct {
 
 	// component name
 	name string
-	// App instance
-	App ApplicationInterface
-}
-
-// set App instance
-func (component *Component) SetApp(app ApplicationInterface) {
-	component.App = app
 }
 
 // init config
 func (component *Component) Init(configInterface ComponentConfigInterface) {
-	component.name = component.getComponentName(configInterface.GetComponent())
+	component.name = component.getComponentName(configInterface.NewComponent())
 }
 
 // start

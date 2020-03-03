@@ -1,6 +1,9 @@
 package camLog
 
-import "github.com/go-cam/cam/base/camBase"
+import (
+	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camConstants"
+)
 
 type LogComponentConfig struct {
 	camBase.ComponentConfig
@@ -25,8 +28,8 @@ type LogComponentConfig struct {
 
 func NewLogConfig() *LogComponentConfig {
 	config := new(LogComponentConfig)
-	config.PrintLevel = LevelDebug | LevelInfo | LevelWarn | LevelError
-	config.WriteLevel = LevelInfo | LevelWarn | LevelError
+	config.PrintLevel = camConstants.LevelDebug | camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError
+	config.WriteLevel = camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError
 	config.FileMaxSize = 10 * 1024 * 1024
 	return config
 }

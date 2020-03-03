@@ -7,7 +7,6 @@ import (
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"reflect"
 	"strconv"
 	"strings"
 )
@@ -33,29 +32,22 @@ type WebsocketComponent struct {
 }
 
 // init
-func (component *WebsocketComponent) Init(configInterface camBase.ComponentConfigInterface) {
-	component.Component.Init(configInterface)
+func (component *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
+	component.Component.Init(configI)
 
-	configValue := reflect.ValueOf(configInterface)
-	var config *WebsocketComponentConfig
-	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*WebsocketComponentConfig)
-	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(WebsocketComponentConfig)
-		config = &configStruct
-	} else {
-		panic("illegal config")
+	var ok bool
+	component.config, ok = configI.(*WebsocketComponentConfig)
+	if !ok {
+		camBase.App.Error("WebsocketComponent", "invalid config")
 	}
-
 	component.upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 	}
 	component.messageParseHandler = component.defaultMessageParseHandler
-	component.config = config
-	component.RouterPlugin.Init(&config.RouterPluginConfig)
-	component.ContextPlugin.Init(&config.ContextPluginConfig)
+	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
+	component.ContextPlugin.Init(&component.config.ContextPluginConfig)
 }
 
 // start

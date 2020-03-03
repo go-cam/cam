@@ -6,7 +6,6 @@ import (
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"os"
-	"reflect"
 	"xorm.io/xorm"
 )
 
@@ -19,26 +18,17 @@ type ConsoleComponent struct {
 }
 
 // init
-func (component *ConsoleComponent) Init(configInterface camBase.ComponentConfigInterface) {
-	component.Component.Init(configInterface)
+func (component *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
+	component.Component.Init(configI)
 
-	configValue := reflect.ValueOf(configInterface)
-	var config *ConsoleComponentConfig
-	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*ConsoleComponentConfig)
-	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(ConsoleComponentConfig)
-		config = &configStruct
-	} else {
-		panic("illegal config")
+	var ok bool
+	component.config, ok = configI.(*ConsoleComponentConfig)
+	if !ok {
+		camBase.App.Error("ConsoleComponent", "invalid config")
 	}
-	component.config = config
-
-	// register controller
-	//component.controllerDict, component.controllerActionDict = camComponents.Common.GetControllerDict(config.ControllerList)
 
 	// init router plugin
-	component.RouterPlugin.Init(&config.RouterPluginConfig)
+	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
 }
 
 // run command

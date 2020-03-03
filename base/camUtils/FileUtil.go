@@ -38,6 +38,9 @@ func (util *FileUtil) Mkdir(path string) error {
 // read all content from file
 func (util *FileUtil) ReadFile(filePath string) ([]byte, error) {
 	file, err := os.Open(filePath)
+	defer func() {
+		_ = file.Close()
+	}()
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +67,6 @@ func (util *FileUtil) AppendFile(filename string, content []byte) error {
 	defer func() {
 		_ = file.Close()
 	}()
-
 	if err != nil {
 		return err
 	}
@@ -78,7 +80,7 @@ func (util *FileUtil) AppendFile(filename string, content []byte) error {
 }
 
 // delete file
-func (util *FileUtil) DeleteFile(filename string) error {
+func (util *FileUtil) Remove(filename string) error {
 	return os.Remove(filename)
 }
 
@@ -111,4 +113,23 @@ func (util *FileUtil) Size(filename string) int64 {
 // rename file or dir
 func (util *FileUtil) Rename(oldPath, newPath string) error {
 	return os.Rename(oldPath, newPath)
+}
+
+// remove all of file inside the path
+func (util *FileUtil) RemoveAll(path string) error {
+	return os.RemoveAll(path)
+}
+
+// get fileInfo
+func (util *FileUtil) Stat(path string) (os.FileInfo, error) {
+	return os.Stat(path)
+}
+
+// check path whether dir
+func (util *FileUtil) IsDir(path string) bool {
+	fileInfo, err := util.Stat(path)
+	if err != nil || fileInfo == nil {
+		return false
+	}
+	return fileInfo.IsDir()
 }

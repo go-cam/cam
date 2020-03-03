@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,23 +26,16 @@ type HttpComponent struct {
 }
 
 // init
-func (component *HttpComponent) Init(configInterface camBase.ComponentConfigInterface) {
-	component.Component.Init(configInterface)
+func (component *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
+	component.Component.Init(configI)
 
-	configValue := reflect.ValueOf(configInterface)
-	var config *HttpComponentConfig
-	if configValue.Kind() == reflect.Ptr {
-		config = configValue.Interface().(*HttpComponentConfig)
-	} else if configValue.Kind() == reflect.Struct {
-		configStruct := configValue.Interface().(HttpComponentConfig)
-		config = &configStruct
-	} else {
-		panic("illegal config")
+	var ok bool
+	component.config, ok = configI.(*HttpComponentConfig)
+	if !ok {
+		camBase.App.Error("HttpComponent", "invalid config")
 	}
-
-	component.config = config
-	component.RouterPlugin.Init(&config.RouterPluginConfig)
-	component.ContextPlugin.Init(&config.ContextPluginConfig)
+	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
+	component.ContextPlugin.Init(&component.config.ContextPluginConfig)
 	component.store = component.getFilesystemStore()
 }
 

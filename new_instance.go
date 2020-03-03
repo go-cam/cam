@@ -2,6 +2,7 @@ package cam
 
 import (
 	"github.com/go-cam/cam/base/camConfig"
+	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
 	"github.com/go-cam/cam/component/camHttp"
@@ -46,4 +47,17 @@ func NewLogConfig() *camLog.LogComponentConfig {
 // new config
 func NewConfig() *camConfig.Config {
 	return camConfig.NewConfig()
+}
+
+// new cache config
+func NewCacheConfig() *camCache.CacheComponentConfig {
+	return camCache.NewCacheConfig()
+}
+
+func NewFileCache() *camCache.FileCache {
+	return camCache.NewFileCache()
+}
+
+func NewRedisCache() *camCache.RedisCache {
+	return camCache.NewRedisEngine()
 }

@@ -5,9 +5,10 @@ import (
 	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
+	"github.com/go-cam/cam/component/camDatabase"
 	"github.com/go-cam/cam/component/camLog"
-	"reflect"
 	"strconv"
 	"time"
 )
@@ -19,6 +20,7 @@ type Application struct {
 	status        camBase.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
 	config        *camConfig.Config                     // Application config
 	logComponent  *camLog.LogComponent                  // log component
+	cache         camBase.CacheComponentInterface       // cache component
 	waitChan      chan bool                             // wait until call Application.Stop()'s sign
 	componentDict map[string]camBase.ComponentInterface // components dict
 	migrationDict map[string]camBase.MigrationInterface // migration map
@@ -34,10 +36,11 @@ func init() {
 // new Application instance
 func NewApplication() *Application {
 	app := new(Application)
-	app.status = camConstants.ApplicationStatusInit
+	app.status = camConstants.AppStatusInit
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
 	app.waitChan = make(chan bool)
+	app.cache = nil
 	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.migrationDict = map[string]camBase.MigrationInterface{}
 	return app
@@ -84,17 +87,14 @@ func (app *Application) Run() {
 func (app *Application) onInit() {
 	// read config component
 	for name, config := range app.config.ComponentDict {
-		componentInterface := config.GetComponent()
-		t := reflect.TypeOf(componentInterface)
-		componentType := t.Elem()
-		componentValue := reflect.New(componentType)
-		componentInterface = componentValue.Interface().(camBase.ComponentInterface)
-		componentInterface.Init(config)
-		componentInterface.SetApp(app)
-		app.componentDict[name] = componentInterface
+		componentI := config.NewComponent()
+		componentI.Init(config)
+		app.componentDict[name] = componentI
 	}
 	// init core component
 	app.initCoreComponent()
+
+	app.status = AppStatusInit
 }
 
 // startup all components
@@ -104,6 +104,8 @@ func (app *Application) onStart() {
 		app.Info("runtime", "start component:"+name)
 	}
 	app.Info("runtime", "Application start finished.")
+
+	app.status = AppStatusStart
 }
 
 // stop all components
@@ -113,6 +115,8 @@ func (app *Application) onStop() {
 		app.Info("runtime", "stop component:"+name)
 	}
 	app.Info("runtime", "Application stop finished.")
+
+	app.status = AppStatusStop
 }
 
 // Wait until the app call Stop()
@@ -208,7 +212,10 @@ func (app *Application) GetComponentByName(name string) camBase.ComponentInterfa
 func (app *Application) GetDB() camBase.DatabaseComponentInterface {
 	dbCompI := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
 	if dbCompI == nil {
-		return nil
+		dbCompI = app.GetComponent(&camDatabase.DatabaseComponent{})
+		if dbCompI == nil {
+			return nil
+		}
 	}
 
 	dbComp, ok := dbCompI.(camBase.DatabaseComponentInterface)
@@ -278,4 +285,54 @@ func (app *Application) GetParam(key string) interface{} {
 		return nil
 	}
 	return i
+}
+
+// get cache component
+func (app *Application) GetCache() camBase.CacheComponentInterface {
+	if app.cache != nil {
+		return app.cache
+	}
+
+	var ok bool
+	compI := app.GetComponent(&camCache.CacheComponent{})
+	if compI == nil {
+		compI = app.createDefaultCacheComponent()
+		app.cache, ok = compI.(camBase.CacheComponentInterface)
+		if !ok {
+			app.Error("Application.GetCache", "create default cache fail")
+		}
+	} else {
+		app.cache, ok = compI.(camBase.CacheComponentInterface)
+		if !ok {
+			app.Error("Application.GetCache", "convert fail")
+			return nil
+		}
+	}
+
+	return app.cache
+}
+
+func (app *Application) createDefaultCacheComponent() camBase.ComponentInterface {
+	cacheConfig := NewCacheConfig()
+	componentI := cacheConfig.NewComponent()
+	componentName := "cache"
+
+	i := 0
+	for {
+		tmpComponent := app.GetComponentByName(componentName)
+		if tmpComponent == nil {
+			break
+		}
+		componentName = "cache_" + strconv.Itoa(i)
+		i++
+	}
+	if app.status >= AppStatusInit {
+		componentI.Init(cacheConfig)
+	}
+	if app.status == AppStatusStart {
+		componentI.Start()
+	}
+
+	app.componentDict[componentName] = componentI
+	return componentI
 }
