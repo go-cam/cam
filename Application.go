@@ -101,9 +101,9 @@ func (app *Application) onInit() {
 func (app *Application) onStart() {
 	for name, component := range app.componentDict {
 		go component.Start()
-		app.Info("runtime", "start component:"+name)
+		app.Info("Application.onStart", "start component:"+name)
 	}
-	app.Info("runtime", "Application start finished.")
+	app.Info("Application.onStart", "Application start finished.")
 
 	app.status = AppStatusStart
 }
@@ -112,9 +112,9 @@ func (app *Application) onStart() {
 func (app *Application) onStop() {
 	for name, component := range app.componentDict {
 		component.Stop()
-		app.Info("runtime", "stop component:"+name)
+		app.Info("Application.onStop", "stop component:"+name)
 	}
-	app.Info("runtime", "Application stop finished.")
+	app.Info("Application.onStop", "Application stop finished.")
 
 	app.status = AppStatusStop
 }
@@ -169,7 +169,7 @@ func (app *Application) callConsole() {
 	}
 
 	if !isCallConsole {
-		app.Info("runtime-console", "the console component is not enabled.")
+		app.Warn("Application.callConsole", "the console component is not enabled.")
 	}
 }
 

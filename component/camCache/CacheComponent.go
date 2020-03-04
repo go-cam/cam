@@ -22,6 +22,11 @@ func (comp *CacheComponent) Init(configI camBase.ComponentConfigInterface) {
 	if !ok {
 		camBase.App.Error("CacheComponent", "invalid config")
 	}
+
+	err := comp.config.Engine.Init()
+	if err != nil {
+		camBase.App.Error("CacheComponent.Init", err.Error())
+	}
 }
 
 // start

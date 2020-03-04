@@ -8,6 +8,7 @@ import (
 	"github.com/go-cam/cam/base/camUtils"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -20,90 +21,101 @@ type LogComponent struct {
 	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
 	lastCheckFileTimestamp int64                       // last check file time
 	titleMaxLen            int                         // title max len
+	logChan                chan bool
+	mutex                  sync.Mutex
 }
 
 // on App init
-func (component *LogComponent) Init(configI camBase.ComponentConfigInterface) {
-	component.Component.Init(configI)
+func (comp *LogComponent) Init(configI camBase.ComponentConfigInterface) {
+	comp.Component.Init(configI)
 
 	var ok bool
-	component.config, ok = configI.(*LogComponentConfig)
+	comp.config, ok = configI.(*LogComponentConfig)
 	if !ok {
 		camBase.App.Error("LogComponent", "invalid config")
 	}
 
 	// log output path
-	component.logRootDir = camUtils.File.GetRunPath() + "/runtime/log"
-	if !camUtils.File.Exists(component.logRootDir) {
-		err := camUtils.File.Mkdir(component.logRootDir)
+	comp.logRootDir = camUtils.File.GetRunPath() + "/runtime/log"
+	if !camUtils.File.Exists(comp.logRootDir) {
+		err := camUtils.File.Mkdir(comp.logRootDir)
 		camUtils.Error.Panic(err)
 	}
-	component.initLevelLabels()
-	component.lastCheckFileTimestamp = 0
-	component.titleMaxLen = 20
-
+	comp.initLevelLabels()
+	comp.lastCheckFileTimestamp = 0
+	comp.titleMaxLen = 32
 }
 
 // on App start
-func (component *LogComponent) Start() {
-	component.Component.Start()
+func (comp *LogComponent) Start() {
+	comp.Component.Start()
 }
 
 // before App destroy
-func (component *LogComponent) Stop() {
-	component.Component.Stop()
+func (comp *LogComponent) Stop() {
+	comp.Component.Stop()
 }
-func (component *LogComponent) base(level camBase.LogLevel, title string, content string) error {
-	if !component.isBaseLevel(level) {
+func (comp *LogComponent) base(level camBase.LogLevel, title string, content string) error {
+	comp.mutex.Lock()
+	defer func() {
+		comp.mutex.Unlock()
+	}()
+
+	if !comp.isBaseLevel(level) {
 		return errors.New("level is not basic level")
 	}
+	isPrint := comp.isOutputLevel(level, comp.config.PrintLevel)
+	isWrite := comp.isOutputLevel(level, comp.config.WriteLevel)
+	if !isPrint && !isWrite {
+		return nil
+	}
 
-	levelLabel := component.getLevelLabels(level)
-
+	var err error = nil
+	levelLabel := comp.getLevelLabels(level)
 	datetime := camUtils.Time.NowDateTime()
-	spaceTitle := component.addSpaceToTitle(title)
-	line := "[" + datetime + " " + levelLabel + " " + spaceTitle + "] " + content
-	filename := component.getLogFilename()
+	spaceTitle := comp.addSpaceToTitle(title)
+	line := "[ " + datetime + " " + levelLabel + " | " + spaceTitle + " ] " + content
+	filename := comp.getLogFilename()
 
-	if component.isOutputLevel(level, component.config.PrintLevel) {
+	if isPrint {
 		fmt.Println(line)
 	}
-	if component.isOutputLevel(level, component.config.WriteLevel) {
-		component.checkAndRenameFile()
-		return camUtils.File.AppendFile(filename, []byte(line+"\n"))
+	if isWrite {
+		comp.checkAndRenameFile()
+		err = camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
-	return nil
+	return err
 }
 
-func (component *LogComponent) Debug(title string, content string) error {
-	return component.base(camConstants.LevelDebug, title, content)
+func (comp *LogComponent) Debug(title string, content string) error {
+	return comp.base(camConstants.LevelDebug, title, content)
 }
 
-func (component *LogComponent) Info(title string, content string) error {
-	return component.base(camConstants.LevelInfo, title, content)
+func (comp *LogComponent) Info(title string, content string) error {
+	return comp.base(camConstants.LevelInfo, title, content)
 }
 
-func (component *LogComponent) Warn(title string, content string) error {
-	return component.base(camConstants.LevelWarn, title, content)
+func (comp *LogComponent) Warn(title string, content string) error {
+	return comp.base(camConstants.LevelWarn, title, content)
 }
 
-func (component *LogComponent) Error(title string, content string) error {
-	return component.base(camConstants.LevelError, title, content)
+func (comp *LogComponent) Error(title string, content string) error {
+	return comp.base(camConstants.LevelError, title, content)
 }
 
 // init level labels
-func (component *LogComponent) initLevelLabels() {
-	component.levelLabels = map[camBase.LogLevel]string{
-		camConstants.LevelDebug: "D",
-		camConstants.LevelInfo:  "I",
-		camConstants.LevelWarn:  "W",
-		camConstants.LevelError: "E",
+func (comp *LogComponent) initLevelLabels() {
+	comp.levelLabels = map[camBase.LogLevel]string{
+		camConstants.LevelDebug: "DEBUG",
+		camConstants.LevelInfo:  "INFO ",
+		camConstants.LevelWarn:  "WARN ",
+		camConstants.LevelError: "ERROR",
 	}
 }
 
 // get level labels
-func (component *LogComponent) getLevelLabels(level camBase.LogLevel) string {
-	label, has := component.levelLabels[level]
+func (comp *LogComponent) getLevelLabels(level camBase.LogLevel) string {
+	label, has := comp.levelLabels[level]
 	if !has {
 		return ""
 	}
@@ -111,58 +123,49 @@ func (component *LogComponent) getLevelLabels(level camBase.LogLevel) string {
 }
 
 // Whether output is required for detection level
-func (component *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outputLevel camBase.LogLevel) bool {
+func (comp *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outputLevel camBase.LogLevel) bool {
 	return targetLevel&outputLevel == targetLevel
 }
 
 // Whether level is basic level (debug, info, warn, error)
-func (component *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
+func (comp *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
 	return level == camConstants.LevelDebug || level == camConstants.LevelInfo || level == camConstants.LevelWarn || level == camConstants.LevelError
 }
 
 // Check if the file exceeds the configured size
-func (component *LogComponent) checkAndRenameFile() {
+func (comp *LogComponent) checkAndRenameFile() {
 	now := time.Now().Unix()
-	if now < component.lastCheckFileTimestamp+10 {
+	if now < comp.lastCheckFileTimestamp+10 {
 		return
 	}
-	component.lastCheckFileTimestamp = now
+	comp.lastCheckFileTimestamp = now
 
-	filename := component.getLogFilename()
+	filename := comp.getLogFilename()
 	fileSize := camUtils.File.Size(filename)
-	if fileSize >= component.config.FileMaxSize {
-		newFilename := component.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
+	if fileSize >= comp.config.FileMaxSize {
+		newFilename := comp.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
 		err := camUtils.File.Rename(filename, newFilename)
 		if err != nil {
-			_ = component.Error("LogComponent.checkAndRenameFile", err.Error())
+			_ = comp.Error("LogComponent.checkAndRenameFile", err.Error())
 		}
 	}
 }
 
 // get log absolute filename
-func (component *LogComponent) getLogFilename() string {
-	return component.logRootDir + "/app.log"
+func (comp *LogComponent) getLogFilename() string {
+	return comp.logRootDir + "/app.log"
 }
 
 // add space before title
-func (component *LogComponent) addSpaceToTitle(title string) string {
+func (comp *LogComponent) addSpaceToTitle(title string) string {
 
 	titleLen := len(title)
-	if titleLen > component.titleMaxLen {
-		component.titleMaxLen = titleLen
+	if titleLen > comp.titleMaxLen {
+		comp.titleMaxLen = titleLen
 	}
 
-	strArr := make([]string, component.titleMaxLen)
-	spaceNum := component.titleMaxLen - titleLen
-	i := 0
-	for ; i < spaceNum; i++ {
-		strArr[i] = " "
-	}
-	titleArr := strings.Split(title, "")
-	for j := 0; j < titleLen; j++ {
-		index := i + j
-		strArr[index] = titleArr[j]
-	}
+	spaceNum := comp.titleMaxLen - titleLen
+	strArr := make([]string, spaceNum)
 
-	return strings.Join(strArr, "")
+	return title + strings.Join(strArr, " ")
 }
