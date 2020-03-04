@@ -26,40 +26,40 @@ type HttpComponent struct {
 }
 
 // init
-func (component *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
-	component.Component.Init(configI)
+func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
+	comp.Component.Init(configI)
 
 	var ok bool
-	component.config, ok = configI.(*HttpComponentConfig)
+	comp.config, ok = configI.(*HttpComponentConfig)
 	if !ok {
 		camBase.App.Error("HttpComponent", "invalid config")
 	}
-	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
-	component.ContextPlugin.Init(&component.config.ContextPluginConfig)
-	component.store = component.getFilesystemStore()
+	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
+	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
+	comp.store = comp.getFilesystemStore()
 }
 
 // start
-func (component *HttpComponent) Start() {
-	component.Component.Start()
+func (comp *HttpComponent) Start() {
+	comp.Component.Start()
 
-	if !component.config.SslOnly {
-		camBase.App.Info("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(component.config.Port), 10))
-		go component.listenAndServe()
+	if !comp.config.SslOnly {
+		camBase.App.Info("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		go comp.listenAndServe()
 	}
-	if component.config.IsSslOn {
-		camBase.App.Info("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(component.config.SslPort), 10))
-		go component.listenAndServeTLS()
+	if comp.config.IsSslOn {
+		camBase.App.Info("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		go comp.listenAndServeTLS()
 	}
 }
 
 // stop
-func (component *HttpComponent) Stop() {
-	component.Component.Stop()
+func (comp *HttpComponent) Stop() {
+	comp.Component.Stop()
 }
 
 // Receive http request, Call controller action, Send http response
-func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
+func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			panic(rec)
@@ -75,21 +75,21 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 	} else {
 		route = dirs[0] + "/" + dirs[1]
 	}
-	handler := component.getCustomRoute(route)
+	handler := comp.getCustomRoute(route)
 	if handler != nil {
 		handler(responseWriter, request)
 		return
 	}
 
-	controller, action := component.GetControllerAction(route)
+	controller, action := comp.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("404")
 	}
 
-	storeSession := component.getStoreSession(request)
-	context := component.NewContext()
+	storeSession := comp.getStoreSession(request)
+	context := comp.NewContext()
 	session := NewHttpSession(storeSession)
-	values := component.getRequestValues(request)
+	values := comp.getRequestValues(request)
 
 	controller.Init()
 	controller.SetContext(context)
@@ -115,7 +115,7 @@ func (component *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, 
 }
 
 // get session store
-func (component *HttpComponent) getFilesystemStore() *sessions.FilesystemStore {
+func (comp *HttpComponent) getFilesystemStore() *sessions.FilesystemStore {
 	runtimeDir := camUtils.File.GetRunPath() + "/runtime/session"
 	if !camUtils.File.Exists(runtimeDir) {
 		err := camUtils.File.Mkdir(runtimeDir)
@@ -127,11 +127,11 @@ func (component *HttpComponent) getFilesystemStore() *sessions.FilesystemStore {
 }
 
 // enable server
-func (component *HttpComponent) listenAndServe() {
+func (comp *HttpComponent) listenAndServe() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
+	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.config.Port), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.Port), 10),
 		Handler: mux,
 	}
 	err := server.ListenAndServe()
@@ -139,19 +139,19 @@ func (component *HttpComponent) listenAndServe() {
 }
 
 // enable server with SSl
-func (component *HttpComponent) listenAndServeTLS() {
+func (comp *HttpComponent) listenAndServeTLS() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
+	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.config.SslPort), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.SslPort), 10),
 		Handler: mux,
 	}
-	err := server.ListenAndServeTLS(component.config.SslCertFile, component.config.SslKeyFile)
+	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
 	camUtils.Error.Panic(err)
 }
 
 // get request params
-func (component *HttpComponent) getRequestValues(request *http.Request) map[string]interface{} {
+func (comp *HttpComponent) getRequestValues(request *http.Request) map[string]interface{} {
 	values := map[string]interface{}{}
 
 	// parse params from request url
@@ -200,8 +200,8 @@ func (component *HttpComponent) getRequestValues(request *http.Request) map[stri
 }
 
 // get http session
-func (component *HttpComponent) getStoreSession(request *http.Request) *sessions.Session {
-	session, err := component.store.Get(request, component.config.SessionName)
+func (comp *HttpComponent) getStoreSession(request *http.Request) *sessions.Session {
+	session, err := comp.store.Get(request, comp.config.SessionName)
 	if err != nil {
 		osPathErr, ok := err.(*os.PathError)
 		if !ok {
@@ -222,8 +222,8 @@ func (component *HttpComponent) getStoreSession(request *http.Request) *sessions
 }
 
 // get custom route handler
-func (component *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
-	handler, has := component.config.routeHandlerDict[route]
+func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
+	handler, has := comp.config.routeHandlerDict[route]
 	if !has {
 		return nil
 	}

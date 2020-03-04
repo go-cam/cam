@@ -12,7 +12,7 @@ type XormController struct {
 }
 
 // install github.com/go-xorm/cmd/xorm
-func (controller *XormController) InstallCmdXorm() {
+func (ctrl *XormController) InstallCmdXorm() {
 	_ = camUtils.Console.Start("go get github.com/go-xorm/cmd/xorm")
 }
 
@@ -29,14 +29,14 @@ func (controller *XormController) InstallCmdXorm() {
 //		generatedPath     This parameter is optional, if blank, the default value is model, then will
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
-func (controller *XormController) Generate() {
+func (ctrl *XormController) Generate() {
 	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}
 
 	dsn := db.GetDSN()
-	console := controller.GetConsoleComponent()
+	console := ctrl.GetConsoleComponent()
 	tplDir := console.config.XormTemplateDir
 	dbDir := console.config.DatabaseDir
 	modelsDir := dbDir + "/models"

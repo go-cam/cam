@@ -16,26 +16,26 @@ type MigrateController struct {
 }
 
 // create migration's file
-func (controller *MigrateController) Create() {
-	name := controller.GetArgv(0)
+func (ctrl *MigrateController) Create() {
+	name := ctrl.GetArgv(0)
 	if len(name) == 0 {
 		name = "new_migrate"
 	}
-	if !controller.validName(name) {
+	if !ctrl.validName(name) {
 		fmt.Println("Illegal name: " + name + ". Chars must in [a-z][A-Z][0-9]_")
 		return
 	}
 
 	var err error
 
-	console := controller.GetConsoleComponent()
+	console := ctrl.GetConsoleComponent()
 	dbDir := console.config.DatabaseDir
 	migrateDir := dbDir + "/migrations"
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
 		camUtils.Error.Panic(err)
 	}
-	filename := controller.getFilename(name)
+	filename := ctrl.getFilename(name)
 	absFilename := migrateDir + "/" + filename
 	fmt.Println("General filename...")
 	fmt.Println("\t" + absFilename)
@@ -44,7 +44,7 @@ func (controller *MigrateController) Create() {
 		return
 	}
 
-	content := controller.getMigrationContent(filename)
+	content := ctrl.getMigrationContent(filename)
 	err = camUtils.File.WriteFile(absFilename, content)
 	camUtils.Error.Panic(err)
 
@@ -52,13 +52,13 @@ func (controller *MigrateController) Create() {
 }
 
 // migrate up
-func (controller *MigrateController) Up() {
+func (ctrl *MigrateController) Up() {
 	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}
 
-	versionList := controller.GetConsoleComponent().GetMigrateUpVersionList()
+	versionList := ctrl.GetConsoleComponent().GetMigrateUpVersionList()
 	if len(versionList) == 0 {
 		fmt.Println("No new versions need to be up")
 		return
@@ -73,23 +73,23 @@ func (controller *MigrateController) Up() {
 		return
 	}
 
-	controller.GetConsoleComponent().MigrateUp()
+	ctrl.GetConsoleComponent().MigrateUp()
 }
 
 // migrate down
-func (controller *MigrateController) Down() {
-	controller.GetConsoleComponent().MigrateDown()
+func (ctrl *MigrateController) Down() {
+	ctrl.GetConsoleComponent().MigrateDown()
 }
 
 // get migration's filename. only filename, not absolute filename
-func (controller *MigrateController) getFilename(name string) string {
+func (ctrl *MigrateController) getFilename(name string) string {
 	// generate filename
 	id := camUtils.Migrate.IdByDatetime()
 	return "m" + id + "_" + name + ".go"
 }
 
 // orm struct's file template
-func (controller *MigrateController) getTpl() string {
+func (ctrl *MigrateController) getTpl() string {
 	return `package migrations
 
 import (
@@ -117,11 +117,11 @@ func (migration *{{ .ClassName}}) Down() {
 }
 
 // get migration file content
-func (controller *MigrateController) getMigrationContent(filename string) []byte {
+func (ctrl *MigrateController) getMigrationContent(filename string) []byte {
 	var err error
 	var retBytes = []byte("")
 
-	t, err := template.New(filename).Parse(controller.getTpl())
+	t, err := template.New(filename).Parse(ctrl.getTpl())
 	camUtils.Error.Panic(err)
 
 	filename = strings.TrimSuffix(filename, ".go")
@@ -135,7 +135,7 @@ func (controller *MigrateController) getMigrationContent(filename string) []byte
 }
 
 // Verify that the file name is legal
-func (controller *MigrateController) validName(name string) bool {
+func (ctrl *MigrateController) validName(name string) bool {
 	re, err := regexp.Compile("([0-9]|[a-z]|[A-Z]|_)")
 	if err != nil {
 		camUtils.Error.Panic(err)

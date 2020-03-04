@@ -17,56 +17,56 @@ type DatabaseComponent struct {
 }
 
 // init
-func (component *DatabaseComponent) Init(configI camBase.ComponentConfigInterface) {
-	component.Component.Init(configI)
+func (comp *DatabaseComponent) Init(configI camBase.ComponentConfigInterface) {
+	comp.Component.Init(configI)
 	var ok bool
-	component.config, ok = configI.(*DatabaseComponentConfig)
+	comp.config, ok = configI.(*DatabaseComponentConfig)
 	if !ok {
 		camBase.App.Error("DatabaseComponent", "invalid config")
 	}
-	component.engine = nil
+	comp.engine = nil
 }
 
 // start
-func (component *DatabaseComponent) Start() {
-	component.Component.Start()
+func (comp *DatabaseComponent) Start() {
+	comp.Component.Start()
 }
 
 // stop
-func (component *DatabaseComponent) Stop() {
-	component.Component.Stop()
+func (comp *DatabaseComponent) Stop() {
+	comp.Component.Stop()
 }
 
 // create migrations's version record table
-func (component *DatabaseComponent) createMigrateVersionTable() error {
-	session := component.NewSession()
+func (comp *DatabaseComponent) createMigrateVersionTable() error {
+	session := comp.NewSession()
 	migration := new(camConsole.Migration)
 	return session.Sync2(migration)
 }
 
 // get xorm engine
-func (component *DatabaseComponent) GetEngine() *xorm.Engine {
-	if component.engine == nil {
+func (comp *DatabaseComponent) GetEngine() *xorm.Engine {
+	if comp.engine == nil {
 		var err error
-		component.engine, err = xorm.NewEngine(component.config.DriverName, component.GetDSN())
+		comp.engine, err = xorm.NewEngine(comp.config.DriverName, comp.GetDSN())
 		camUtils.Error.Panic(err)
 	}
-	return component.engine
+	return comp.engine
 }
 
 // get data source name.
 // [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-func (component *DatabaseComponent) GetDSN() string {
-	host := component.config.Host
-	port := component.config.Port
-	name := component.config.Name
-	username := component.config.Username
-	password := component.config.Password
+func (comp *DatabaseComponent) GetDSN() string {
+	host := comp.config.Host
+	port := comp.config.Port
+	name := comp.config.Name
+	username := comp.config.Username
+	password := comp.config.Password
 
 	return username + ":" + password + "@tcp(" + host + ":" + port + ")/" + name + "?multiStatements=true&charset=utf8"
 }
 
 // new session
-func (component *DatabaseComponent) NewSession() *xorm.Session {
-	return component.GetEngine().NewSession()
+func (comp *DatabaseComponent) NewSession() *xorm.Session {
+	return comp.GetEngine().NewSession()
 }

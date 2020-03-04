@@ -32,41 +32,41 @@ type WebsocketComponent struct {
 }
 
 // init
-func (component *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
-	component.Component.Init(configI)
+func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
+	comp.Component.Init(configI)
 
 	var ok bool
-	component.config, ok = configI.(*WebsocketComponentConfig)
+	comp.config, ok = configI.(*WebsocketComponentConfig)
 	if !ok {
 		camBase.App.Error("WebsocketComponent", "invalid config")
 	}
-	component.upgrader = websocket.Upgrader{
+	comp.upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 	}
-	component.messageParseHandler = component.defaultMessageParseHandler
-	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
-	component.ContextPlugin.Init(&component.config.ContextPluginConfig)
+	comp.messageParseHandler = comp.defaultMessageParseHandler
+	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
+	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 }
 
 // start
-func (component *WebsocketComponent) Start() {
-	component.Component.Start()
+func (comp *WebsocketComponent) Start() {
+	comp.Component.Start()
 
-	if !component.config.SslOnly {
-		camBase.App.Info("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(component.config.Port), 10))
-		go component.listenAndServe()
+	if !comp.config.SslOnly {
+		camBase.App.Info("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		go comp.listenAndServe()
 	}
-	if component.config.IsSslOn {
-		camBase.App.Info("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(component.config.SslPort), 10))
-		go component.listenAndServeTLS()
+	if comp.config.IsSslOn {
+		camBase.App.Info("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		go comp.listenAndServeTLS()
 	}
 }
 
 // new connection
-func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Request) {
-	conn, err := component.upgrader.Upgrade(w, r, nil)
+func (comp *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Request) {
+	conn, err := comp.upgrader.Upgrade(w, r, nil)
 	if conn == nil || err != nil {
 		return
 	}
@@ -87,7 +87,7 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 
 		if messageType == websocket.TextMessage || messageType == websocket.BinaryMessage {
 			// Use controller or custom message handler to get sendMessage
-			sendMessage := component.getSendMessage(session, recvMessage)
+			sendMessage := comp.getSendMessage(session, recvMessage)
 			if sendMessage != nil {
 				err = conn.WriteMessage(websocket.TextMessage, sendMessage)
 				if err != nil {
@@ -98,18 +98,18 @@ func (component *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.
 }
 
 // call controller's action
-func (component *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) []byte {
+func (comp *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) []byte {
 	defer func() {
 		if rec := recover(); rec != nil {
 			panic(rec)
 		}
 	}()
 
-	controllerName, actionName, values := component.messageParseHandler(recvMessage)
+	controllerName, actionName, values := comp.messageParseHandler(recvMessage)
 
 	route := camUtils.Url.HumpToUrl(controllerName) + "/" + camUtils.Url.HumpToUrl(actionName)
 
-	handler := component.getCustomHandler(route)
+	handler := comp.getCustomHandler(route)
 	if handler != nil {
 		websocketSession, ok := session.(*WebsocketSession)
 		if !ok {
@@ -118,12 +118,12 @@ func (component *WebsocketComponent) getSendMessage(session camBase.SessionInter
 		return handler(websocketSession.GetConn())
 	}
 
-	controller, action := component.GetControllerAction(route)
+	controller, action := comp.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("404")
 	}
 
-	context := component.NewContext()
+	context := comp.NewContext()
 
 	// init controller
 	controller.Init()
@@ -143,7 +143,7 @@ func (component *WebsocketComponent) getSendMessage(session camBase.SessionInter
 
 // default router parser.
 // Parse the received data to: controllerName、actionName、values
-func (component *WebsocketComponent) defaultMessageParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
+func (comp *WebsocketComponent) defaultMessageParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
 	messageModel := new(Message)
 	responseModel := new(Response)
 	camUtils.Json.DecodeToObj(message, messageModel)
@@ -160,11 +160,11 @@ func (component *WebsocketComponent) defaultMessageParseHandler(message []byte) 
 }
 
 // enable server
-func (component *WebsocketComponent) listenAndServe() {
+func (comp *WebsocketComponent) listenAndServe() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
+	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.config.Port), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.Port), 10),
 		Handler: mux,
 	}
 	err := server.ListenAndServe()
@@ -172,20 +172,20 @@ func (component *WebsocketComponent) listenAndServe() {
 }
 
 // enable server with SSl
-func (component *WebsocketComponent) listenAndServeTLS() {
+func (comp *WebsocketComponent) listenAndServeTLS() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", component.handlerFunc)
+	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(component.config.SslPort), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.SslPort), 10),
 		Handler: mux,
 	}
-	err := server.ListenAndServeTLS(component.config.SslCertFile, component.config.SslKeyFile)
+	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
 	camUtils.Error.Panic(err)
 }
 
 // get custom route handler
-func (component *WebsocketComponent) getCustomHandler(route string) camBase.WebsocketRouteHandler {
-	handler, has := component.config.routeHandlerDict[route]
+func (comp *WebsocketComponent) getCustomHandler(route string) camBase.WebsocketRouteHandler {
+	handler, has := comp.config.routeHandlerDict[route]
 	if !has {
 		return nil
 	}

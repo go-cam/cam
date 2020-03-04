@@ -19,7 +19,7 @@ type ConsoleController struct {
 //		controller.GetArgv(1) => "argv1"
 //		controller.GetArgv(2) => ""
 //		controller.GetArgv(-1) => ""
-func (controller *ConsoleController) GetArgv(key int) string {
+func (ctrl *ConsoleController) GetArgv(key int) string {
 	key += 2
 	if key < 2 {
 		return ""
@@ -31,7 +31,7 @@ func (controller *ConsoleController) GetArgv(key int) string {
 }
 
 // get console component
-func (controller *ConsoleController) GetConsoleComponent() *ConsoleComponent {
+func (ctrl *ConsoleController) GetConsoleComponent() *ConsoleComponent {
 	componentI := camBase.App.GetComponent(&ConsoleComponent{})
 	console, ok := componentI.(*ConsoleComponent)
 	if !ok {

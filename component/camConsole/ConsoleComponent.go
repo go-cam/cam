@@ -18,31 +18,31 @@ type ConsoleComponent struct {
 }
 
 // init
-func (component *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
-	component.Component.Init(configI)
+func (comp *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
+	comp.Component.Init(configI)
 
 	var ok bool
-	component.config, ok = configI.(*ConsoleComponentConfig)
+	comp.config, ok = configI.(*ConsoleComponentConfig)
 	if !ok {
 		camBase.App.Error("ConsoleComponent", "invalid config")
 	}
 
 	// init router plugin
-	component.RouterPlugin.Init(&component.config.RouterPluginConfig)
+	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 }
 
 // run command
 // Example:
 //	# go build cam.go
 //	# ./cam controllerName/actionName param1 param2
-func (component *ConsoleComponent) RunAction() {
+func (comp *ConsoleComponent) RunAction() {
 	if len(os.Args) < 2 {
 		fmt.Println("please input route")
 		return
 	}
 
 	route := os.Args[1]
-	controller, action := component.GetControllerAction(route)
+	controller, action := comp.GetControllerAction(route)
 	if controller == nil || action == nil {
 		panic("route not found: " + route)
 	}
@@ -57,8 +57,8 @@ func (component *ConsoleComponent) RunAction() {
 }
 
 // get migrate up version list.
-func (component *ConsoleComponent) GetMigrateUpVersionList() []string {
-	lastVersion := component.MigrateLastVersion()
+func (comp *ConsoleComponent) GetMigrateUpVersionList() []string {
+	lastVersion := comp.MigrateLastVersion()
 	var versionList []string
 	for version, _ := range camBase.App.GetMigrateDict() {
 		if version <= lastVersion {
@@ -69,12 +69,12 @@ func (component *ConsoleComponent) GetMigrateUpVersionList() []string {
 	return versionList
 }
 
-func (component *ConsoleComponent) MigrateLastVersion() string {
-	session := component.getDBSession()
+func (comp *ConsoleComponent) MigrateLastVersion() string {
+	session := comp.getDBSession()
 	exists, err := session.IsTableExist(new(Migration))
 	camUtils.Error.Panic(err)
 	if !exists {
-		err = component.createMigrateVersionTable()
+		err = comp.createMigrateVersionTable()
 		camUtils.Error.Panic(err)
 		return ""
 	}
@@ -91,17 +91,17 @@ func (component *ConsoleComponent) MigrateLastVersion() string {
 }
 
 // create migrations's version record table
-func (component *ConsoleComponent) createMigrateVersionTable() error {
-	session := component.getDBSession()
+func (comp *ConsoleComponent) createMigrateVersionTable() error {
+	session := comp.getDBSession()
 	migration := new(Migration)
 	return session.Sync2(migration)
 }
 
 // up all database version
-func (component *ConsoleComponent) MigrateUp() {
+func (comp *ConsoleComponent) MigrateUp() {
 	fmt.Println("Migrate up start.")
 
-	lastVersion := component.MigrateLastVersion()
+	lastVersion := comp.MigrateLastVersion()
 	var err error
 	for version, m := range camBase.App.GetMigrateDict() {
 		if version <= lastVersion {
@@ -113,7 +113,7 @@ func (component *ConsoleComponent) MigrateUp() {
 		m.Up()
 		sqlList := m.GetSqlList()
 
-		session := component.getDBSession()
+		session := comp.getDBSession()
 		err = session.Begin()
 		camUtils.Error.Panic(err)
 
@@ -140,8 +140,8 @@ func (component *ConsoleComponent) MigrateUp() {
 }
 
 // down last database version
-func (component *ConsoleComponent) MigrateDown() {
-	lastVersion := component.MigrateLastVersion()
+func (comp *ConsoleComponent) MigrateDown() {
+	lastVersion := comp.MigrateLastVersion()
 	m, has := camBase.App.GetMigrateDict()[lastVersion]
 	if !has {
 		if lastVersion == "" {
@@ -161,7 +161,7 @@ func (component *ConsoleComponent) MigrateDown() {
 	sqlList := m.GetSqlList()
 
 	var err error
-	session := component.getDBSession()
+	session := comp.getDBSession()
 	err = session.Begin()
 	camUtils.Error.Panic(err)
 	defer func() {
@@ -186,7 +186,7 @@ func (component *ConsoleComponent) MigrateDown() {
 }
 
 // get database session
-func (component *ConsoleComponent) getDBSession() *xorm.Session {
+func (comp *ConsoleComponent) getDBSession() *xorm.Session {
 	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database")
