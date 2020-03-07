@@ -44,11 +44,11 @@ func (comp *HttpComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.SslOnly {
-		camBase.App.Info("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		camBase.App.Trace("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsSslOn {
-		camBase.App.Info("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		camBase.App.Trace("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -83,13 +83,18 @@ func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, reque
 
 	controller, action := comp.GetControllerAction(route)
 	if controller == nil || action == nil {
-		panic("404")
+		camBase.App.Warn("HttpComponent", "404. not found route: "+route)
+		return
 	}
 
 	storeSession := comp.getStoreSession(request)
 	context := comp.NewContext()
 	session := NewHttpSession(storeSession)
 	values := comp.getRequestValues(request)
+
+	if httpCtrl, ok := controller.(HttpControllerInterface); ok {
+		httpCtrl.setResponseWriterAndRequest(&responseWriter, request)
+	}
 
 	controller.Init()
 	controller.SetContext(context)

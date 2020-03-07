@@ -13,12 +13,14 @@ const (
 
 // Log
 const (
-	LogLevelDebug = camConstants.LevelDebug // debug log
-	LogLevelInfo  = camConstants.LevelInfo  // info log
-	LogLevelWarn  = camConstants.LevelWarn  // warning log
-	LogLevelError = camConstants.LevelError // error log
+	LogLevelTrace = camConstants.LevelTrace // log level: trace
+	LogLevelDebug = camConstants.LevelDebug // log level: debug
+	LogLevelInfo  = camConstants.LevelInfo  // log level: info
+	LogLevelWarn  = camConstants.LevelWarn  // log level: warning
+	LogLevelError = camConstants.LevelError // log level: error
+	LogLevelFatal = camConstants.LevelFatal // log level: fatal
 
-	LogLevelNone    = 0                                                           // none level
-	LogLevelSuggest = LogLevelInfo | LogLevelWarn | LogLevelError                 // suggest level
-	LogLevelAll     = LogLevelDebug | LogLevelInfo | LogLevelWarn | LogLevelError // all level
+	LogLevelNone    = 0                                                                                           // none level
+	LogLevelSuggest = LogLevelInfo | LogLevelWarn | LogLevelError | LogLevelFatal                                 // suggest level
+	LogLevelAll     = LogLevelTrace | LogLevelDebug | LogLevelInfo | LogLevelWarn | LogLevelError | LogLevelFatal // all level
 )

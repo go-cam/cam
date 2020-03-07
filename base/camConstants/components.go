@@ -9,8 +9,10 @@ const (
 
 // LogComponent
 const (
-	LevelDebug camBase.LogLevel = 1      // debug log
-	LevelInfo  camBase.LogLevel = 1 << 1 // info log
-	LevelWarn  camBase.LogLevel = 1 << 2 // warning log
-	LevelError camBase.LogLevel = 1 << 3 // error log
+	LevelTrace camBase.LogLevel = 1               // trace log
+	LevelDebug                  = LevelTrace << 1 // debug log
+	LevelInfo                   = LevelDebug << 1 // info log
+	LevelWarn                   = LevelInfo << 1  // warning log
+	LevelError                  = LevelWarn << 1  // error log
+	LevelFatal                  = LevelError << 1 // fatal log
 )

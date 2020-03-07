@@ -101,9 +101,9 @@ func (app *Application) onInit() {
 func (app *Application) onStart() {
 	for name, component := range app.componentDict {
 		go component.Start()
-		app.Info("Application.onStart", "start component:"+name)
+		app.Trace("Application.onStart", "start component:"+name)
 	}
-	app.Info("Application.onStart", "Application start finished.")
+	app.Trace("Application.onStart", "Application start finished.")
 
 	app.status = AppStatusStart
 }
@@ -112,9 +112,9 @@ func (app *Application) onStart() {
 func (app *Application) onStop() {
 	for name, component := range app.componentDict {
 		component.Stop()
-		app.Info("Application.onStop", "stop component:"+name)
+		app.Trace("Application.onStop", "stop component:"+name)
 	}
-	app.Info("Application.onStop", "Application stop finished.")
+	app.Trace("Application.onStop", "Application stop finished.")
 
 	app.status = AppStatusStop
 }
@@ -232,36 +232,42 @@ func (app *Application) AddMigration(m camBase.MigrationInterface) {
 	app.migrationDict[id] = m
 }
 
-// log debug
-func (app *Application) Debug(title string, content string) {
-	err := app.logComponent.Debug(title, content)
+// base log
+func (app *Application) baseLog(logLevel camBase.LogLevel, title string, content string) {
+	err := app.logComponent.Record(logLevel, title, content)
 	if err != nil {
 		panic(err)
 	}
+}
+
+// log trace
+func (app *Application) Trace(title string, content string) {
+	app.baseLog(LogLevelTrace, title, content)
+}
+
+// log debug
+func (app *Application) Debug(title string, content string) {
+	app.baseLog(LogLevelDebug, title, content)
 }
 
 // log info
 func (app *Application) Info(title string, content string) {
-	err := app.logComponent.Info(title, content)
-	if err != nil {
-		panic(err)
-	}
+	app.baseLog(LogLevelInfo, title, content)
 }
 
 // log warning
 func (app *Application) Warn(title string, content string) {
-	err := app.logComponent.Warn(title, content)
-	if err != nil {
-		panic(err)
-	}
+	app.baseLog(LogLevelWarn, title, content)
 }
 
 // log error
 func (app *Application) Error(title string, content string) {
-	err := app.logComponent.Error(title, content)
-	if err != nil {
-		panic(err)
-	}
+	app.baseLog(LogLevelError, title, content)
+}
+
+// log fatal
+func (app *Application) Fatal(title string, content string) {
+	app.baseLog(LogLevelFatal, title, content)
 }
 
 // get one .evn file values
@@ -312,6 +318,7 @@ func (app *Application) GetCache() camBase.CacheComponentInterface {
 	return app.cache
 }
 
+// create default cache component
 func (app *Application) createDefaultCacheComponent() camBase.ComponentInterface {
 	cacheConfig := NewCacheConfig()
 	componentI := cacheConfig.NewComponent()

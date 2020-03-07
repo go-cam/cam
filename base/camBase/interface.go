@@ -20,14 +20,18 @@ type ApplicationInterface interface {
 	Stop()
 	// add migration struct
 	AddMigration(m MigrationInterface)
-	// log info
+	// log trace
+	Trace(title string, content string)
+	// log debug
 	Debug(title string, content string)
 	// log info
 	Info(title string, content string)
-	// log info
+	// log warn
 	Warn(title string, content string)
-	// log info
+	// log error
 	Error(title string, content string)
+	// log fatal
+	Fatal(title string, content string)
 	// Add config
 	AddConfig(config AppConfigInterface)
 	// get value form .evn file

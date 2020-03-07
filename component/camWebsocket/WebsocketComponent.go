@@ -55,11 +55,11 @@ func (comp *WebsocketComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.SslOnly {
-		camBase.App.Info("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		camBase.App.Trace("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsSslOn {
-		camBase.App.Info("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		camBase.App.Trace("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
 		go comp.listenAndServeTLS()
 	}
 }

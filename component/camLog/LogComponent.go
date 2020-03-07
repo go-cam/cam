@@ -21,8 +21,7 @@ type LogComponent struct {
 	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
 	lastCheckFileTimestamp int64                       // last check file time
 	titleMaxLen            int                         // title max len
-	logChan                chan bool
-	mutex                  sync.Mutex
+	mutex                  sync.Mutex                  // log lock struct
 }
 
 // on App init
@@ -55,7 +54,7 @@ func (comp *LogComponent) Start() {
 func (comp *LogComponent) Stop() {
 	comp.Component.Stop()
 }
-func (comp *LogComponent) base(level camBase.LogLevel, title string, content string) error {
+func (comp *LogComponent) Record(level camBase.LogLevel, title string, content string) error {
 	comp.mutex.Lock()
 	defer func() {
 		comp.mutex.Unlock()
@@ -87,29 +86,19 @@ func (comp *LogComponent) base(level camBase.LogLevel, title string, content str
 	return err
 }
 
-func (comp *LogComponent) Debug(title string, content string) error {
-	return comp.base(camConstants.LevelDebug, title, content)
-}
-
-func (comp *LogComponent) Info(title string, content string) error {
-	return comp.base(camConstants.LevelInfo, title, content)
-}
-
-func (comp *LogComponent) Warn(title string, content string) error {
-	return comp.base(camConstants.LevelWarn, title, content)
-}
-
 func (comp *LogComponent) Error(title string, content string) error {
-	return comp.base(camConstants.LevelError, title, content)
+	return comp.Record(camConstants.LevelError, title, content)
 }
 
 // init level labels
 func (comp *LogComponent) initLevelLabels() {
 	comp.levelLabels = map[camBase.LogLevel]string{
+		camConstants.LevelTrace: "TRACE",
 		camConstants.LevelDebug: "DEBUG",
 		camConstants.LevelInfo:  "INFO ",
 		camConstants.LevelWarn:  "WARN ",
 		camConstants.LevelError: "ERROR",
+		camConstants.LevelFatal: "FATAL",
 	}
 }
 
@@ -129,7 +118,8 @@ func (comp *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outputLeve
 
 // Whether level is basic level (debug, info, warn, error)
 func (comp *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
-	return level == camConstants.LevelDebug || level == camConstants.LevelInfo || level == camConstants.LevelWarn || level == camConstants.LevelError
+	_, has := comp.levelLabels[level]
+	return has
 }
 
 // Check if the file exceeds the configured size
@@ -146,7 +136,7 @@ func (comp *LogComponent) checkAndRenameFile() {
 		newFilename := comp.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
 		err := camUtils.File.Rename(filename, newFilename)
 		if err != nil {
-			_ = comp.Error("LogComponent.checkAndRenameFile", err.Error())
+			_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", err.Error())
 		}
 	}
 }

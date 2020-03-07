@@ -28,8 +28,8 @@ type LogComponentConfig struct {
 
 func NewLogConfig() *LogComponentConfig {
 	config := new(LogComponentConfig)
-	config.PrintLevel = camConstants.LevelDebug | camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError
-	config.WriteLevel = camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError
+	config.PrintLevel = camConstants.LevelTrace | camConstants.LevelDebug | camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError | camConstants.LevelFatal
+	config.WriteLevel = camConstants.LevelInfo | camConstants.LevelWarn | camConstants.LevelError | camConstants.LevelFatal
 	config.FileMaxSize = 10 * 1024 * 1024
 	return config
 }

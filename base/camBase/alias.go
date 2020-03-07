@@ -15,7 +15,7 @@ type CamModuleType int
 type WebsocketMessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 
 // log level
-type LogLevel int
+type LogLevel uint8
 
 // http custom route handler
 type HttpRouteHandler func(responseWriter http.ResponseWriter, request *http.Request)
