@@ -35,6 +35,7 @@ func (ctrl *HttpController) GetRequest() *http.Request {
 	return ctrl.request
 }
 
+// Deprecated: cannot work
 func (ctrl *HttpController) GetFile(key string) {
 	file, _, err := ctrl.request.FormFile(key)
 	if err != nil {
