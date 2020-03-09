@@ -9,6 +9,7 @@ import (
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
 	"github.com/go-cam/cam/component/camLog"
+	"github.com/go-cam/cam/component/camMail"
 	"strconv"
 	"time"
 )
@@ -233,7 +234,7 @@ func (app *Application) AddMigration(m camBase.MigrationInterface) {
 }
 
 // base log
-func (app *Application) baseLog(logLevel camBase.LogLevel, title string, content string) {
+func (app *Application) basicLog(logLevel camBase.LogLevel, title string, content string) {
 	err := app.logComponent.Record(logLevel, title, content)
 	if err != nil {
 		panic(err)
@@ -242,32 +243,32 @@ func (app *Application) baseLog(logLevel camBase.LogLevel, title string, content
 
 // log trace
 func (app *Application) Trace(title string, content string) {
-	app.baseLog(LogLevelTrace, title, content)
+	app.basicLog(LogLevelTrace, title, content)
 }
 
 // log debug
 func (app *Application) Debug(title string, content string) {
-	app.baseLog(LogLevelDebug, title, content)
+	app.basicLog(LogLevelDebug, title, content)
 }
 
 // log info
 func (app *Application) Info(title string, content string) {
-	app.baseLog(LogLevelInfo, title, content)
+	app.basicLog(LogLevelInfo, title, content)
 }
 
 // log warning
 func (app *Application) Warn(title string, content string) {
-	app.baseLog(LogLevelWarn, title, content)
+	app.basicLog(LogLevelWarn, title, content)
 }
 
 // log error
 func (app *Application) Error(title string, content string) {
-	app.baseLog(LogLevelError, title, content)
+	app.basicLog(LogLevelError, title, content)
 }
 
 // log fatal
 func (app *Application) Fatal(title string, content string) {
-	app.baseLog(LogLevelFatal, title, content)
+	app.basicLog(LogLevelFatal, title, content)
 }
 
 // get one .evn file values
@@ -342,4 +343,17 @@ func (app *Application) createDefaultCacheComponent() camBase.ComponentInterface
 
 	app.componentDict[componentName] = componentI
 	return componentI
+}
+
+// get mail component
+func (app *Application) GetMail() camBase.MailComponentInterface {
+	compI := app.GetComponent(&camMail.MailComponent{})
+	if compI == nil {
+		return nil
+	}
+	mailCompI, ok := compI.(camBase.MailComponentInterface)
+	if !ok {
+		return nil
+	}
+	return mailCompI
 }

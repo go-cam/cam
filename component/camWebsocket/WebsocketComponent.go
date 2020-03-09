@@ -38,7 +38,8 @@ func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*WebsocketComponentConfig)
 	if !ok {
-		camBase.App.Error("WebsocketComponent", "invalid config")
+		camBase.App.Fatal("WebsocketComponent", "invalid config")
+		return
 	}
 	comp.upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {

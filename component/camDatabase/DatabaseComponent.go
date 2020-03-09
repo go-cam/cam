@@ -22,7 +22,8 @@ func (comp *DatabaseComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*DatabaseComponentConfig)
 	if !ok {
-		camBase.App.Error("DatabaseComponent", "invalid config")
+		camBase.App.Fatal("DatabaseComponent", "invalid config")
+		return
 	}
 	comp.engine = nil
 }

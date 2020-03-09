@@ -24,7 +24,8 @@ func (comp *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*ConsoleComponentConfig)
 	if !ok {
-		camBase.App.Error("ConsoleComponent", "invalid config")
+		camBase.App.Fatal("ConsoleComponent", "invalid config")
+		return
 	}
 
 	// init router plugin

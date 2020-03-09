@@ -7,6 +7,7 @@ import (
 	"github.com/go-cam/cam/component/camDatabase"
 	"github.com/go-cam/cam/component/camHttp"
 	"github.com/go-cam/cam/component/camLog"
+	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camWebsocket"
 )
 
@@ -60,4 +61,8 @@ func NewFileCache() *camCache.FileCache {
 
 func NewRedisCache() *camCache.RedisCache {
 	return camCache.NewRedisEngine()
+}
+
+func NewMailConfig(email string, password string, host string) *camMail.MailComponentConfig {
+	return camMail.NewMailConfig(email, password, host)
 }

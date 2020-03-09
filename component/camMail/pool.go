@@ -1,4 +1,5 @@
-// from: https://github.com/jordan-wright/email
+// From: https://github.com/jordan-wright/email
+// Datetime: 2020-03-09 17:28:00
 package camMail
 
 import (

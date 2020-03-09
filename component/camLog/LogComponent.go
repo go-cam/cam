@@ -31,7 +31,8 @@ func (comp *LogComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*LogComponentConfig)
 	if !ok {
-		camBase.App.Error("LogComponent", "invalid config")
+		camBase.App.Fatal("LogComponent", "invalid config")
+		return
 	}
 
 	// log output path
@@ -84,10 +85,6 @@ func (comp *LogComponent) Record(level camBase.LogLevel, title string, content s
 		err = camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
 	return err
-}
-
-func (comp *LogComponent) Error(title string, content string) error {
-	return comp.Record(camConstants.LevelError, title, content)
 }
 
 // init level labels

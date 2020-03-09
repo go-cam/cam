@@ -32,7 +32,8 @@ func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*HttpComponentConfig)
 	if !ok {
-		camBase.App.Error("HttpComponent", "invalid config")
+		camBase.App.Fatal("HttpComponent", "invalid config")
+		return
 	}
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)

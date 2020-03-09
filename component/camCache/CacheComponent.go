@@ -20,7 +20,8 @@ func (comp *CacheComponent) Init(configI camBase.ComponentConfigInterface) {
 	var ok bool
 	comp.config, ok = configI.(*CacheComponentConfig)
 	if !ok {
-		camBase.App.Error("CacheComponent", "invalid config")
+		camBase.App.Fatal("CacheComponent", "invalid config")
+		return
 	}
 
 	err := comp.config.Engine.Init()

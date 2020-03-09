@@ -40,8 +40,10 @@ type ApplicationInterface interface {
 	GetParam(key string) interface{}
 	// get migrate dict
 	GetMigrateDict() map[string]MigrationInterface
-	// get cache engine
+	// get cache component
 	GetCache() CacheComponentInterface
+	// get mail component
+	GetMail() MailComponentInterface
 }
 
 // component config interface
@@ -157,7 +159,7 @@ type ConsoleComponentInterface interface {
 type AppConfigInterface interface {
 }
 
-// cache config interface
+// cache component interface
 type CacheComponentInterface interface {
 	// set cache storage default duration
 	Set(key string, value interface{}) error
@@ -171,4 +173,9 @@ type CacheComponentInterface interface {
 	Del(keys ...string) error
 	// delete all cache
 	Flush() error
+}
+
+// mail component interface
+type MailComponentInterface interface {
+	Send(subject string, body string, to ...string) error
 }
