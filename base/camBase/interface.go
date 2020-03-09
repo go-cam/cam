@@ -82,10 +82,6 @@ type ControllerInterface interface {
 	// set values.
 	// it will replace the original values
 	SetValues(values map[string]interface{})
-	// append values to values. new value replace old value
-	AppendValues(values map[string]interface{})
-	// set app instance
-	SetApp(app ApplicationInterface)
 	// get default action
 	GetDefaultActionName() string
 	// set response

@@ -9,6 +9,7 @@ import (
 	"github.com/go-cam/cam/component/camLog"
 	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camWebsocket"
+	"github.com/go-cam/cam/template"
 )
 
 // new Application config
@@ -24,7 +25,7 @@ func NewWebsocketConfig(port uint16) *camWebsocket.WebsocketComponentConfig {
 }
 
 // new ConsoleComponent config
-func NewHttpServerConfig(port uint16) *camHttp.HttpComponentConfig {
+func NewHttpConfig(port uint16) *camHttp.HttpComponentConfig {
 	return camHttp.NewHttpComponentConfig(port)
 }
 
@@ -65,4 +66,8 @@ func NewRedisCache() *camCache.RedisCache {
 
 func NewMailConfig(email string, password string, host string) *camMail.MailComponentConfig {
 	return camMail.NewMailConfig(email, password, host)
+}
+
+func NewTemplateCommand() *template.Command {
+	return template.NewCommand()
 }
