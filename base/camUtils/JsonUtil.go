@@ -2,7 +2,6 @@ package camUtils
 
 import (
 	"encoding/json"
-	"github.com/tidwall/gjson"
 )
 
 type JsonUtil struct {
@@ -35,10 +34,4 @@ func (util *JsonUtil) EncodeStrBeautiful(v interface{}) string {
 // decode to struct
 func (util *JsonUtil) DecodeToObj(bytes []byte, obj interface{}) {
 	_ = json.Unmarshal(bytes, obj)
-}
-
-// Deprecated:
-// decode to gjson sturct
-func (util *JsonUtil) DecodeStr(jsonStr string) gjson.Result {
-	return gjson.Parse(jsonStr)
 }
