@@ -121,7 +121,8 @@ func (comp *WebsocketComponent) getSendMessage(session camBase.SessionInterface,
 
 	controller, action := comp.GetControllerAction(route)
 	if controller == nil || action == nil {
-		panic("404")
+		camBase.App.Warn("WebsocketComponent", "404. not found route: "+route)
+		return nil
 	}
 
 	context := comp.NewContext()
