@@ -18,5 +18,6 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 # Future planning
 
 - v0.4.0
-  - add socket component
-  - add i18n, Multi-Language Support
+  - Add socket component
+  - Add i18n, Multi-Language Support
+  - Optimize EnvUtil. Supports multi-path .env files

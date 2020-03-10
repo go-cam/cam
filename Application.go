@@ -47,7 +47,7 @@ func NewApplication() *Application {
 	return app
 }
 
-// Add config
+// Add config. Must be called before calling cam.App.Run ().
 // Merge as much as possible, otherwise overwrite.
 //
 // config: new config
