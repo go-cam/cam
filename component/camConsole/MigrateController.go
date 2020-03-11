@@ -94,7 +94,7 @@ func (ctrl *MigrateController) getTpl() string {
 
 import (
 	"github.com/go-cam/cam"
-	"github.com/go-cam/cam/camModels"
+	"github.com/go-cam/cam/component/camConsole"
 )
 
 func init() {
@@ -103,7 +103,7 @@ func init() {
 }
 
 type {{ .ClassName}} struct {
-	camModels.MigrationTpl
+	camConsole.BaseMigration
 }
 
 // up
