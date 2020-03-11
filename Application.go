@@ -22,7 +22,6 @@ type Application struct {
 	config        *camConfig.Config                     // Application config
 	logComponent  *camLog.LogComponent                  // log component
 	cache         camBase.CacheComponentInterface       // cache component
-	waitChan      chan bool                             // wait until call Application.Stop()'s sign
 	componentDict map[string]camBase.ComponentInterface // components dict
 	migrationDict map[string]camBase.MigrationInterface // migration map
 }
@@ -37,10 +36,9 @@ func init() {
 // new Application instance
 func NewApplication() *Application {
 	app := new(Application)
-	app.status = camConstants.AppStatusInit
+	app.status = camConstants.AppStatusBeforeInit
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
-	app.waitChan = make(chan bool)
 	app.cache = nil
 	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.migrationDict = map[string]camBase.MigrationInterface{}
@@ -77,10 +75,7 @@ func (app *Application) Run() {
 	} else {
 		app.onInit()
 		app.onStart()
-		select {
-		case <-app.waitChan:
-			app.onStop()
-		}
+		app.wait()
 	}
 }
 
@@ -95,7 +90,7 @@ func (app *Application) onInit() {
 	// init core component
 	app.initCoreComponent()
 
-	app.status = AppStatusInit
+	app.status = camConstants.AppStatusBeforeStart
 }
 
 // startup all components
@@ -106,18 +101,19 @@ func (app *Application) onStart() {
 	}
 	app.Trace("Application.onStart", "Application start finished.")
 
-	app.status = AppStatusStart
+	app.status = camConstants.AppStatusAfterStart
 }
 
 // stop all components
 func (app *Application) onStop() {
 	for name, component := range app.componentDict {
 		component.Stop()
+		delete(app.componentDict, name)
 		app.Trace("Application.onStop", "stop component:"+name)
 	}
 	app.Trace("Application.onStop", "Application stop finished.")
 
-	app.status = AppStatusStop
+	app.status = camConstants.AppStatusAfterStop
 }
 
 // Wait until the app call Stop()
@@ -278,7 +274,8 @@ func (app *Application) GetEvn(key string) string {
 
 // stop Application
 func (app *Application) Stop() {
-	app.waitChan <- true
+	app.status = camConstants.AppStatusBeforeStop
+	app.onStop()
 }
 
 func (app *Application) GetMigrateDict() map[string]camBase.MigrationInterface {
@@ -334,10 +331,10 @@ func (app *Application) createDefaultCacheComponent() camBase.ComponentInterface
 		componentName = "cache_" + strconv.Itoa(i)
 		i++
 	}
-	if app.status >= AppStatusInit {
+	if app.status >= camConstants.AppStatusBeforeStart {
 		componentI.Init(cacheConfig)
 	}
-	if app.status == AppStatusStart {
+	if app.status >= camConstants.AppStatusAfterStart {
 		componentI.Start()
 	}
 

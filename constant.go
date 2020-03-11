@@ -4,13 +4,6 @@ import (
 	"github.com/go-cam/cam/base/camConstants"
 )
 
-// app
-const (
-	AppStatusInit  = camConstants.AppStatusInit
-	AppStatusStart = camConstants.AppStatusStart
-	AppStatusStop  = camConstants.AppStatusStop
-)
-
 // Log
 const (
 	LogLevelTrace = camConstants.LevelTrace // log level: trace
