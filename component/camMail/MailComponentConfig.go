@@ -1,9 +1,11 @@
 package camMail
 
-import "github.com/go-cam/cam/base/camBase"
+import (
+	"github.com/go-cam/cam/component"
+)
 
 type MailComponentConfig struct {
-	camBase.ComponentConfig
+	component.ComponentConfig
 
 	Email              string // master mail
 	Nickname           string // nickname

@@ -3,6 +3,7 @@ package camHttp
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camPluginContext"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/gorilla/sessions"
@@ -17,7 +18,7 @@ import (
 
 // http server component
 type HttpComponent struct {
-	camBase.Component
+	component.Component
 	camPluginRouter.RouterPlugin
 	camPluginContext.ContextPlugin
 
@@ -63,7 +64,7 @@ func (comp *HttpComponent) Stop() {
 func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
-			panic(rec)
+			comp.Recover(rec)
 		}
 	}()
 

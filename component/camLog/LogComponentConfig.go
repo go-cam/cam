@@ -3,10 +3,11 @@ package camLog
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/component"
 )
 
 type LogComponentConfig struct {
-	camBase.ComponentConfig
+	component.ComponentConfig
 
 	// print log level
 	// Binary switch used.

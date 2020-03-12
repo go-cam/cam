@@ -2,6 +2,12 @@ package camConstants
 
 import "github.com/go-cam/cam/base/camBase"
 
+// BaseComponent
+const (
+	RecoverHandlerResultPass  camBase.RecoverHandlerResult = iota // It mean the panic was recover
+	RecoverHandlerResultPanic                                     // It mean the panic was not recover and panic again
+)
+
 // DatabaseComponent
 const (
 	DatabaseDriverMysql = "mysql"

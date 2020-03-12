@@ -2,12 +2,13 @@ package camCache
 
 import (
 	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/component"
 	"time"
 )
 
 // cache component
 type CacheComponent struct {
-	camBase.Component
+	component.Component
 	camBase.CacheComponentInterface
 
 	config *CacheComponentConfig

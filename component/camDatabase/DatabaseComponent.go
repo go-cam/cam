@@ -3,13 +3,14 @@ package camDatabase
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/component/camConsole"
 	"xorm.io/xorm"
 )
 
 // database component
 type DatabaseComponent struct {
-	camBase.Component
+	component.Component
 	camBase.DatabaseComponentInterface
 
 	config *DatabaseComponentConfig

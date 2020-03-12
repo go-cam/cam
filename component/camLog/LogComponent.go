@@ -6,6 +6,7 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,7 +15,7 @@ import (
 
 // log components
 type LogComponent struct {
-	camBase.Component
+	component.Component
 	config *LogComponentConfig
 
 	logRootDir             string                      // file log dir

@@ -22,3 +22,9 @@ type HttpRouteHandler func(responseWriter http.ResponseWriter, request *http.Req
 
 // websocket custom route handler
 type WebsocketRouteHandler func(conn *websocket.Conn) []byte
+
+// recover handler result
+type RecoverHandlerResult uint8
+
+// component recover handler
+type RecoverHandler func(rec interface{}) RecoverHandlerResult

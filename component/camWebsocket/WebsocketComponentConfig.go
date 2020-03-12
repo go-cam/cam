@@ -2,6 +2,7 @@ package camWebsocket
 
 import (
 	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camPluginContext"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/go-cam/cam/plugin/camPluginSsl"
@@ -9,7 +10,7 @@ import (
 
 // websocket server 所需的配置
 type WebsocketComponentConfig struct {
-	camBase.ComponentConfig
+	component.ComponentConfig
 	camPluginSsl.SslPluginConfig
 	camPluginRouter.RouterPluginConfig
 	camPluginContext.ContextPluginConfig

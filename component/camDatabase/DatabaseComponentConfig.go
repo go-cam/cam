@@ -1,12 +1,12 @@
 package camDatabase
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/component"
 )
 
 // database config
 type DatabaseComponentConfig struct {
-	camBase.ComponentConfig
+	component.ComponentConfig
 
 	DriverName string // driver name. Example: "mysql", "sqlite"
 	Host       string // database hostname

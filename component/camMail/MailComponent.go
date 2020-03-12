@@ -3,12 +3,13 @@ package camMail
 import (
 	"crypto/tls"
 	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/component"
 	"net/smtp"
 	"strconv"
 )
 
 type MailComponent struct {
-	camBase.Component
+	component.Component
 
 	config *MailComponentConfig
 

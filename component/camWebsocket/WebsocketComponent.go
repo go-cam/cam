@@ -3,6 +3,7 @@ package camWebsocket
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camPluginContext"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/gorilla/websocket"
@@ -12,7 +13,7 @@ import (
 )
 
 type WebsocketComponent struct {
-	camBase.Component
+	component.Component
 	camPluginRouter.RouterPlugin
 	camPluginContext.ContextPlugin
 
@@ -102,7 +103,7 @@ func (comp *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Reque
 func (comp *WebsocketComponent) getSendMessage(session camBase.SessionInterface, recvMessage []byte) []byte {
 	defer func() {
 		if rec := recover(); rec != nil {
-			panic(rec)
+			comp.Recover(rec)
 		}
 	}()
 

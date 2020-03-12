@@ -48,7 +48,10 @@ type ApplicationInterface interface {
 
 // component config interface
 type ComponentConfigInterface interface {
+	// new component
 	NewComponent() ComponentInterface
+	// get recover handler
+	GetRecoverHandler() RecoverHandler
 }
 
 // Component interface

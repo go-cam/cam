@@ -1,15 +1,15 @@
 package camConsole
 
 import (
-	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"strings"
 )
 
 // console config
 type ConsoleComponentConfig struct {
-	camBase.ComponentConfig
+	component.ComponentConfig
 	camPluginRouter.RouterPluginConfig
 
 	DatabaseDir     string // DatabaseComponentConfig file storage path. Default is: /[path to run dir]/database
