@@ -20,60 +20,60 @@ type Controller struct {
 }
 
 // OVERWRITE:
-func (controller *Controller) Init() {
-	controller.values = map[string]interface{}{}
-	controller.responseBytes = []byte("")
+func (ctrl *Controller) Init() {
+	ctrl.values = map[string]interface{}{}
+	ctrl.responseBytes = []byte("")
 }
 
 // OVERWRITE
-func (controller *Controller) BeforeAction(action camBase.ControllerActionInterface) bool {
+func (ctrl *Controller) BeforeAction(action camBase.ControllerActionInterface) bool {
 	return true
 }
 
 // OVERWRITE
-func (controller *Controller) AfterAction(action camBase.ControllerActionInterface, response []byte) []byte {
+func (ctrl *Controller) AfterAction(action camBase.ControllerActionInterface, response []byte) []byte {
 	return response
 }
 
 // OVERWRITE
-func (controller *Controller) SetContext(context camBase.ContextInterface) {
-	controller.context = context
+func (ctrl *Controller) SetContext(context camBase.ContextInterface) {
+	ctrl.context = context
 }
 
 // OVERWRITE
-func (controller *Controller) GetContext() camBase.ContextInterface {
-	return controller.context
+func (ctrl *Controller) GetContext() camBase.ContextInterface {
+	return ctrl.context
 }
 
 // OVERWRITE
-func (controller *Controller) SetSession(session camBase.SessionInterface) {
-	controller.session = session
+func (ctrl *Controller) SetSession(session camBase.SessionInterface) {
+	ctrl.session = session
 }
 
 // OVERWRITE
-func (controller *Controller) GetSession() camBase.SessionInterface {
-	return controller.session
+func (ctrl *Controller) GetSession() camBase.SessionInterface {
+	return ctrl.session
 }
 
 // OVERWRITE
 // set values
-func (controller *Controller) SetValues(values map[string]interface{}) {
-	controller.values = values
+func (ctrl *Controller) SetValues(values map[string]interface{}) {
+	ctrl.values = values
 }
 
 // get all values
-func (controller *Controller) GetValues() map[string]interface{} {
-	return controller.values
+func (ctrl *Controller) GetValues() map[string]interface{} {
+	return ctrl.values
 }
 
 // OVERWRITE
-func (controller *Controller) AddValue(key string, value interface{}) {
-	controller.values[key] = value
+func (ctrl *Controller) AddValue(key string, value interface{}) {
+	ctrl.values[key] = value
 }
 
 // get value by key
-func (controller *Controller) GetValue(key string) interface{} {
-	value, has := controller.values[key]
+func (ctrl *Controller) GetValue(key string) interface{} {
+	value, has := ctrl.values[key]
 	if !has {
 		value = nil
 	}
@@ -81,27 +81,27 @@ func (controller *Controller) GetValue(key string) interface{} {
 }
 
 // set response content
-func (controller *Controller) SetResponse(bytes []byte) {
-	controller.responseBytes = bytes
+func (ctrl *Controller) SetResponse(bytes []byte) {
+	ctrl.responseBytes = bytes
 }
 
 // OVERWRITE
 // return action write
-func (controller *Controller) GetResponse() []byte {
-	return controller.responseBytes
+func (ctrl *Controller) GetResponse() []byte {
+	return ctrl.responseBytes
 }
 
 // OVERWRITE
-func (controller *Controller) GetDefaultActionName() string {
+func (ctrl *Controller) GetDefaultActionName() string {
 	return ""
 }
 
 // Only support on http request
-func (controller *Controller) GetHttpResponseWrite() http.ResponseWriter {
-	return controller.httpResponseWriter
+func (ctrl *Controller) GetHttpResponseWrite() http.ResponseWriter {
+	return ctrl.httpResponseWriter
 }
 
 // Only support on http request
-func (controller *Controller) GetHttpRequest() *http.Request {
-	return controller.httpRequest
+func (ctrl *Controller) GetHttpRequest() *http.Request {
+	return ctrl.httpRequest
 }

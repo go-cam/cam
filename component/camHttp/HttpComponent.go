@@ -158,50 +158,77 @@ func (comp *HttpComponent) listenAndServeTLS() {
 
 // get request params
 func (comp *HttpComponent) getRequestValues(request *http.Request) map[string]interface{} {
-	values := map[string]interface{}{}
+	values := comp.getRequestValuesByUrl(request)
 
-	// parse params from request url
+	contentType := request.Header.Get("Content-Type")
+	if strings.Contains(contentType, "multipart/form-data") {
+		newValues := comp.getRequestValuesByFormData(request)
+		for key, value := range newValues {
+			values[key] = value
+		}
+	}
+	if strings.Contains(contentType, "application/json") {
+		newValues := comp.getRequestValuesByJson(request)
+		for key, value := range newValues {
+			values[key] = value
+		}
+	}
+
+	return values
+}
+
+// parse params from request url
+func (comp *HttpComponent) getRequestValuesByUrl(request *http.Request) map[string]interface{} {
+	values := map[string]interface{}{}
 	_ = request.ParseForm()
 	for key, value := range request.Form {
 		values[key] = value
 	}
+	return values
+}
 
-	// parse params from form data
-	contentType := request.Header.Get("Content-Type")
-	if strings.HasPrefix(contentType, "multipart/form-data") {
-		// multipart/form-data; boundary=----WebKitFormBoundaryDumfytNg1NzoZq2r
-		boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
-		boundaries := boundaryRegexp.FindStringSubmatch(contentType)
-		if len(boundaries) < 2 {
-			panic("fail to parse form values")
-		}
-		boundary := "--" + boundaries[1]
-
-		bytes, _ := ioutil.ReadAll(request.Body)
-		bodyStr := string(bytes)
-		paramsStrList := strings.Split(bodyStr, boundary)
-
-		for _, row := range paramsStrList {
-			if row == "" || !strings.Contains(row, "\"") {
-				// exclude row
-				continue
-			}
-
-			repl := "Content-Disposition: form-data; name=\"([0-9a-zA-Z|_]+)\""
-			keyRegexp, _ := regexp.Compile(repl)
-			keyList := keyRegexp.FindStringSubmatch(row)
-			key := keyList[1]
-
-			valueRow := keyRegexp.ReplaceAllString(row, "")
-			value := strings.Trim(valueRow, "\n")
-			value = strings.Trim(value, "\r")
-			value = strings.Trim(value, "\r\n")
-			value = strings.Trim(value, " ")
-
-			values[key] = values
-		}
+// parse params from form data
+func (comp *HttpComponent) getRequestValuesByFormData(request *http.Request) map[string]interface{} {
+	values := map[string]interface{}{}
+	// multipart/form-data; boundary=----WebKitFormBoundaryDumfytNg1NzoZq2r
+	boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
+	boundaries := boundaryRegexp.FindStringSubmatch("multipart/form-data")
+	if len(boundaries) < 2 {
+		panic("fail to parse form values")
 	}
+	boundary := "--" + boundaries[1]
 
+	bytes, _ := ioutil.ReadAll(request.Body)
+	bodyStr := string(bytes)
+	paramsStrList := strings.Split(bodyStr, boundary)
+
+	for _, row := range paramsStrList {
+		if row == "" || !strings.Contains(row, "\"") {
+			// exclude row
+			continue
+		}
+
+		repl := "Content-Disposition: form-data; name=\"([0-9a-zA-Z|_]+)\""
+		keyRegexp, _ := regexp.Compile(repl)
+		keyList := keyRegexp.FindStringSubmatch(row)
+		key := keyList[1]
+
+		valueRow := keyRegexp.ReplaceAllString(row, "")
+		value := strings.Trim(valueRow, "\n")
+		value = strings.Trim(value, "\r")
+		value = strings.Trim(value, "\r\n")
+		value = strings.Trim(value, " ")
+
+		values[key] = values
+	}
+	return values
+}
+
+// parse params from json
+func (comp *HttpComponent) getRequestValuesByJson(request *http.Request) map[string]interface{} {
+	var values map[string]interface{}
+	bytes, _ := ioutil.ReadAll(request.Body)
+	camUtils.Json.DecodeToObj(bytes, &values)
 	return values
 }
 
