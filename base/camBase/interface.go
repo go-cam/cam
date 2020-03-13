@@ -91,6 +91,10 @@ type ControllerInterface interface {
 	SetResponse([]byte)
 	// get response
 	GetResponse() []byte
+	// set recover
+	SetRecover(rec RecoverInterface)
+	// get recover
+	GetRecover() RecoverInterface
 }
 
 // controller action interface
@@ -177,4 +181,10 @@ type CacheComponentInterface interface {
 // mail component interface
 type MailComponentInterface interface {
 	Send(subject string, body string, to ...string) error
+}
+
+// recoverable interface
+type RecoverInterface interface {
+	Error() string
+	GetError() error
 }

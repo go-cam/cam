@@ -129,3 +129,8 @@ func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 
 	return excludeDict
 }
+
+// get recover controller and action
+func (plugin *RouterPlugin) GetRecoverControllerAction() (controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
+	return plugin.GetControllerAction(plugin.config.recoverRoute)
+}

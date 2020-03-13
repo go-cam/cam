@@ -12,8 +12,9 @@ type Controller struct {
 	context camBase.ContextInterface
 	session camBase.SessionInterface
 
-	values        map[string]interface{} // controller values
-	responseBytes []byte                 // response bytes
+	values        map[string]interface{}   // controller values
+	responseBytes []byte                   // response bytes
+	recover       camBase.RecoverInterface // get recover
 
 	httpResponseWriter http.ResponseWriter
 	httpRequest        *http.Request
@@ -104,4 +105,14 @@ func (ctrl *Controller) GetHttpResponseWrite() http.ResponseWriter {
 // Only support on http request
 func (ctrl *Controller) GetHttpRequest() *http.Request {
 	return ctrl.httpRequest
+}
+
+// set recover
+func (ctrl *Controller) SetRecover(rec camBase.RecoverInterface) {
+	ctrl.recover = rec
+}
+
+// get recover
+func (ctrl *Controller) GetRecover() camBase.RecoverInterface {
+	return ctrl.recover
 }

@@ -1,6 +1,7 @@
 package cam
 
 import (
+	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
@@ -70,4 +71,8 @@ func NewMailConfig(email string, password string, host string) *camMail.MailComp
 
 func NewTemplateCommand() *template.Command {
 	return template.NewCommand()
+}
+
+func NewRecover(message string) *camBase.Recover {
+	return camBase.NewRecoverable(message)
 }

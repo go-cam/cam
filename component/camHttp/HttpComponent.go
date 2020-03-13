@@ -64,7 +64,7 @@ func (comp *HttpComponent) Stop() {
 func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
-			comp.Recover(rec)
+			comp.tryRecover(responseWriter, request, rec)
 		}
 	}()
 
@@ -89,6 +89,11 @@ func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, reque
 		return
 	}
 
+	comp.callControllerAction(responseWriter, request, controller, action)
+}
+
+// call controller action
+func (comp *HttpComponent) callControllerAction(responseWriter http.ResponseWriter, request *http.Request, controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
 	storeSession := comp.getStoreSession(request)
 	context := comp.NewContext()
 	session := NewHttpSession(storeSession)
@@ -103,13 +108,20 @@ func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, reque
 	controller.SetSession(session)
 	controller.SetValues(values)
 
+	var err error
+
 	if !controller.BeforeAction(action) {
-		panic("invalid request")
+		responseWriter.WriteHeader(400)
+		_, err = responseWriter.Write([]byte("invalid request"))
+		if err != nil {
+			panic(err)
+		}
+		return
 	}
 	action.Call()
 	response := controller.AfterAction(action, controller.GetResponse())
 
-	err := storeSession.Save(request, responseWriter)
+	err = storeSession.Save(request, responseWriter)
 	if err != nil {
 		panic(err)
 	}
@@ -119,6 +131,19 @@ func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, reque
 	if err != nil {
 		panic(err)
 	}
+}
+
+// try to recover panic
+func (comp *HttpComponent) tryRecover(responseWriter http.ResponseWriter, request *http.Request, v interface{}) {
+	controller, action := comp.GetRecoverControllerAction()
+	rec, ok := v.(camBase.RecoverInterface)
+	if !ok || controller == nil || action == nil {
+		comp.Recover(v)
+		return
+	}
+
+	controller.SetRecover(rec)
+	comp.callControllerAction(responseWriter, request, controller, action)
 }
 
 // get session store
