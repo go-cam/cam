@@ -220,7 +220,8 @@ func (comp *HttpComponent) getRequestValuesByFormData(request *http.Request) map
 	boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
 	boundaries := boundaryRegexp.FindStringSubmatch("multipart/form-data")
 	if len(boundaries) < 2 {
-		panic("fail to parse form values")
+		camBase.App.Error("HttpComponent.getRequestValuesByFormData", "fail to parse form values")
+		return values
 	}
 	boundary := "--" + boundaries[1]
 

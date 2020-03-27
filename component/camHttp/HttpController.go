@@ -1,7 +1,6 @@
 package camHttp
 
 import (
-	"fmt"
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"net/http"
@@ -35,13 +34,14 @@ func (ctrl *HttpController) GetRequest() *http.Request {
 	return ctrl.request
 }
 
-// Deprecated: cannot work
-func (ctrl *HttpController) GetFile(key string) {
-	file, _, err := ctrl.request.FormFile(key)
+// Get upload file
+// call UploadFile.Save(...) if you want to save the upload file
+func (ctrl *HttpController) GetFile(key string) *UploadFile {
+	file, header, err := ctrl.GetRequest().FormFile(key)
 	if err != nil {
 		camBase.App.Error("HttpController.GetFile", err.Error())
-		return
+		return nil
 	}
 
-	fmt.Println(file)
+	return NewUploadFile(file, header)
 }
