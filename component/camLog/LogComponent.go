@@ -2,11 +2,11 @@ package camLog
 
 import (
 	"errors"
-	"fmt"
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -22,7 +22,7 @@ type LogComponent struct {
 	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
 	lastCheckFileTimestamp int64                       // last check file time
 	titleMaxLen            int                         // title max len
-	mutex                  sync.Mutex                  // log lock struct
+	fileWriteMutex         sync.Mutex                  // log lock struct
 }
 
 // on App init
@@ -57,11 +57,6 @@ func (comp *LogComponent) Stop() {
 	comp.Component.Stop()
 }
 func (comp *LogComponent) Record(level camBase.LogLevel, title string, content string) error {
-	comp.mutex.Lock()
-	defer func() {
-		comp.mutex.Unlock()
-	}()
-
 	if !comp.isBaseLevel(level) {
 		return errors.New("level is not basic level")
 	}
@@ -73,15 +68,17 @@ func (comp *LogComponent) Record(level camBase.LogLevel, title string, content s
 
 	var err error = nil
 	levelLabel := comp.getLevelLabels(level)
-	datetime := camUtils.Time.NowDateTime()
 	spaceTitle := comp.addSpaceToTitle(title)
-	line := "[ " + datetime + " " + levelLabel + " | " + spaceTitle + " ] " + content
+	line := "[ " + levelLabel + " | " + spaceTitle + " ] " + content
 	filename := comp.getLogFilename()
 
 	if isPrint {
-		fmt.Println(line)
+		log.Println(line)
 	}
 	if isWrite {
+		comp.fileWriteMutex.Lock()
+		defer comp.fileWriteMutex.Unlock()
+
 		comp.checkAndRenameFile()
 		err = camUtils.File.AppendFile(filename, []byte(line+"\n"))
 	}
