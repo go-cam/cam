@@ -42,9 +42,7 @@ func NewConsoleConfig() *camConsole.ConsoleComponentConfig {
 
 // new log config
 func NewLogConfig() *camLog.LogComponentConfig {
-	config := camLog.NewLogConfig()
-	config.Component = new(camLog.LogComponent)
-	return config
+	return camLog.NewLogConfig()
 }
 
 // new config
