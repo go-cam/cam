@@ -1,8 +1,10 @@
+// export common constants, structures, methods
 package cam
 
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConfig"
+	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
@@ -11,9 +13,51 @@ import (
 	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camSocket"
 	"github.com/go-cam/cam/component/camWebsocket"
+	"github.com/go-cam/cam/plugin/camPluginContext"
+	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/go-cam/cam/template"
 )
 
+// #################### [START] constant export ####################
+// Log
+const (
+	LogLevelTrace   = camConstants.LevelTrace   // log level: trace
+	LogLevelDebug   = camConstants.LevelDebug   // log level: debug
+	LogLevelInfo    = camConstants.LevelInfo    // log level: info
+	LogLevelWarn    = camConstants.LevelWarn    // log level: warning
+	LogLevelError   = camConstants.LevelError   // log level: error
+	LogLevelFatal   = camConstants.LevelFatal   // log level: fatal
+	LogLevelNone    = camConstants.LevelNone    // none
+	LogLevelSuggest = camConstants.LevelSuggest // suggest this level to write file
+	LogLevelAll     = camConstants.LevelAll     // all
+)
+
+// #################### [END] constant export ####################
+
+// #################### [START] struct export ####################
+type Controller struct {
+	camPluginRouter.Controller
+}
+
+type ConstantController struct {
+	camConsole.ConsoleController
+}
+
+type HttpController struct {
+	camHttp.HttpController
+}
+
+type ControllerAction struct {
+	camPluginRouter.ControllerAction
+}
+
+type Context struct {
+	camPluginContext.Context
+}
+
+// #################### [END] struct export ####################
+
+// #################### [START] new instance func export ####################
 // new Application config
 func NewAppConfig() *camConfig.AppConfig {
 	appConfig := new(camConfig.AppConfig)
@@ -82,3 +126,5 @@ func NewRecover(message string) *camBase.Recover {
 func NewSocketConfig(port uint16) *camSocket.SocketComponentConfig {
 	return camSocket.NewSocketComponentConfig(port)
 }
+
+// #################### [END] new instance func export ####################
