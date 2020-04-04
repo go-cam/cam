@@ -4,52 +4,62 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 // websocket session
 type WebsocketSession struct {
 	camBase.SessionInterface
 
-	conn      *websocket.Conn             // websocket connection
-	sessionId string                      // sessionId
-	values    map[interface{}]interface{} // save session value
+	conn      *websocket.Conn // websocket connection
+	sessionId string          // sessionId
+	values    sync.Map        // save session value
 }
 
+// new websocket session
 func NewWebsocketSession(conn *websocket.Conn) *WebsocketSession {
-	model := new(WebsocketSession)
-	model.conn = conn
-	model.sessionId = camUtils.String.UUID()
-	model.values = map[interface{}]interface{}{}
-	return model
+	sess := new(WebsocketSession)
+	sess.conn = conn
+	sess.sessionId = camUtils.String.UUID()
+	sess.values = sync.Map{}
+	return sess
 }
 
-// 获取 sessionId
-func (session *WebsocketSession) GetSessionId() string {
-	return session.sessionId
+// get sessionId
+func (sess *WebsocketSession) GetSessionId() string {
+	return sess.sessionId
 }
 
-// 设置值
-func (session *WebsocketSession) Set(key interface{}, value interface{}) {
-	session.values[key] = value
+// set session value
+func (sess *WebsocketSession) Set(key interface{}, value interface{}) {
+	sess.values.Store(key, value)
 }
 
-// 获取值
-func (session *WebsocketSession) Get(key interface{}) interface{} {
-	value, has := session.values[key]
-	if !has {
+// get session value
+func (sess *WebsocketSession) Get(key interface{}) interface{} {
+	value, ok := sess.values.Load(key)
+	if !ok {
 		return nil
 	}
 	return value
 }
 
-// 销毁session 清空 session 所有数据
-func (session *WebsocketSession) Destroy() {
-	_ = session.conn.Close()
-	session.sessionId = ""
-	session.values = map[interface{}]interface{}{}
+// delete key
+func (sess *WebsocketSession) Del(key interface{}) {
+	sess.values.Delete(key)
+}
+
+// destroy session
+func (sess *WebsocketSession) Destroy() {
+	_ = sess.conn.Close()
+	sess.sessionId = ""
+	sess.values.Range(func(key, value interface{}) bool {
+		sess.values.Delete(key)
+		return true
+	})
 }
 
 // get client connection
-func (session *WebsocketSession) GetConn() *websocket.Conn {
-	return session.conn
+func (sess *WebsocketSession) GetConn() *websocket.Conn {
+	return sess.conn
 }

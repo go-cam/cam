@@ -2,6 +2,7 @@ package camBase
 
 import (
 	"github.com/gorilla/websocket"
+	"net"
 	"net/http"
 )
 
@@ -11,8 +12,9 @@ type ApplicationStatus int
 // CamModule type
 type CamModuleType int
 
-// websocket component message parse handler
-type WebsocketMessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
+// message parse handler.
+// it can read route and values info form the message
+type MessageParseHandler func(message []byte) (controllerName string, actionName string, values map[string]interface{})
 
 // log level
 type LogLevel uint8
@@ -28,3 +30,9 @@ type RecoverHandlerResult uint8
 
 // component recover handler
 type RecoverHandler func(rec interface{}) RecoverHandlerResult
+
+// socket conn handler
+type SocketConnHandler func(conn net.Conn)
+
+// socket custom route handler
+type SocketRouteHandler func(conn net.Conn) []byte

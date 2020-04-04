@@ -7,5 +7,5 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.1
 	github.com/tidwall/gjson v1.3.4 // indirect
-	xorm.io/xorm v0.8.2
+	xorm.io/xorm v1.0.1
 )

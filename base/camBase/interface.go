@@ -117,6 +117,8 @@ type SessionInterface interface {
 	Set(key interface{}, value interface{})
 	// get value by key
 	Get(key interface{}) interface{}
+	// delete value by key
+	Del(key interface{})
 	// destroy session
 	Destroy()
 }

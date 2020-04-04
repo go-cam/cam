@@ -9,6 +9,7 @@ import (
 	"github.com/go-cam/cam/component/camHttp"
 	"github.com/go-cam/cam/component/camLog"
 	"github.com/go-cam/cam/component/camMail"
+	"github.com/go-cam/cam/component/camSocket"
 	"github.com/go-cam/cam/component/camWebsocket"
 	"github.com/go-cam/cam/template"
 )
@@ -55,10 +56,12 @@ func NewCacheConfig() *camCache.CacheComponentConfig {
 	return camCache.NewCacheConfig()
 }
 
+// new file cache engine
 func NewFileCache() *camCache.FileCache {
 	return camCache.NewFileCache()
 }
 
+// new redis engine
 func NewRedisCache() *camCache.RedisCache {
 	return camCache.NewRedisEngine()
 }
@@ -73,4 +76,9 @@ func NewTemplateCommand() *template.Command {
 
 func NewRecover(message string) *camBase.Recover {
 	return camBase.NewRecoverable(message)
+}
+
+// new socket config
+func NewSocketConfig(port uint16) *camSocket.SocketComponentConfig {
+	return camSocket.NewSocketComponentConfig(port)
 }

@@ -3,6 +3,7 @@ package camUtils
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -83,4 +84,14 @@ func (util *StringUtil) FillZero(num string, digit int) string {
 		num = "0" + num
 	}
 	return num
+}
+
+// uint64 to string
+func (util *StringUtil) Uint64ToString(num uint64) string {
+	return strconv.FormatUint(num, 10)
+}
+
+// int64 to string
+func (util *StringUtil) Int64ToString(num int64) string {
+	return strconv.FormatInt(num, 10)
 }

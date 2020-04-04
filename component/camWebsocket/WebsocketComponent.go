@@ -4,12 +4,12 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
+	"github.com/go-cam/cam/plugin"
 	"github.com/go-cam/cam/plugin/camPluginContext"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type WebsocketComponent struct {
@@ -29,7 +29,7 @@ type WebsocketComponent struct {
 	// controllerName:  controller name
 	// actionName: 		action name
 	// values: 			send data, just like post form data
-	messageParseHandler camBase.WebsocketMessageParseHandler
+	messageParseHandler camBase.MessageParseHandler
 }
 
 // init
@@ -47,7 +47,7 @@ func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
 			return true
 		},
 	}
-	comp.messageParseHandler = comp.defaultMessageParseHandler
+	comp.messageParseHandler = plugin.DefaultMessageParseHandler
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 }
@@ -57,11 +57,11 @@ func (comp *WebsocketComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.SslOnly {
-		camBase.App.Trace("WebsocketComponent", "listen ws://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		camBase.App.Trace("WebsocketComponent", "listen ws://:"+camUtils.C.Uint16ToString(comp.config.Port))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsSslOn {
-		camBase.App.Trace("WebsocketComponent", "listen wss://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		camBase.App.Trace("WebsocketComponent", "listen wss://:"+camUtils.C.Uint16ToString(comp.config.SslPort))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -144,24 +144,6 @@ func (comp *WebsocketComponent) getSendMessage(session camBase.SessionInterface,
 	return response
 }
 
-// default router parser.
-// Parse the received data to: controllerName、actionName、values
-func (comp *WebsocketComponent) defaultMessageParseHandler(message []byte) (controllerName string, actionName string, values map[string]interface{}) {
-	messageModel := new(Message)
-	responseModel := new(Response)
-	camUtils.Json.DecodeToObj(message, messageModel)
-	camUtils.Json.DecodeToObj([]byte(messageModel.Data), responseModel)
-
-	if messageModel.Route == "" {
-		return "", "", responseModel.Values
-	}
-	if !strings.Contains(messageModel.Route, "/") {
-		return messageModel.Route, "", responseModel.Values
-	}
-	tmpArr := strings.Split(messageModel.Route, "/")
-	return camUtils.Url.UrlToHump(tmpArr[0]), camUtils.Url.UrlToHump(tmpArr[1]), responseModel.Values
-}
-
 // enable server
 func (comp *WebsocketComponent) listenAndServe() {
 	mux := http.NewServeMux()
@@ -171,7 +153,9 @@ func (comp *WebsocketComponent) listenAndServe() {
 		Handler: mux,
 	}
 	err := server.ListenAndServe()
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // enable server with SSl
@@ -183,7 +167,9 @@ func (comp *WebsocketComponent) listenAndServeTLS() {
 		Handler: mux,
 	}
 	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // get custom route handler
