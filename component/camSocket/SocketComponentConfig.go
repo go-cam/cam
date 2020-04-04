@@ -62,5 +62,7 @@ func NewSocketComponentConfig(port uint16) *SocketComponentConfig {
 	config.ConnHandler = nil
 	config.MessageParseHandler = nil
 	config.Trace = false
+	config.RouterPluginConfig.Init()
+	config.ContextPluginConfig.Init()
 	return config
 }

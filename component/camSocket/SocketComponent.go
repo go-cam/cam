@@ -35,6 +35,9 @@ func (comp *SocketComponent) Init(configI camBase.ComponentConfigInterface) {
 		return
 	}
 
+	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
+	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
+
 	comp.connHandler = comp.defaultConnHandler
 	if comp.config.ConnHandler != nil {
 		comp.connHandler = comp.config.ConnHandler
@@ -157,6 +160,7 @@ func (comp *SocketComponent) recv(conn *net.TCPConn) []byte {
 	if recv, err = bufio.NewReader(conn).ReadBytes(comp.config.Etb); err != nil {
 		panic(err)
 	}
+	recv = recv[:len(recv)-1]
 
 	if uint64(len(recv)) > comp.config.RecvMaxLen {
 		_ = conn.Close()
@@ -186,12 +190,12 @@ func (comp *SocketComponent) send(conn *net.TCPConn, send []byte) {
 	}
 
 	// send
-	if _, err = conn.Write(send); err != nil {
+	if _, err = conn.Write(append(send, comp.config.Etb)); err != nil {
 		panic(err)
 	}
 
 	// unset send deadline
-	if err = conn.SetReadDeadline(time.Time{}); err != nil {
+	if err = conn.SetWriteDeadline(time.Time{}); err != nil {
 		panic(err)
 	}
 }
