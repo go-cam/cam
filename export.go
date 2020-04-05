@@ -150,8 +150,8 @@ func NewValidationConfig() *camValidation.ValidationComponentConfig {
 }
 
 // new rule
-func NewRule(fields []string, handlers []camBase.ValidHandler) *camStructs.Rule {
-	return camStructs.NewRule(fields, handlers)
+func NewRule(fields []string, handlers ...camBase.ValidHandler) *camStructs.Rule {
+	return camStructs.NewRule(fields, handlers...)
 }
 
 // #################### [END] new instance func export ####################

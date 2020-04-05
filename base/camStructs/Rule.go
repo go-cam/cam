@@ -11,7 +11,7 @@ type Rule struct {
 }
 
 // new rule
-func NewRule(fields []string, handlers []camBase.ValidHandler) *Rule {
+func NewRule(fields []string, handlers ...camBase.ValidHandler) *Rule {
 	rule := new(Rule)
 	rule.fields = fields
 	rule.handlers = handlers

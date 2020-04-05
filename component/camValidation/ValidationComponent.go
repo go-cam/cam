@@ -84,6 +84,9 @@ func (comp *ValidationComponent) validInterface(v interface{}) map[string][]erro
 
 		for _, fieldName := range fieldNames {
 			field := rValue.FieldByName(fieldName)
+			if field.Kind() == reflect.Ptr {
+				field = field.Elem()
+			}
 
 			for _, handler := range handlers {
 				err := handler(field)
