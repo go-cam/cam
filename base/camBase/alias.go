@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"net"
 	"net/http"
+	"reflect"
 )
 
 // app status
@@ -36,3 +37,9 @@ type SocketConnHandler func(conn net.Conn)
 
 // socket custom route handler
 type SocketRouteHandler func(conn net.Conn) []byte
+
+// valid mode priority level
+type ValidMode uint8
+
+// valid handler
+type ValidHandler func(value reflect.Value) error

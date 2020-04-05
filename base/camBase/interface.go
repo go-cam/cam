@@ -44,6 +44,8 @@ type ApplicationInterface interface {
 	GetCache() CacheComponentInterface
 	// get mail component
 	GetMail() MailComponentInterface
+	// valid struct.
+	Valid(v interface{}) (firstErr error, errDict map[string][]error)
 }
 
 // component config interface
@@ -189,4 +191,24 @@ type MailComponentInterface interface {
 type RecoverInterface interface {
 	Error() string
 	GetError() error
+}
+
+// valid interface
+type ValidInterface interface {
+	// get rules
+	Rules() []ValidRuleInterface
+}
+
+// rule
+type ValidRuleInterface interface {
+	// get fields of validation
+	Fields() []string
+	// get handlers of validation
+	Handlers() []ValidHandler
+}
+
+// validation component interface
+type ValidationComponentInterface interface {
+	// valid struct
+	Valid(v interface{}) map[string][]error
 }

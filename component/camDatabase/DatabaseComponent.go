@@ -36,7 +36,7 @@ func (comp *DatabaseComponent) Start() {
 
 // stop
 func (comp *DatabaseComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 
 // create migrations's version record table

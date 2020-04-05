@@ -1,10 +1,12 @@
-// export common constants, structures, methods
 package cam
+
+// export common constants, structures, methods
 
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
@@ -12,6 +14,7 @@ import (
 	"github.com/go-cam/cam/component/camLog"
 	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camSocket"
+	"github.com/go-cam/cam/component/camValidation"
 	"github.com/go-cam/cam/component/camWebsocket"
 	"github.com/go-cam/cam/plugin/camPluginContext"
 	"github.com/go-cam/cam/plugin/camPluginRouter"
@@ -19,6 +22,7 @@ import (
 )
 
 // #################### [START] constant export ####################
+
 // Log
 const (
 	LogLevelTrace   = camConstants.LevelTrace   // log level: trace
@@ -32,9 +36,17 @@ const (
 	LogLevelAll     = camConstants.LevelAll     // all
 )
 
+// Validation
+const (
+	ValidModeInterface = camConstants.ModeInterface // Interface mode
+	ValidModeTag       = camConstants.ModeTag       // Tag mode
+	ValidModeBot       = camConstants.ModeBoth      // Interface and Tag mode
+)
+
 // #################### [END] constant export ####################
 
 // #################### [START] struct export ####################
+
 type Controller struct {
 	camPluginRouter.Controller
 }
@@ -55,9 +67,14 @@ type Context struct {
 	camPluginContext.Context
 }
 
+type ValidInterface interface {
+	camBase.ValidInterface
+}
+
 // #################### [END] struct export ####################
 
 // #################### [START] new instance func export ####################
+
 // new Application config
 func NewAppConfig() *camConfig.AppConfig {
 	appConfig := new(camConfig.AppConfig)
@@ -118,13 +135,28 @@ func NewTemplateCommand() *template.Command {
 	return template.NewCommand()
 }
 
-func NewRecover(message string) *camBase.Recover {
-	return camBase.NewRecoverable(message)
+func NewRecover(message string) *camStructs.Recover {
+	return camStructs.NewRecoverable(message)
 }
 
-// new socket config
+// new SocketComponentConfig
 func NewSocketConfig(port uint16) *camSocket.SocketComponentConfig {
 	return camSocket.NewSocketComponentConfig(port)
 }
 
+// new ValidationComponentConfig
+func NewValidationConfig() *camValidation.ValidationComponentConfig {
+	return camValidation.NewValidationConfig()
+}
+
+// new rule
+func NewRule(fields []string, handlers []camBase.ValidHandler) *camStructs.Rule {
+	return camStructs.NewRule(fields, handlers)
+}
+
 // #################### [END] new instance func export ####################
+
+// #################### [START] instance export ####################
+var Rule = camValidation.Rule
+
+// #################### [END] instance export ####################

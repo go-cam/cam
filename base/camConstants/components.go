@@ -25,3 +25,10 @@ const (
 	LevelSuggest                  = LevelInfo | LevelWarn | LevelError | LevelFatal               // suggest this level to write file
 	LevelAll                      = LevelTrace | LevelDebug | LevelWarn | LevelError | LevelFatal // all
 )
+
+// ValidationComponent
+const (
+	ModeInterface camBase.ValidMode = 1
+	ModeTag                         = ModeInterface << 1
+	ModeBoth                        = ModeInterface | ModeTag
+)

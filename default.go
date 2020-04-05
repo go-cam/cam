@@ -1,5 +1,6 @@
-// Help framework easy start, default setting, simplified application method
 package cam
+
+// Help framework easy start, default setting, simplified application method
 
 import (
 	"github.com/go-cam/cam/base/camBase"
@@ -108,4 +109,9 @@ func Error(title, content string) {
 // fatal log
 func Fatal(title, content string) {
 	App.Fatal(title, content)
+}
+
+// valid struct
+func Valid(v interface{}) (firstErr error, errDict map[string][]error) {
+	return App.Valid(v)
 }

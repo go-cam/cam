@@ -61,7 +61,7 @@ func (comp *LogComponent) Start() {
 
 // before App destroy
 func (comp *LogComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 func (comp *LogComponent) Record(level camBase.LogLevel, title string, content string) error {
 	if !comp.isBaseLevel(level) {

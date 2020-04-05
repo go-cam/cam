@@ -42,7 +42,7 @@ func (comp *CacheComponent) Start() {
 
 // stop
 func (comp *CacheComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 
 // set cache

@@ -56,7 +56,7 @@ func (comp *HttpComponent) Start() {
 
 // stop
 func (comp *HttpComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 
 // Receive http request, Call controller action, Send http response
