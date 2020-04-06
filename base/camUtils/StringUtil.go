@@ -95,3 +95,35 @@ func (util *StringUtil) Uint64ToString(num uint64) string {
 func (util *StringUtil) Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
+
+// float64 to string
+func (util *StringUtil) Float64ToString(num float64) string {
+	return strconv.FormatFloat(num, 'f', 16, 64)
+}
+
+// string to int64
+func (util *StringUtil) StringToInt64(str string) int64 {
+	num, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return num
+}
+
+// string to uint64
+func (util *StringUtil) StringToUint64(str string) uint64 {
+	num, err := strconv.ParseUint(str, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return num
+}
+
+// string to float64
+func (util *StringUtil) StringToFloat64(str string) float64 {
+	num, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		return 0
+	}
+	return num
+}

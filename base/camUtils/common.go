@@ -1,7 +1,5 @@
 package camUtils
 
-import "strconv"
-
 // Common utils
 type CUtil struct {
 }
@@ -48,12 +46,12 @@ func (c *CUtil) Int8ToString(num int8) string {
 	return c.Int64ToString(int64(num))
 }
 
+func (c *CUtil) Float64ToString(num float64) string {
+	return String.Float64ToString(num)
+}
+
 func (c *CUtil) StringToInt64(str string) int64 {
-	num, err := strconv.ParseInt(str, 10, 64)
-	if err != nil {
-		return 0
-	}
-	return num
+	return String.StringToInt64(str)
 }
 
 func (c *CUtil) StringToInt(str string) int {
@@ -61,13 +59,17 @@ func (c *CUtil) StringToInt(str string) int {
 }
 
 func (c *CUtil) StringToUint64(str string) uint64 {
-	num, err := strconv.ParseUint(str, 10, 64)
-	if err != nil {
-		return 0
-	}
-	return num
+	return String.StringToUint64(str)
 }
 
 func (c *CUtil) StringToUint(str string) uint {
 	return uint(c.StringToUint64(str))
+}
+
+func (c *CUtil) StringToFloat64(str string) float64 {
+	return String.StringToFloat64(str)
+}
+
+func (c *CUtil) StringToFloat32(str string) float32 {
+	return float32(c.StringToFloat64(str))
 }

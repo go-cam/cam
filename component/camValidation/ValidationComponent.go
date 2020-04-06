@@ -74,7 +74,7 @@ func (comp *ValidationComponent) validInterface(v interface{}) map[string][]erro
 		rValue = rValue.Elem()
 	}
 	if rValue.Kind() != reflect.Struct {
-		errDict = comp.addError(errDict, "", errors.New("value of validation is not a struct"))
+		comp.addError(&errDict, "", errors.New("value of validation is not a struct"))
 		return errDict
 	}
 
@@ -84,18 +84,23 @@ func (comp *ValidationComponent) validInterface(v interface{}) map[string][]erro
 
 		for _, fieldName := range fieldNames {
 			field := rValue.FieldByName(fieldName)
-			if field.Kind() == reflect.Ptr {
-				field = field.Elem()
-			}
 
 			for _, handler := range handlers {
 				err := handler(field)
 				if err != nil {
 					errMsg := fieldName + ": " + err.Error()
-					errDict = comp.addError(errDict, fieldName, errors.New(errMsg))
+					comp.addError(&errDict, fieldName, errors.New(errMsg))
 					if comp.conf.StopWhenFirstErr {
 						return errDict
 					}
+				}
+			}
+
+			// validation each child member
+			if comp.conf.Each {
+				errs := comp.eachValid(&field)
+				for _, err := range errs {
+					comp.addError(&errDict, fieldName, err)
 				}
 			}
 		}
@@ -120,12 +125,44 @@ func (comp *ValidationComponent) getValidHandlers(names []string) ([]camBase.Val
 }
 
 // add error handler
-func (comp *ValidationComponent) addError(errDict map[string][]error, fieldName string, err error) map[string][]error {
-	_, has := errDict[fieldName]
+func (comp *ValidationComponent) addError(errDict *map[string][]error, fieldName string, err error) {
+	_, has := (*errDict)[fieldName]
 	if !has {
-		errDict[fieldName] = []error{}
+		(*errDict)[fieldName] = []error{}
 	}
-	errDict[fieldName] = append(errDict[fieldName], err)
+	(*errDict)[fieldName] = append((*errDict)[fieldName], err)
+}
 
-	return errDict
+// validation children
+func (comp *ValidationComponent) eachValid(value *reflect.Value) []error {
+	var errs []error
+
+	var field reflect.Value
+	if (*value).Kind() == reflect.Ptr {
+		field = (*value).Elem()
+	} else {
+		field = *value
+	}
+
+	switch field.Kind() {
+	case reflect.Slice:
+		length := field.Len()
+		for i := 0; i < length; i++ {
+			childField := field.Index(i)
+			comp.eachValid(&childField)
+		}
+	case reflect.Map:
+		keyValues := field.MapKeys()
+		for _, keyValue := range keyValues {
+			childField := field.MapIndex(keyValue)
+			comp.eachValid(&childField)
+		}
+	case reflect.Struct:
+		errDict := comp.Valid(field)
+		for _, childErrs := range errDict {
+			errs = append(errs, childErrs...)
+		}
+	}
+
+	return errs
 }

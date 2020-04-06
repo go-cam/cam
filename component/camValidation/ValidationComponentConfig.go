@@ -16,6 +16,8 @@ type ValidationComponentConfig struct {
 	CustomValidDict map[string]camBase.ValidHandler
 	// stop valid when has first error
 	StopWhenFirstErr bool
+	// for each to valid sub struct(or ptr), map and splice
+	Each bool
 }
 
 // new ValidationComponentConfig instance
@@ -25,6 +27,7 @@ func NewValidationConfig() *ValidationComponentConfig {
 	conf.Mode = camConstants.ModeInterface
 	conf.CustomValidDict = map[string]camBase.ValidHandler{}
 	conf.StopWhenFirstErr = true
+	conf.Each = true
 	return conf
 }
 
