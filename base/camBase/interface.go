@@ -196,11 +196,11 @@ type RecoverInterface interface {
 // valid interface
 type ValidInterface interface {
 	// get rules
-	Rules() []ValidRuleInterface
+	Rules() []RuleInterface
 }
 
 // rule
-type ValidRuleInterface interface {
+type RuleInterface interface {
 	// get fields of validation
 	Fields() []string
 	// get handlers of validation

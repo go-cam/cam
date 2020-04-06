@@ -4,7 +4,7 @@ import "github.com/go-cam/cam/base/camBase"
 
 // validation's rule
 type Rule struct {
-	camBase.ValidRuleInterface
+	camBase.RuleInterface
 
 	fields   []string
 	handlers []camBase.ValidHandler
