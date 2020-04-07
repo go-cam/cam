@@ -10,7 +10,6 @@ type Controller struct {
 	camBase.ControllerInterface
 
 	context camBase.ContextInterface
-	session camBase.SessionInterface
 
 	values        map[string]interface{}   // controller values
 	responseBytes []byte                   // response bytes
@@ -48,12 +47,12 @@ func (ctrl *Controller) GetContext() camBase.ContextInterface {
 
 // OVERWRITE
 func (ctrl *Controller) SetSession(session camBase.SessionInterface) {
-	ctrl.session = session
+	ctrl.context.SetSession(session)
 }
 
 // OVERWRITE
 func (ctrl *Controller) GetSession() camBase.SessionInterface {
-	return ctrl.session
+	return ctrl.context.GetSession()
 }
 
 // OVERWRITE

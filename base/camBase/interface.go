@@ -109,6 +109,10 @@ type ControllerActionInterface interface {
 
 // context interface
 type ContextInterface interface {
+	// set session
+	SetSession(session SessionInterface)
+	// get session
+	GetSession() SessionInterface
 }
 
 // session interface
