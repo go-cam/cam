@@ -15,15 +15,18 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 # Contents
 
 - [Cam](#cam)
-  - [Getting start](#getting-start)
+  - [Start with template](#start-with-template)
+  - [Easy start](#easy-start) 
+    - If you don't want cumbersome configuration. You can try this. But most documents are based on the the [cam-template](https://github.com/go-cam/cam-template)
   - [Template struct](#template-struct)
   - [Environment support](#environment-support)
   - [Examples](#examples)
     - [.Env file](#env-file)
     - [Upload file](#upload-file)
+    - Validation (alpha)
 - [Future planning](#future-planning)
 
-## Getting start
+## Start with template
 
 ### 1. Clone cam-template from github
 
@@ -46,7 +49,55 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 
 ### 5. Check whether it runs successfully
 
-Open the browser and visit: http://127.0.0.1:8800/hello
+Open the browser and open link: http://127.0.0.1:8800/hello
+
+## Easy start
+
+### 1. Create two file:
+
+`go.mod`:
+```go
+module app
+
+go 1.14
+
+require (
+	github.com/go-cam/cam v0.4.0-alpha.3
+)
+```
+
+`main.go`
+```go
+package main
+
+import "github.com/go-cam/cam"
+
+func main() {
+	cam.RegisterController(&HelloController{})
+	cam.RunDefault()
+}
+
+type HelloController struct {
+	cam.Controller
+}
+
+func (ctrl *HelloController) Cam() {
+	ctrl.SetResponse([]byte("cam is word."))
+}
+```
+
+### 2. Build and run
+
+build
+
+    go build main.go
+    
+run
+
+    ./main
+
+
+Open the browser and open link: http://127.0.0.1:20200/hello/cam
 
 ## Template struct: 
     The document is explained based on this directory
