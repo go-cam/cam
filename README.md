@@ -55,7 +55,7 @@ Open the browser and open link: http://127.0.0.1:8800/hello
 
 ### 1. Create two file:
 
-`go.mod`:
+`go.mod`
 ```go
 module app
 
