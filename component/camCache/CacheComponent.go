@@ -42,7 +42,7 @@ func (comp *CacheComponent) Start() {
 
 // stop
 func (comp *CacheComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 
 // set cache
@@ -80,7 +80,7 @@ func (comp *CacheComponent) Flush() error {
 func (comp *CacheComponent) gcLoop() {
 	interval := comp.config.Engine.GetGCInterval()
 	for {
-		camBase.App.Trace("CacheComponent.gcLoop", "run")
+		camBase.App.Trace("CacheComponent.gcLoop", "")
 		err := comp.config.Engine.GC()
 		if err != nil {
 			camBase.App.Error("CacheComponent.gcLoop", err.Error())

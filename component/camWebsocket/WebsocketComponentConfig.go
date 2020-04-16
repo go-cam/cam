@@ -23,7 +23,7 @@ type WebsocketComponentConfig struct {
 	// controllerName:
 	// actionName:
 	// values: send data, just like post form data
-	MessageParseHandler camBase.WebsocketMessageParseHandler
+	MessageParseHandler camBase.MessageParseHandler
 
 	routeHandlerDict map[string]camBase.WebsocketRouteHandler
 }

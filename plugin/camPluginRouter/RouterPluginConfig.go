@@ -6,8 +6,11 @@ import "github.com/go-cam/cam/base/camBase"
 // it can inject component if it need to
 type RouterPluginConfig struct {
 	camBase.PluginConfigInterface
-	recoverRoute   string                        // recover route
-	ControllerList []camBase.ControllerInterface // controller list
+
+	// recover route
+	recoverRoute string
+	// controller list
+	ControllerList []camBase.ControllerInterface
 }
 
 // init

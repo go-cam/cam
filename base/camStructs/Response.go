@@ -1,4 +1,4 @@
-package camWebsocket
+package camStructs
 
 type Response struct {
 	Code    int                    `json:"c"` // status code

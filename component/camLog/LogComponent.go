@@ -2,11 +2,12 @@ package camLog
 
 import (
 	"errors"
-	"fmt"
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -22,7 +23,10 @@ type LogComponent struct {
 	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
 	lastCheckFileTimestamp int64                       // last check file time
 	titleMaxLen            int                         // title max len
-	mutex                  sync.Mutex                  // log lock struct
+	consoleLogger          *log.Logger                 // console logger
+	fileLogger             *log.Logger                 // file logger
+	logFile                *os.File                    // log file
+	fileRenameMutex        sync.Mutex                  // log file rename mutex
 }
 
 // on App init
@@ -45,6 +49,9 @@ func (comp *LogComponent) Init(configI camBase.ComponentConfigInterface) {
 	comp.initLevelLabels()
 	comp.lastCheckFileTimestamp = 0
 	comp.titleMaxLen = 32
+	comp.consoleLogger = log.New(os.Stdout, comp.config.Prefix, comp.config.Flag)
+	comp.fileLogger = log.New(nil, comp.config.Prefix, comp.config.Flag)
+	comp.resetFileLoggerOutput()
 }
 
 // on App start
@@ -54,14 +61,9 @@ func (comp *LogComponent) Start() {
 
 // before App destroy
 func (comp *LogComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 func (comp *LogComponent) Record(level camBase.LogLevel, title string, content string) error {
-	comp.mutex.Lock()
-	defer func() {
-		comp.mutex.Unlock()
-	}()
-
 	if !comp.isBaseLevel(level) {
 		return errors.New("level is not basic level")
 	}
@@ -73,17 +75,15 @@ func (comp *LogComponent) Record(level camBase.LogLevel, title string, content s
 
 	var err error = nil
 	levelLabel := comp.getLevelLabels(level)
-	datetime := camUtils.Time.NowDateTime()
 	spaceTitle := comp.addSpaceToTitle(title)
-	line := "[ " + datetime + " " + levelLabel + " | " + spaceTitle + " ] " + content
-	filename := comp.getLogFilename()
+	line := "[ " + levelLabel + " | " + spaceTitle + " ] " + content
 
 	if isPrint {
-		fmt.Println(line)
+		comp.consoleLogger.Println(line)
 	}
 	if isWrite {
 		comp.checkAndRenameFile()
-		err = camUtils.File.AppendFile(filename, []byte(line+"\n"))
+		comp.fileLogger.Println(line)
 	}
 	return err
 }
@@ -122,21 +122,40 @@ func (comp *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
 
 // Check if the file exceeds the configured size
 func (comp *LogComponent) checkAndRenameFile() {
+	comp.fileRenameMutex.Lock()
+	defer comp.fileRenameMutex.Unlock()
+
 	now := time.Now().Unix()
 	if now < comp.lastCheckFileTimestamp+10 {
 		return
 	}
 	comp.lastCheckFileTimestamp = now
 
+	// close app.log
+	if comp.logFile == nil {
+		return
+	}
+	comp.fileLogger.SetOutput(nil)
+	err := comp.logFile.Close()
+	if err != nil {
+		_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", "failed to close file. err: "+err.Error())
+		return
+	}
+
+	// rename app.log
 	filename := comp.getLogFilename()
 	fileSize := camUtils.File.Size(filename)
 	if fileSize >= comp.config.FileMaxSize {
 		newFilename := comp.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
 		err := camUtils.File.Rename(filename, newFilename)
 		if err != nil {
-			_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", err.Error())
+			_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", "failed to rename. err: "+err.Error())
+			return
 		}
 	}
+
+	// new and set io.writer
+	comp.resetFileLoggerOutput()
 }
 
 // get log absolute filename
@@ -156,4 +175,31 @@ func (comp *LogComponent) addSpaceToTitle(title string) string {
 	strArr := make([]string, spaceNum)
 
 	return title + strings.Join(strArr, " ")
+}
+
+// reset fileLogger output io.writer
+func (comp *LogComponent) resetFileLoggerOutput() {
+	comp.createLogFile()
+
+	var err error
+	comp.logFile, err = os.OpenFile(comp.getLogFilename(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		camBase.App.Fatal("LogComponent.getLogFileWriter", err.Error())
+		return
+	}
+
+	comp.fileLogger.SetOutput(comp.logFile)
+}
+
+// create log file
+func (comp *LogComponent) createLogFile() {
+	logFilename := comp.getLogFilename()
+	if camUtils.File.Exists(logFilename) {
+		return
+	}
+
+	err := camUtils.File.WriteFile(logFilename, []byte(""))
+	if err != nil {
+		camBase.App.Fatal("LogComponent.createLogFile", "can't create log file. err: "+err.Error())
+	}
 }

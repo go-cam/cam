@@ -1,4 +1,4 @@
-package camWebsocket
+package camStructs
 
 type Message struct {
 	Id    int64  `json:"i"` // process id.

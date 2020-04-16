@@ -35,7 +35,7 @@ func (comp *MailComponent) Start() {
 
 // before App destroy
 func (comp *MailComponent) Stop() {
-	comp.Component.Stop()
+	defer comp.Component.Stop()
 }
 
 // send mail

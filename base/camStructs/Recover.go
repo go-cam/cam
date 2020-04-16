@@ -1,10 +1,13 @@
-package camBase
+package camStructs
 
-import "errors"
+import (
+	"errors"
+	"github.com/go-cam/cam/base/camBase"
+)
 
 // recoverable panic content
 type Recover struct {
-	RecoverInterface
+	camBase.RecoverInterface
 	error
 }
 

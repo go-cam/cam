@@ -41,6 +41,11 @@ func (comp *Component) getComponentName(componentInterface camBase.ComponentInte
 	return t.Elem().Name()
 }
 
+// component name
+func (comp *Component) Name() string {
+	return comp.name
+}
+
 // recover
 func (comp *Component) Recover(rec interface{}) {
 	if comp.recoverHandler(rec) == camConstants.RecoverHandlerResultPanic {

@@ -44,6 +44,8 @@ type ApplicationInterface interface {
 	GetCache() CacheComponentInterface
 	// get mail component
 	GetMail() MailComponentInterface
+	// valid struct.
+	Valid(v interface{}) (firstErr error, errDict map[string][]error)
 }
 
 // component config interface
@@ -107,6 +109,10 @@ type ControllerActionInterface interface {
 
 // context interface
 type ContextInterface interface {
+	// set session
+	SetSession(session SessionInterface)
+	// get session
+	GetSession() SessionInterface
 }
 
 // session interface
@@ -117,6 +123,8 @@ type SessionInterface interface {
 	Set(key interface{}, value interface{})
 	// get value by key
 	Get(key interface{}) interface{}
+	// delete value by key
+	Del(key interface{})
 	// destroy session
 	Destroy()
 }
@@ -187,4 +195,24 @@ type MailComponentInterface interface {
 type RecoverInterface interface {
 	Error() string
 	GetError() error
+}
+
+// valid interface
+type ValidInterface interface {
+	// get rules
+	Rules() []RuleInterface
+}
+
+// rule
+type RuleInterface interface {
+	// get fields of validation
+	Fields() []string
+	// get handlers of validation
+	Handlers() []ValidHandler
+}
+
+// validation component interface
+type ValidationComponentInterface interface {
+	// valid struct
+	Valid(v interface{}) map[string][]error
 }

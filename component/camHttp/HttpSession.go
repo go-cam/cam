@@ -19,25 +19,30 @@ func NewHttpSession(storeSession *sessions.Session) *HttpSession {
 }
 
 // set sessionId
-func (session *HttpSession) GetSessionId() string {
-	return session.session.ID
+func (sess *HttpSession) GetSessionId() string {
+	return sess.session.ID
 }
 
 // set key-value
-func (session *HttpSession) Set(key interface{}, value interface{}) {
-	session.session.Values[key] = value
+func (sess *HttpSession) Set(key interface{}, value interface{}) {
+	sess.session.Values[key] = value
 }
 
 // get value by key
-func (session *HttpSession) Get(key interface{}) interface{} {
-	value, has := session.session.Values[key]
+func (sess *HttpSession) Get(key interface{}) interface{} {
+	value, has := sess.session.Values[key]
 	if !has {
 		return nil
 	}
 	return value
 }
 
+// del value by key
+func (sess *HttpSession) Del(key interface{}) {
+	sess.Set(key, nil)
+}
+
 // destroy session
-func (session *HttpSession) Destroy() {
-	session.session.Values = map[interface{}]interface{}{}
+func (sess *HttpSession) Destroy() {
+	sess.session.Values = map[interface{}]interface{}{}
 }

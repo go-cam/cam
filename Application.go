@@ -10,6 +10,8 @@ import (
 	"github.com/go-cam/cam/component/camDatabase"
 	"github.com/go-cam/cam/component/camLog"
 	"github.com/go-cam/cam/component/camMail"
+	"github.com/go-cam/cam/component/camValidation"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -22,6 +24,7 @@ type Application struct {
 	config        *camConfig.Config                     // Application config
 	logComponent  *camLog.LogComponent                  // log component
 	cache         camBase.CacheComponentInterface       // cache component
+	valid         camBase.ValidationComponentInterface  // validation component
 	componentDict map[string]camBase.ComponentInterface // components dict
 	migrationDict map[string]camBase.MigrationInterface // migration map
 }
@@ -40,6 +43,7 @@ func NewApplication() *Application {
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
 	app.cache = nil
+	app.valid = nil
 	app.componentDict = map[string]camBase.ComponentInterface{}
 	app.migrationDict = map[string]camBase.MigrationInterface{}
 	return app
@@ -300,46 +304,65 @@ func (app *Application) GetCache() camBase.CacheComponentInterface {
 	var ok bool
 	compI := app.GetComponent(&camCache.CacheComponent{})
 	if compI == nil {
-		compI = app.createDefaultCacheComponent()
-		app.cache, ok = compI.(camBase.CacheComponentInterface)
-		if !ok {
-			app.Error("Application.GetCache", "create default cache fail")
+		compI = app.AddComponentAfterRun("cache", NewCacheConfig())
+		if compI == nil {
+			app.Fatal("Application.GetCache", "create default cache fail")
 		}
-	} else {
-		app.cache, ok = compI.(camBase.CacheComponentInterface)
-		if !ok {
-			app.Error("Application.GetCache", "convert fail")
-			return nil
-		}
+	}
+	app.cache, ok = compI.(camBase.CacheComponentInterface)
+	if !ok {
+		app.Fatal("Application.GetCache", "convert fail")
+		return nil
 	}
 
 	return app.cache
 }
 
-// create default cache component
-func (app *Application) createDefaultCacheComponent() camBase.ComponentInterface {
-	cacheConfig := NewCacheConfig()
-	componentI := cacheConfig.NewComponent()
-	componentName := "cache"
+// get valid
+func (app *Application) getValid() camBase.ValidationComponentInterface {
+	if app.valid != nil {
+		return app.valid
+	}
+	var ok bool
+	compI := app.GetComponent(&camValidation.ValidationComponent{})
+	if compI == nil {
+		compI = app.AddComponentAfterRun("valid", NewValidationConfig())
+		if compI == nil {
+			app.Fatal("Application.getValid", "create default validation fail")
+		}
+	}
 
-	i := 0
-	for {
-		tmpComponent := app.GetComponentByName(componentName)
-		if tmpComponent == nil {
+	app.valid, ok = compI.(camBase.ValidationComponentInterface)
+	if !ok {
+		app.Fatal("Application.getValid", "convert fail")
+		return nil
+	}
+
+	return app.valid
+}
+
+// add component after app ran
+func (app *Application) AddComponentAfterRun(name string, conf camBase.ComponentConfigInterface) camBase.ComponentInterface {
+	compI := conf.NewComponent()
+	compName := name
+
+	for i := 0; ; i++ {
+		tmpComp := app.GetComponentByName(compName)
+		if tmpComp == nil {
 			break
 		}
-		componentName = "cache_" + strconv.Itoa(i)
-		i++
-	}
-	if app.status >= camConstants.AppStatusBeforeStart {
-		componentI.Init(cacheConfig)
-	}
-	if app.status >= camConstants.AppStatusAfterStart {
-		componentI.Start()
+		compName = name + "_" + strconv.Itoa(i)
 	}
 
-	app.componentDict[componentName] = componentI
-	return componentI
+	if app.status >= camConstants.AppStatusBeforeStart {
+		compI.Init(conf)
+	}
+	if app.status >= camConstants.AppStatusAfterStart {
+		compI.Start()
+	}
+
+	app.componentDict[compName] = compI
+	return compI
 }
 
 // get mail component
@@ -353,4 +376,21 @@ func (app *Application) GetMail() camBase.MailComponentInterface {
 		return nil
 	}
 	return mailCompI
+}
+
+// valid struct
+func (app *Application) Valid(v interface{}) (firstErr error, errDict map[string][]error) {
+	valid := app.getValid()
+	if valid == nil {
+		app.Fatal("Application.Valid", "not valid instance")
+		return nil, nil
+	}
+	errDict = valid.Valid(v)
+	if len(errDict) == 0 {
+		return nil, errDict
+	}
+
+	fieldName := reflect.ValueOf(errDict).MapKeys()[0].Interface().(string)
+	firstErr = errDict[fieldName][0]
+	return firstErr, errDict
 }

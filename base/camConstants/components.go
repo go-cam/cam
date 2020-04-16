@@ -15,10 +15,20 @@ const (
 
 // LogComponent
 const (
-	LevelTrace camBase.LogLevel = 1               // trace log
-	LevelDebug                  = LevelTrace << 1 // debug log
-	LevelInfo                   = LevelDebug << 1 // info log
-	LevelWarn                   = LevelInfo << 1  // warning log
-	LevelError                  = LevelWarn << 1  // error log
-	LevelFatal                  = LevelError << 1 // fatal log
+	LevelTrace   camBase.LogLevel = 1                                                             // trace log
+	LevelDebug                    = LevelTrace << 1                                               // debug log
+	LevelInfo                     = LevelDebug << 1                                               // info log
+	LevelWarn                     = LevelInfo << 1                                                // warning log
+	LevelError                    = LevelWarn << 1                                                // error log
+	LevelFatal                    = LevelError << 1                                               // fatal log
+	LevelNone                     = 0                                                             // none
+	LevelSuggest                  = LevelInfo | LevelWarn | LevelError | LevelFatal               // suggest this level to write file
+	LevelAll                      = LevelTrace | LevelDebug | LevelWarn | LevelError | LevelFatal // all
+)
+
+// ValidationComponent
+const (
+	ModeInterface camBase.ValidMode = 1
+	ModeTag                         = ModeInterface << 1
+	ModeBoth                        = ModeInterface | ModeTag
 )

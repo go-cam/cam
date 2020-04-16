@@ -92,8 +92,9 @@ func (util *FileUtil) ScanDir(dir string, withDir bool) ([]os.FileInfo, error) {
 }
 
 // get parent dir
-func (util *FileUtil) Dir(dir string) string {
-	return filepath.Dir(dir)
+// path: absolute filename or absolute directory
+func (util *FileUtil) Dir(path string) string {
+	return filepath.Dir(path)
 }
 
 // get file size in bytes. only support file
