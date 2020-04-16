@@ -95,6 +95,7 @@ func (util *ConsoleUtil) IsPressY() bool {
 		return false
 	}
 	str := strings.ToLower(input.Text())
+	str = strings.TrimSpace(str)
 	if str != "y" {
 		return false
 	}
