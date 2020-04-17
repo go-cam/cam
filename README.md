@@ -23,7 +23,7 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
   - [Examples](#examples)
     - [.Env file](#env-file)
     - [Upload file](#upload-file)
-    - Validation (alpha)
+    - [Validation](#validation)
 - [Future planning](#future-planning)
 
 ## Start with template
@@ -203,6 +203,42 @@ func (ctrl *FileController) Upload() {
 
 Then
 post file to `http://.../file/upload`
+
+# Validation
+
+Example:
+```go
+package valid
+
+import (
+    "github.com/go-cam/cam"
+    "github.com/go-cam/cam/base/camBase"
+)
+
+type User struct {
+	Email   string
+	MyEmail Email
+}
+
+type Email string
+
+func (user *User) Rules() []camBase.RuleInterface {
+	return []camBase.RuleInterface{
+		cam.NewRule([]string{"Email", "MyEmail"}, cam.Rule.Email, cam.Rule.Length(0, 100)),
+	}
+}
+
+func init() {
+    user := new(User)
+    user.Email = "123123"
+    user.MyEmail = "123@123.com"
+    firstErr, _ := cam.Valid(user)
+    if firstErr != nil {
+        panic(firstErr)
+    }
+}
+```
+
 
 # Future planning
 - v0.4.0
