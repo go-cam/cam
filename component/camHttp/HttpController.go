@@ -8,6 +8,7 @@ import (
 
 // http controller interface
 type HttpControllerInterface interface {
+	// Deprecated: Please use context to implement camBase.ContextHttpInterface
 	setResponseWriterAndRequest(w *http.ResponseWriter, r *http.Request)
 }
 
@@ -26,10 +27,12 @@ func (ctrl *HttpController) setResponseWriterAndRequest(w *http.ResponseWriter, 
 	ctrl.request = r
 }
 
+// Deprecated: remove on v0.5.0 . Please use context to implement camBase.ContextHttpInterface
 func (ctrl *HttpController) GetRequestWriter() *http.ResponseWriter {
 	return ctrl.responseWriter
 }
 
+// Deprecated: remove on v0.5.0 . Please use context to implement camBase.ContextHttpInterface
 func (ctrl *HttpController) GetRequest() *http.Request {
 	return ctrl.request
 }

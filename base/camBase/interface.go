@@ -1,6 +1,7 @@
 package camBase
 
 import (
+	"net/http"
 	"time"
 	"xorm.io/xorm"
 )
@@ -113,6 +114,15 @@ type ContextInterface interface {
 	SetSession(session SessionInterface)
 	// get session
 	GetSession() SessionInterface
+}
+
+// http context
+// it will inject http.ResponseWriter and request *http.Request to context
+type ContextHttpInterface interface {
+	SetHttpResponseWriter(responseWriter http.ResponseWriter)
+	GetHttpResponseWriter() http.ResponseWriter
+	SetHttpRequest(request *http.Request)
+	GetHttpRequest() *http.Request
 }
 
 // session interface

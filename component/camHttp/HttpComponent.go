@@ -97,6 +97,7 @@ func (comp *HttpComponent) callControllerAction(responseWriter http.ResponseWrit
 	context := comp.NewContext()
 	session := NewHttpSession(storeSession)
 	values := comp.getRequestValues(request)
+	comp.injectHttpInContext(context, responseWriter, request)
 
 	if httpCtrl, ok := controller.(HttpControllerInterface); ok {
 		httpCtrl.setResponseWriterAndRequest(&responseWriter, request)
@@ -130,6 +131,16 @@ func (comp *HttpComponent) callControllerAction(responseWriter http.ResponseWrit
 	if err != nil {
 		panic(err)
 	}
+}
+
+// inject *http.Request and http.ResponseWriter into context
+func (comp *HttpComponent) injectHttpInContext(ctx camBase.ContextInterface, responseWriter http.ResponseWriter, request *http.Request) {
+	ctxHttp, ok := ctx.(camBase.ContextHttpInterface)
+	if !ok {
+		return
+	}
+	ctxHttp.SetHttpResponseWriter(responseWriter)
+	ctxHttp.SetHttpRequest(request)
 }
 
 // try to recover panic

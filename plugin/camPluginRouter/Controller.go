@@ -2,7 +2,6 @@ package camPluginRouter
 
 import (
 	"github.com/go-cam/cam/base/camBase"
-	"net/http"
 )
 
 // base controller
@@ -14,9 +13,6 @@ type Controller struct {
 	values        map[string]interface{}   // controller values
 	responseBytes []byte                   // response bytes
 	recover       camBase.RecoverInterface // get recover
-
-	httpResponseWriter http.ResponseWriter
-	httpRequest        *http.Request
 }
 
 // OVERWRITE:
@@ -94,16 +90,6 @@ func (ctrl *Controller) GetResponse() []byte {
 // OVERWRITE
 func (ctrl *Controller) GetDefaultActionName() string {
 	return ""
-}
-
-// Only support on http request
-func (ctrl *Controller) GetHttpResponseWrite() http.ResponseWriter {
-	return ctrl.httpResponseWriter
-}
-
-// Only support on http request
-func (ctrl *Controller) GetHttpRequest() *http.Request {
-	return ctrl.httpRequest
 }
 
 // set recover
