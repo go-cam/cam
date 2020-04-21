@@ -4,8 +4,9 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
-	"github.com/go-cam/cam/plugin/camPluginContext"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camMiddleware"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"github.com/gorilla/sessions"
 	"io/ioutil"
 	"net/http"
@@ -18,8 +19,9 @@ import (
 // http server component
 type HttpComponent struct {
 	component.Component
-	camPluginRouter.RouterPlugin
-	camPluginContext.ContextPlugin
+	camRouter.RouterPlugin
+	camContext.ContextPlugin
+	camMiddleware.MiddlewarePlugin
 
 	config *HttpComponentConfig
 	store  *sessions.FilesystemStore
@@ -37,6 +39,7 @@ func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
 	}
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
+	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
 	comp.store = comp.getFilesystemStore()
 }
 
@@ -60,15 +63,15 @@ func (comp *HttpComponent) Stop() {
 }
 
 // Receive http request, Call controller action, Send http response
-func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, request *http.Request) {
+func (comp *HttpComponent) handlerFunc(rw http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if rec := recover(); rec != nil {
-			comp.tryRecover(responseWriter, request, rec)
+			comp.tryRecover(rw, r, rec)
 		}
 	}()
 
 	route := ""
-	url := request.URL.String()
+	url := r.URL.String()
 	dirs := camUtils.Url.SplitUrl(url)
 	dirLen := len(dirs)
 	if dirLen == 1 {
@@ -76,66 +79,98 @@ func (comp *HttpComponent) handlerFunc(responseWriter http.ResponseWriter, reque
 	} else {
 		route = dirs[0] + "/" + dirs[1]
 	}
+
+	// Deprecated: remove this block in v0.5.0  It's not support middleware
+	// =========== START ===========
 	handler := comp.getCustomRoute(route)
 	if handler != nil {
-		handler(responseWriter, request)
+		handler(rw, r)
 		return
 	}
+	// =========== END ===========
 
-	controller, action := comp.GetControllerAction(route)
-	if controller == nil || action == nil {
-		camBase.App.Warn("HttpComponent", "404. not found route: "+route)
-		return
-	}
-
-	comp.callControllerAction(responseWriter, request, controller, action)
+	ctx := comp.newHttpContext(r, rw)
+	defer func() { ctx.Close() }()
+	comp.routeHandler(ctx, route)
 }
 
-// call controller action
-func (comp *HttpComponent) callControllerAction(responseWriter http.ResponseWriter, request *http.Request, controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
-	storeSession := comp.getStoreSession(request)
-	context := comp.NewContext()
-	session := NewHttpSession(storeSession)
-	values := comp.getRequestValues(request)
-	comp.injectHttpInContext(context, responseWriter, request)
+// Handle route and set httpResponse
+func (comp *HttpComponent) routeHandler(ctx camBase.HttpContextInterface, route string) {
+	next := func() []byte {
+		return comp.callNext(ctx, route)
+	}
+	var nextList []camBase.NextHandler
+	nextList = append(nextList, next)
 
-	if httpCtrl, ok := controller.(HttpControllerInterface); ok {
-		httpCtrl.setResponseWriterAndRequest(&responseWriter, request)
+	midIList := comp.GetMiddlewareList(route)
+	for _, midI := range midIList {
+		next = func() camBase.NextHandler {
+			i := len(nextList) - 1
+			return func() []byte {
+				return midI.Handler(ctx, nextList[i])
+			}
+		}()
+		nextList = append(nextList, next)
+	}
+	res := nextList[len(nextList)-1]()
+	_, err := ctx.GetHttpResponseWriter().Write(res)
+	if err != nil {
+		panic(err)
+	}
+}
+
+// call controller or custom route handler
+func (comp *HttpComponent) callNext(ctx camBase.HttpContextInterface, route string) []byte {
+	// Use custom handler first
+	handler := comp.GetCustomHandler(route)
+	if handler != nil {
+		return handler(ctx)
 	}
 
-	controller.Init()
-	controller.SetContext(context)
-	controller.SetSession(session)
-	controller.SetValues(values)
+	// Use Controller and Action to handle route
+	ctrl, action := comp.GetControllerAction(route)
+	if ctrl == nil || action == nil {
+		rw := ctx.GetHttpResponseWriter()
+		camBase.App.Warn("HttpComponent", "404. Not found route: "+route)
+		rw.WriteHeader(404)
+		return nil
+	}
 
+	return comp.callNextControllerAction(ctx, ctrl, action)
+}
+
+// Encapsulate the flow of call control
+func (comp *HttpComponent) callNextControllerAction(ctx camBase.HttpContextInterface, ctrl camBase.ControllerInterface, action camBase.ControllerActionInterface) []byte {
+	rw := ctx.GetHttpResponseWriter()
+	r := ctx.GetHttpRequest()
 	var err error
 
-	if !controller.BeforeAction(action) {
-		responseWriter.WriteHeader(400)
-		_, err = responseWriter.Write([]byte("invalid request"))
+	// Compatible. Remove on v0.5.0
+	if httpCtrlI, ok := ctrl.(HttpControllerInterface); ok {
+		httpCtrlI.setResponseWriterAndRequest(&rw, r)
+	}
+
+	values := comp.getRequestValues(ctx.GetHttpRequest())
+	ctrl.SetContext(ctx)
+	ctrl.SetSession(ctx.GetSession()) // Compatible. Remove on v0.5.0
+	ctrl.SetValues(values)
+
+	if !ctrl.BeforeAction(action) {
+		rw.WriteHeader(400)
+		_, err = rw.Write([]byte("invalid request"))
 		if err != nil {
 			panic(err)
 		}
-		return
+		return nil
 	}
 	action.Call()
-	response := controller.AfterAction(action, controller.GetResponse())
-
-	err = storeSession.Save(request, responseWriter)
-	if err != nil {
-		panic(err)
-	}
-
-	responseWriter.WriteHeader(200)
-	_, err = responseWriter.Write(response)
-	if err != nil {
-		panic(err)
-	}
+	res := ctrl.AfterAction(action, ctx.Read())
+	return res
 }
 
 // inject *http.Request and http.ResponseWriter into context
 func (comp *HttpComponent) injectHttpInContext(ctx camBase.ContextInterface, responseWriter http.ResponseWriter, request *http.Request) {
-	ctxHttp, ok := ctx.(camBase.ContextHttpInterface)
+	ctxHttp, ok := ctx.(camBase.HttpContextInterface)
 	if !ok {
 		return
 	}
@@ -144,16 +179,18 @@ func (comp *HttpComponent) injectHttpInContext(ctx camBase.ContextInterface, res
 }
 
 // try to recover panic
-func (comp *HttpComponent) tryRecover(responseWriter http.ResponseWriter, request *http.Request, v interface{}) {
-	controller, action := comp.GetRecoverControllerAction()
+func (comp *HttpComponent) tryRecover(rw http.ResponseWriter, r *http.Request, v interface{}) {
 	rec, ok := v.(camBase.RecoverInterface)
-	if !ok || controller == nil || action == nil {
+	if !ok {
 		comp.Recover(v)
 		return
 	}
 
-	controller.SetRecover(rec)
-	comp.callControllerAction(responseWriter, request, controller, action)
+	recoverRoute := comp.GetRecoverRoute()
+	ctx := comp.newHttpContext(r, rw)
+	ctx.SetRecover(rec)
+	defer func() { ctx.Close() }()
+	comp.routeHandler(ctx, recoverRoute)
 }
 
 // get session store
@@ -306,10 +343,32 @@ func (comp *HttpComponent) getStoreSession(request *http.Request) *sessions.Sess
 }
 
 // get custom route handler
+// Deprecated: remove on v0.5.0
 func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
 	handler, has := comp.config.routeHandlerDict[route]
 	if !has {
 		return nil
 	}
 	return handler
+}
+
+// new HttpContext
+func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWriter) camBase.HttpContextInterface {
+	storeSess := comp.getStoreSession(r)
+	sess := NewHttpSession(storeSess)
+	ctx := comp.NewContext()
+	httpCtx, ok := ctx.(camBase.HttpContextInterface)
+	if !ok {
+		panic("invalid HttpContext struct. Must implements camBase.ContextHttpInterface")
+	}
+	httpCtx.SetSession(sess)
+	httpCtx.SetHttpRequest(r)
+	httpCtx.SetHttpResponseWriter(rw)
+	httpCtx.CloseHandler(func() {
+		err := storeSess.Save(r, rw)
+		if err != nil {
+			panic(err)
+		}
+	})
+	return httpCtx
 }

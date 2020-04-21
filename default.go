@@ -4,12 +4,12 @@ package cam
 
 import (
 	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camRouter"
 )
 
 // record some values
 type defaultAo struct {
-	camPluginRouter.RouterPluginConfig
+	camRouter.RouterPluginConfig
 
 	compDict map[string]camBase.ComponentConfigInterface
 }

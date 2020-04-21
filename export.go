@@ -16,8 +16,8 @@ import (
 	"github.com/go-cam/cam/component/camSocket"
 	"github.com/go-cam/cam/component/camValidation"
 	"github.com/go-cam/cam/component/camWebsocket"
-	"github.com/go-cam/cam/plugin/camPluginContext"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"github.com/go-cam/cam/template"
 )
 
@@ -48,7 +48,7 @@ const (
 // #################### [START] struct export ####################
 
 type Controller struct {
-	camPluginRouter.Controller
+	camRouter.Controller
 }
 
 type ConstantController struct {
@@ -60,15 +60,19 @@ type HttpController struct {
 }
 
 type ControllerAction struct {
-	camPluginRouter.ControllerAction
+	camRouter.ControllerAction
 }
 
 type Context struct {
-	camPluginContext.Context
+	camContext.Context
 }
 
 type ValidInterface interface {
 	camBase.ValidInterface
+}
+
+type MiddlewareInterface interface {
+	camBase.MiddlewareInterface
 }
 
 // #################### [END] struct export ####################

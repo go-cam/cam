@@ -1,4 +1,4 @@
-package camPluginRouter
+package camRouter
 
 import (
 	"github.com/go-cam/cam/base/camBase"
@@ -42,11 +42,15 @@ func (ctrl *Controller) GetContext() camBase.ContextInterface {
 }
 
 // OVERWRITE
+// Deprecated: remove on v0.5.0
+// Instead: GetContext().SetSession();
 func (ctrl *Controller) SetSession(session camBase.SessionInterface) {
 	ctrl.context.SetSession(session)
 }
 
 // OVERWRITE
+// Deprecated: remove on v0.5.0
+// Instead: GetContext().GetSession();
 func (ctrl *Controller) GetSession() camBase.SessionInterface {
 	return ctrl.context.GetSession()
 }
@@ -77,12 +81,17 @@ func (ctrl *Controller) GetValue(key string) interface{} {
 }
 
 // set response content
+// Deprecated: remove on v0.5.0
+// Instead: GetContext().Write();
 func (ctrl *Controller) SetResponse(bytes []byte) {
 	ctrl.responseBytes = bytes
+	ctrl.GetContext().Write(bytes)
 }
 
 // OVERWRITE
 // return action write
+// Deprecated: remove on v0.5.0
+// Instead: GetContext().Read();
 func (ctrl *Controller) GetResponse() []byte {
 	return ctrl.responseBytes
 }
@@ -93,11 +102,12 @@ func (ctrl *Controller) GetDefaultActionName() string {
 }
 
 // set recover
+// Deprecated
 func (ctrl *Controller) SetRecover(rec camBase.RecoverInterface) {
-	ctrl.recover = rec
+	ctrl.GetContext().SetRecover(rec)
 }
 
 // get recover
 func (ctrl *Controller) GetRecover() camBase.RecoverInterface {
-	return ctrl.recover
+	return ctrl.GetContext().GetRecover()
 }

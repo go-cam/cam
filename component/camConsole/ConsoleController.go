@@ -2,13 +2,13 @@ package camConsole
 
 import (
 	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"os"
 )
 
 //
 type ConsoleController struct {
-	camPluginRouter.Controller
+	camRouter.Controller
 }
 
 // get params

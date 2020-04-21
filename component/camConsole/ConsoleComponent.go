@@ -5,7 +5,7 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"os"
 	"xorm.io/xorm"
 )
@@ -13,7 +13,7 @@ import (
 // command component
 type ConsoleComponent struct {
 	component.Component
-	camPluginRouter.RouterPlugin
+	camRouter.RouterPlugin
 
 	config *ConsoleComponentConfig
 }

@@ -7,16 +7,16 @@ import (
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
-	"github.com/go-cam/cam/plugin/camPluginContext"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"net"
 	"time"
 )
 
 type SocketComponent struct {
 	component.Component
-	camPluginRouter.RouterPlugin
-	camPluginContext.ContextPlugin
+	camRouter.RouterPlugin
+	camContext.ContextPlugin
 
 	config *SocketComponentConfig
 

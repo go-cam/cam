@@ -3,17 +3,17 @@ package camWebsocket
 import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/component"
-	"github.com/go-cam/cam/plugin/camPluginContext"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
-	"github.com/go-cam/cam/plugin/camPluginSsl"
+	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camRouter"
+	"github.com/go-cam/cam/plugin/camSsl"
 )
 
 // websocket server 所需的配置
 type WebsocketComponentConfig struct {
 	component.ComponentConfig
-	camPluginSsl.SslPluginConfig
-	camPluginRouter.RouterPluginConfig
-	camPluginContext.ContextPluginConfig
+	camSsl.SslPluginConfig
+	camRouter.RouterPluginConfig
+	camContext.ContextPluginConfig
 
 	Port uint16 // server port
 	// message parse handler

@@ -1,4 +1,4 @@
-package camPluginContext
+package camContext
 
 import (
 	"github.com/go-cam/cam/base/camBase"

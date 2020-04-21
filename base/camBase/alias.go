@@ -43,3 +43,11 @@ type ValidMode uint8
 
 // valid handler
 type ValidHandler func(value reflect.Value) error
+
+// the next Handler.
+// The processing method of Middleware
+type NextHandler func() []byte
+
+// route Handler
+// Such as: Custom Handler, ControllerAction Handler
+type RouteHandler func(ctxI ContextInterface) []byte

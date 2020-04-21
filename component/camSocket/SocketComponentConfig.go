@@ -4,15 +4,15 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/component"
-	"github.com/go-cam/cam/plugin/camPluginContext"
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"time"
 )
 
 type SocketComponentConfig struct {
 	component.ComponentConfig
-	camPluginRouter.RouterPluginConfig
-	camPluginContext.ContextPluginConfig
+	camRouter.RouterPluginConfig
+	camContext.ContextPluginConfig
 
 	// tcp listen port
 	Port uint16

@@ -82,8 +82,12 @@ type ControllerInterface interface {
 	// get context
 	GetContext() ContextInterface
 	// set session
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().SetSession();
 	SetSession(session SessionInterface)
 	// get session
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().GetSession();
 	GetSession() SessionInterface
 	// set values.
 	// it will replace the original values
@@ -91,12 +95,20 @@ type ControllerInterface interface {
 	// get default action
 	GetDefaultActionName() string
 	// set response
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().Write();
 	SetResponse([]byte)
 	// get response
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().Read();
 	GetResponse() []byte
 	// set recover
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().SetRecover();
 	SetRecover(rec RecoverInterface)
 	// get recover
+	// Deprecated: remove on v0.5.0
+	// Instead: GetContext().GetRecover();
 	GetRecover() RecoverInterface
 }
 
@@ -114,15 +126,38 @@ type ContextInterface interface {
 	SetSession(session SessionInterface)
 	// get session
 	GetSession() SessionInterface
+	// Write returned data
+	Write(res []byte)
+	// Read returned data
+	Read() []byte
+	// Set RecoverInterface. As a error panic by last handle route of handler
+	SetRecover(rec RecoverInterface)
+	// Get RecoverInterface
+	GetRecover() RecoverInterface
 }
 
 // http context
 // it will inject http.ResponseWriter and request *http.Request to context
+// Deprecated: remove on v0.5.0
+// Instead: HttpContextInterface
 type ContextHttpInterface interface {
+	ContextInterface
 	SetHttpResponseWriter(responseWriter http.ResponseWriter)
 	GetHttpResponseWriter() http.ResponseWriter
 	SetHttpRequest(request *http.Request)
 	GetHttpRequest() *http.Request
+}
+
+// http context
+// it will inject http.ResponseWriter and request *http.Request to context
+type HttpContextInterface interface {
+	ContextInterface
+	SetHttpResponseWriter(responseWriter http.ResponseWriter)
+	GetHttpResponseWriter() http.ResponseWriter
+	SetHttpRequest(request *http.Request)
+	GetHttpRequest() *http.Request
+	CloseHandler(handler func())
+	Close()
 }
 
 // session interface
@@ -225,4 +260,10 @@ type RuleInterface interface {
 type ValidationComponentInterface interface {
 	// valid struct
 	Valid(v interface{}) map[string][]error
+}
+
+// middleware interface
+type MiddlewareInterface interface {
+	// call when route has middleware
+	Handler(ctx ContextInterface, next NextHandler) []byte
 }

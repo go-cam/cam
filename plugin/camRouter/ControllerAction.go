@@ -1,4 +1,4 @@
-package camPluginRouter
+package camRouter
 
 import (
 	"github.com/go-cam/cam/base/camBase"

@@ -1,12 +1,12 @@
 package camWebsocket
 
 import (
-	"github.com/go-cam/cam/plugin/camPluginRouter"
+	"github.com/go-cam/cam/plugin/camRouter"
 	"github.com/gorilla/websocket"
 )
 
 type WebsocketController struct {
-	camPluginRouter.Controller
+	camRouter.Controller
 }
 
 // get *websocket.Conn

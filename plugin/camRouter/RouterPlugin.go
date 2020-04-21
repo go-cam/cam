@@ -1,4 +1,4 @@
-package camPluginRouter
+package camRouter
 
 import (
 	"github.com/go-cam/cam/base/camBase"
@@ -24,11 +24,12 @@ func (plugin *RouterPlugin) Init(config *RouterPluginConfig) {
 	plugin.parseController()
 }
 
-// parse controller List
+// Parse controller List
+// list to map. Let RoutePlugin find the specified action faster
 func (plugin *RouterPlugin) parseController() {
 	excludeMethodNameDict := plugin.getExcludeActionDict()
 
-	for _, controllerInterface := range plugin.config.ControllerList {
+	for _, controllerInterface := range plugin.config.controllerList {
 		controllerType := reflect.TypeOf(controllerInterface)
 		if controllerType.Kind() == reflect.Ptr {
 			controllerType = controllerType.Elem()
@@ -90,7 +91,7 @@ func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBas
 	return controller, action
 }
 
-// get controllerName and actionName
+// Get controllerName and actionName
 func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerName string, actionName string) {
 	tmpArr := strings.Split(route, "/")
 
@@ -115,7 +116,7 @@ func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerNam
 	return controllerName, actionName
 }
 
-// exclude the camModels.BaseController method, this is not a user callable action
+// Exclude the camModels.BaseController method, this is not a user callable action
 func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 	excludeDict := map[string]bool{}
 
@@ -130,7 +131,21 @@ func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 	return excludeDict
 }
 
-// get recover controller and action
+// Get recover controller and action
 func (plugin *RouterPlugin) GetRecoverControllerAction() (controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
 	return plugin.GetControllerAction(plugin.config.recoverRoute)
+}
+
+// GetRecover router
+func (plugin *RouterPlugin) GetRecoverRoute() string {
+	return plugin.config.recoverRoute
+}
+
+// Get custom route
+func (plugin *RouterPlugin) GetCustomHandler(route string) camBase.RouteHandler {
+	handler, has := plugin.config.customHandlerDict[route]
+	if !has {
+		return nil
+	}
+	return handler
 }

@@ -1,4 +1,4 @@
-package camPluginSsl
+package camSsl
 
 import "github.com/go-cam/cam/base/camBase"
 

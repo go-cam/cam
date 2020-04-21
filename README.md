@@ -238,9 +238,3 @@ func init() {
     }
 }
 ```
-
-
-# Future planning
-- v0.4.0
-  - Add socket component
-  - Add Struct Verification tag
