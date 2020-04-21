@@ -99,20 +99,7 @@ func (comp *HttpComponent) routeHandler(ctx camBase.HttpContextInterface, route 
 	next := func() []byte {
 		return comp.callNext(ctx, route)
 	}
-	var nextList []camBase.NextHandler
-	nextList = append(nextList, next)
-
-	midIList := comp.GetMiddlewareList(route)
-	for _, midI := range midIList {
-		next = func() camBase.NextHandler {
-			i := len(nextList) - 1
-			return func() []byte {
-				return midI.Handler(ctx, nextList[i])
-			}
-		}()
-		nextList = append(nextList, next)
-	}
-	res := nextList[len(nextList)-1]()
+	res := comp.CallWithMiddleware(ctx, route, next)
 	_, err := ctx.GetHttpResponseWriter().Write(res)
 	if err != nil {
 		panic(err)

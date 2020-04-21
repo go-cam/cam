@@ -24,7 +24,7 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
     - [.Env file](#env-file)
     - [Upload file](#upload-file)
     - [Validation](#validation)
-- [Future planning](#future-planning)
+    - [Middleware](#middleware)
 
 ## Start with template
 
@@ -236,5 +236,38 @@ func init() {
     if firstErr != nil {
         panic(firstErr)
     }
+}
+```
+
+# Middleware
+
+Support Component: HttpComponent, WebsocketComponent (after v0.4.1-release), SocketComponent (after v0.4.1-release)
+
+add in ComponentConfig
+```go
+package config
+
+import (
+	"github.com/go-cam/cam"
+	"github.com/go-cam/cam/base/camBase"
+)
+
+
+func httpServer() camBase.ComponentConfigInterface {
+	config := cam.NewHttpConfig(20000)
+	config.Register(&controllers.TestController{})
+    // Add middleware
+	config.AddMiddleware("", &AMiddleware{}) // All route will use this Middleware
+	return config
+}
+
+type AMiddleware struct {
+}
+
+func (mid *AMiddleware) Handler(ctx camBase.ContextInterface, next camBase.NextHandler) []byte {
+	cam.Debug("AMiddleware", "before")
+	res := next()
+	cam.Debug("AMiddleware", "after")
+	return res
 }
 ```
