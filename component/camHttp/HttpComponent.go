@@ -260,43 +260,6 @@ func (comp *HttpComponent) getRequestValuesByFormData(request *http.Request) map
 	}
 
 	return values
-
-	// Read form data
-	//
-	//values := map[string]interface{}{}
-	//// multipart/form-data; boundary=----WebKitFormBoundaryDumfytNg1NzoZq2r
-	//boundaryRegexp, _ := regexp.Compile("boundary=([-|0-9a-zA-Z]+)")
-	//boundaries := boundaryRegexp.FindStringSubmatch("multipart/form-data")
-	//if len(boundaries) < 2 {
-	//	camBase.App.Error("HttpComponent.getRequestValuesByFormData", "fail to parse form values")
-	//	return values
-	//}
-	//boundary := "--" + boundaries[1]
-	//
-	//bytes, _ := ioutil.ReadAll(request.Body)
-	//bodyStr := string(bytes)
-	//paramsStrList := strings.Split(bodyStr, boundary)
-	//
-	//for _, row := range paramsStrList {
-	//	if row == "" || !strings.Contains(row, "\"") {
-	//		// exclude row
-	//		continue
-	//	}
-	//
-	//	repl := "Content-Disposition: form-data; name=\"([0-9a-zA-Z|_]+)\""
-	//	keyRegexp, _ := regexp.Compile(repl)
-	//	keyList := keyRegexp.FindStringSubmatch(row)
-	//	key := keyList[1]
-	//
-	//	valueRow := keyRegexp.ReplaceAllString(row, "")
-	//	value := strings.Trim(valueRow, "\n")
-	//	value = strings.Trim(value, "\r")
-	//	value = strings.Trim(value, "\r\n")
-	//	value = strings.Trim(value, " ")
-	//
-	//	values[key] = values
-	//}
-	//return values
 }
 
 // parse params from json

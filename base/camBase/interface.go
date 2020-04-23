@@ -149,7 +149,6 @@ type ContextHttpInterface interface {
 }
 
 // http context
-// it will inject http.ResponseWriter and request *http.Request to context
 type HttpContextInterface interface {
 	ContextInterface
 	SetHttpResponseWriter(responseWriter http.ResponseWriter)

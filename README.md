@@ -255,8 +255,8 @@ import (
 
 func httpServer() camBase.ComponentConfigInterface {
 	config := cam.NewHttpConfig(20000)
-	config.Register(&controllers.TestController{})
-    // Add middleware
+	config.Register(&controllers.TestController{}) 
+	// Add middleware
 	config.AddMiddleware("", &AMiddleware{}) // All route will use this Middleware
 	return config
 }

@@ -9,7 +9,7 @@ type HttpContext struct {
 	camContext.Context
 	responseWriter http.ResponseWriter
 	request        *http.Request
-	closeHandler   func()
+	closeHandlers  []func()
 }
 
 func (ctx *HttpContext) SetHttpResponseWriter(responseWriter http.ResponseWriter) {
@@ -29,11 +29,11 @@ func (ctx *HttpContext) GetHttpRequest() *http.Request {
 }
 
 func (ctx *HttpContext) CloseHandler(handler func()) {
-	ctx.closeHandler = handler
+	ctx.closeHandlers = append(ctx.closeHandlers, handler)
 }
 
 func (ctx *HttpContext) Close() {
-	if ctx.closeHandler != nil {
-		ctx.closeHandler()
+	for _, handler := range ctx.closeHandlers {
+		handler()
 	}
 }
