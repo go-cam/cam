@@ -20,20 +20,8 @@ type WebsocketComponent struct {
 	camMiddleware.MiddlewarePlugin
 
 	config *WebsocketComponentConfig
-
-	upgrader websocket.Upgrader // struct of http upgrade to websocket
-
-	// message parse handler
-	//
-	//
-	// message: client send bytes
-	//
-	// controllerName:  controller name
-	// actionName: 		action name
-	// values: 			send data, just like post form data
-	// Deprecated: remove on v0.5.0
-	messageParseHandler camBase.MessageParseHandler
-
+	// struct of http upgrade to websocket
+	upgrader websocket.Upgrader
 	// receive message parse handler
 	recvMessageParseHandler plugin.RecvMessageParseHandler
 }
@@ -53,7 +41,6 @@ func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
 			return true
 		},
 	}
-	comp.messageParseHandler = plugin.DefaultMessageParseHandler
 	comp.recvMessageParseHandler = plugin.DefaultRecvToMessageHandler
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
@@ -98,8 +85,9 @@ func (comp *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Reque
 
 		if msgType == websocket.TextMessage || msgType == websocket.BinaryMessage {
 			ctx := comp.newWebsocketContext(conn, recv, sess)
-			msgStruct, values := comp.recvMessageParseHandler(recv)
-			comp.routeHandler(ctx, msgStruct.Route, values)
+			msg, values := comp.recvMessageParseHandler(recv)
+			ctx.SetMessage(msg)
+			comp.routeHandler(ctx, msg.Route, values)
 		}
 	}
 }
@@ -165,6 +153,7 @@ func (comp *WebsocketComponent) tryRecover(oldCtx WebsocketContextInterface, v i
 
 	recoverRoute := comp.GetRecoverRoute()
 	ctx := comp.newWebsocketContext(oldCtx.GetConn(), nil, oldCtx.GetSession().(*WebsocketSession))
+	ctx.SetMessage(oldCtx.GetMessage())
 	ctx.SetRecover(rec)
 	comp.routeHandler(ctx, recoverRoute, nil)
 }
@@ -212,7 +201,7 @@ func (comp *WebsocketComponent) newWebsocketContext(conn *websocket.Conn, recv [
 	ctxI := comp.NewContext()
 	wsCtxI, ok := ctxI.(WebsocketContextInterface)
 	if !ok {
-		panic("invalid HttpContext struct. Must implements camWebsocket.WebsocketContextInterface")
+		panic("invalid WebsocketContext struct. Must implements camWebsocket.WebsocketContextInterface")
 	}
 	wsCtxI.SetSession(sess)
 	wsCtxI.SetConn(conn)

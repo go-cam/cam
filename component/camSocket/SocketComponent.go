@@ -8,6 +8,7 @@ import (
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
 	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camMiddleware"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"net"
 	"time"
@@ -17,11 +18,13 @@ type SocketComponent struct {
 	component.Component
 	camRouter.RouterPlugin
 	camContext.ContextPlugin
+	camMiddleware.MiddlewarePlugin
 
 	config *SocketComponentConfig
 
-	connHandler         camBase.SocketConnHandler
-	messageParseHandler camBase.MessageParseHandler
+	connHandler camBase.SocketConnHandler
+	// receive message parse handler
+	recvMessageParseHandler plugin.RecvMessageParseHandler
 }
 
 // init config
@@ -37,15 +40,13 @@ func (comp *SocketComponent) Init(configI camBase.ComponentConfigInterface) {
 
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
+	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
 
 	comp.connHandler = comp.defaultConnHandler
 	if comp.config.ConnHandler != nil {
 		comp.connHandler = comp.config.ConnHandler
 	}
-	comp.messageParseHandler = plugin.DefaultMessageParseHandler
-	if comp.config.MessageParseHandler != nil {
-		comp.messageParseHandler = comp.config.MessageParseHandler
-	}
+	comp.recvMessageParseHandler = plugin.DefaultRecvToMessageHandler
 }
 
 // start
@@ -94,61 +95,60 @@ func (comp *SocketComponent) defaultConnHandler(conn net.Conn) {
 		camBase.App.Trace("SocketComponent.defaultConnHandler", "new connection: "+conn.RemoteAddr().String())
 	}
 
-	sess := NewSocketSession(conn)
+	sess := NewSocketSession()
+	sess.SetConn(conn)
 	defer sess.Destroy()
 
-	tcpConn, ok := conn.(*net.TCPConn)
-	if !ok {
-		panic("net.Conn can't trans to *net.TCPConn")
-	}
-
 	for {
-		comp.recvAndSend(tcpConn, sess)
+		recv := comp.recv(conn)
+		ctx := comp.newSocketContext(conn, recv, sess)
+		msg, values := comp.recvMessageParseHandler(recv)
+		ctx.SetMessage(msg)
+		comp.routeHandler(ctx, msg.Route, values)
 	}
 }
 
-// handling recv message and send message. Distribute message to route handler
-func (comp *SocketComponent) recvAndSend(conn *net.TCPConn, sess *SocketSession) {
+func (comp *SocketComponent) routeHandler(ctx SocketContextInterface, route string, values map[string]interface{}) {
 	defer func() {
-		comp.Recover(recover())
+		if rec := recover(); rec != nil {
+			comp.tryRecover(ctx, rec)
+		}
 	}()
 
-	recv := comp.recv(conn)
-	if comp.config.Trace {
-		camBase.App.Trace(comp.Name()+" recv", string(recv))
+	next := func() []byte {
+		return comp.callNext(ctx, route, values)
+	}
+	res := comp.CallWithMiddleware(ctx, route, next)
+	comp.send(ctx.GetConn(), res)
+}
+
+func (comp *SocketComponent) callNext(ctx SocketContextInterface, route string, values map[string]interface{}) []byte {
+	customHandler := comp.GetCustomHandler(route)
+	if customHandler != nil {
+		return customHandler(ctx)
 	}
 
-	controllerName, actionName, values := comp.messageParseHandler(recv)
-	route := camUtils.Url.HumpToUrl(controllerName) + "/" + camUtils.Url.HumpToUrl(actionName)
-
-	controller, action := comp.GetControllerAction(route)
-	if controller == nil || action == nil {
-		camBase.App.Warn("WebsocketComponent", "404. not found route: "+route)
-		return
+	ctrl, action := comp.GetControllerAction(route)
+	if ctrl == nil || action == nil {
+		camBase.App.Warn("SocketComponent", "404. not found route: "+route)
+		return nil
 	}
-
-	ctx := comp.NewContext()
-
-	controller.Init()
-	controller.SetContext(ctx)
-	controller.SetSession(sess)
-	controller.SetValues(values)
-
-	if !controller.BeforeAction(action) {
-		camBase.App.Warn("WebsocketComponent", "BeforeAction: invalid request.")
-		return
+	// init ctrl
+	ctrl.Init()
+	ctrl.SetContext(ctx)
+	ctrl.SetSession(ctx.GetSession())
+	ctrl.SetValues(values)
+	if !ctrl.BeforeAction(action) {
+		return []byte("illegal request")
 	}
 	action.Call()
-	send := controller.AfterAction(action, controller.GetResponse())
+	response := ctrl.AfterAction(action, ctx.Read())
 
-	if comp.config.Trace {
-		camBase.App.Trace(comp.Name()+" send", string(send))
-	}
-	comp.send(conn, send)
+	return response
 }
 
 // get recv message
-func (comp *SocketComponent) recv(conn *net.TCPConn) []byte {
+func (comp *SocketComponent) recv(conn net.Conn) []byte {
 	var err error
 
 	// set read deadline
@@ -176,7 +176,7 @@ func (comp *SocketComponent) recv(conn *net.TCPConn) []byte {
 }
 
 // send message to client
-func (comp *SocketComponent) send(conn *net.TCPConn, send []byte) {
+func (comp *SocketComponent) send(conn net.Conn, send []byte) {
 	var err error
 
 	// check send size
@@ -198,4 +198,32 @@ func (comp *SocketComponent) send(conn *net.TCPConn, send []byte) {
 	if err = conn.SetWriteDeadline(time.Time{}); err != nil {
 		panic(err)
 	}
+}
+
+// try to recover
+func (comp *SocketComponent) tryRecover(oldCtx SocketContextInterface, v interface{}) {
+	rec, ok := v.(camBase.RecoverInterface)
+	if !ok {
+		comp.Recover(v)
+		return
+	}
+
+	recoverRoute := comp.GetRecoverRoute()
+	ctx := comp.newSocketContext(oldCtx.GetConn(), nil, oldCtx.GetSession().(*SocketSession))
+	ctx.SetMessage(oldCtx.GetMessage())
+	ctx.SetRecover(rec)
+	comp.routeHandler(ctx, recoverRoute, nil)
+}
+
+// new SocketContext
+func (comp *SocketComponent) newSocketContext(conn net.Conn, recv []byte, sess *SocketSession) SocketContextInterface {
+	ctx := comp.NewContext()
+	socketCtxI, ok := ctx.(SocketContextInterface)
+	if !ok {
+		panic("invalid SocketContext struct. Must implements camSocket.SocketContextInterface")
+	}
+	socketCtxI.SetConn(conn)
+	socketCtxI.SetRecv(recv)
+	socketCtxI.SetSession(sess)
+	return socketCtxI
 }

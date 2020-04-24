@@ -18,15 +18,6 @@ type WebsocketComponentConfig struct {
 	camMiddleware.MiddlewarePluginConfig
 
 	Port uint16 // server port
-	// message parse handler
-	//
-	// message: Messages sent by clients
-	//
-	// controllerName:
-	// actionName:
-	// values: send data, just like post form data
-	MessageParseHandler camBase.MessageParseHandler
-
 	// Deprecated: remove on v0.5.0  it's not support Middleware
 	routeHandlerDict map[string]camBase.WebsocketRouteHandler
 }

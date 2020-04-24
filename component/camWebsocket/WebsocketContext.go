@@ -10,6 +10,7 @@ import (
 // websocket context
 type WebsocketContextInterface interface {
 	camBase.ContextInterface
+	camContext.MessageContextInterface
 	SetConn(conn *websocket.Conn)
 	GetConn() *websocket.Conn
 	SetRecv(recv []byte)
@@ -18,7 +19,7 @@ type WebsocketContextInterface interface {
 
 type WebsocketContext struct {
 	camContext.Context
-
+	camContext.MessageContext
 	conn *websocket.Conn
 	recv []byte
 	msg  *camStructs.Message

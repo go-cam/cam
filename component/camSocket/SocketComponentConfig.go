@@ -5,6 +5,7 @@ import (
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
+	"github.com/go-cam/cam/plugin/camMiddleware"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"time"
 )
@@ -13,6 +14,7 @@ type SocketComponentConfig struct {
 	component.ComponentConfig
 	camRouter.RouterPluginConfig
 	camContext.ContextPluginConfig
+	camMiddleware.MiddlewarePluginConfig
 
 	// tcp listen port
 	Port uint16
@@ -42,10 +44,6 @@ type SocketComponentConfig struct {
 
 	// socket conn handler
 	ConnHandler camBase.SocketConnHandler
-	// message parse handler.
-	// it can read route and values info form the message
-	MessageParseHandler camBase.MessageParseHandler
-
 	// trace recv and send message
 	Trace bool
 }
@@ -60,9 +58,10 @@ func NewSocketComponentConfig(port uint16) *SocketComponentConfig {
 	config.RecvTimeout = 15 * time.Second
 	config.SendTimeout = 60 * time.Second
 	config.ConnHandler = nil
-	config.MessageParseHandler = nil
 	config.Trace = false
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
+	config.MiddlewarePluginConfig.Init()
+	config.SetContextStruct(&SocketContext{})
 	return config
 }

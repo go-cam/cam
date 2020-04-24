@@ -10,14 +10,14 @@ import (
 type SocketSession struct {
 	camBase.SessionInterface
 
+	// Deprecated: remove on v0.5.0
 	conn      net.Conn // socket connection
 	sessionId string   // session id. Generate when new instance
 	values    sync.Map // values
 }
 
-func NewSocketSession(conn net.Conn) *SocketSession {
+func NewSocketSession() *SocketSession {
 	sess := new(SocketSession)
-	sess.conn = conn
 	sess.sessionId = camUtils.String.UUID()
 	sess.values = sync.Map{}
 	return sess
@@ -44,6 +44,16 @@ func (sess *SocketSession) Get(key interface{}) interface{} {
 // delete key
 func (sess *SocketSession) Del(key interface{}) {
 	sess.values.Delete(key)
+}
+
+// Deprecated: remove on v0.5.0
+func (sess *SocketSession) SetConn(conn net.Conn) {
+	sess.conn = conn
+}
+
+// Deprecated: remove on v0.5.0
+func (sess *SocketSession) GetConn() net.Conn {
+	return sess.conn
 }
 
 // destroy session
