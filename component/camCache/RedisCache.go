@@ -94,7 +94,8 @@ func (cache *RedisCache) SetBase64Crypt() {
 
 // base64 encrypt handler
 func (cache *RedisCache) base64EncryptHandler(value interface{}) interface{} {
-	bytes := camUtils.Json.Encode(value)
+	ao := NewCacheAo(value)
+	bytes := camUtils.Json.Encode(ao)
 	return base64.StdEncoding.EncodeToString(bytes)
 }
 
@@ -108,5 +109,7 @@ func (cache *RedisCache) base64DecryptHandler(value interface{}) interface{} {
 	if err != nil {
 		panic(err)
 	}
-	return string(bytes)
+	ao := new(CacheAo)
+	camUtils.Json.DecodeToObj(bytes, ao)
+	return ao.Value
 }
