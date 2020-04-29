@@ -33,7 +33,9 @@ func (ctrl *MigrateController) Create() {
 	migrateDir := dbDir + "/migrations"
 	if !camUtils.File.Exists(migrateDir) {
 		err = camUtils.File.Mkdir(migrateDir)
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 	filename := ctrl.getFilename(name)
 	absFilename := migrateDir + "/" + filename
@@ -46,7 +48,9 @@ func (ctrl *MigrateController) Create() {
 
 	content := ctrl.getMigrationContent(filename)
 	err = camUtils.File.WriteFile(absFilename, content)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Print("\nDone.")
 }
@@ -80,6 +84,23 @@ func (ctrl *MigrateController) Up() {
 func (ctrl *MigrateController) Down() {
 	ctrl.GetConsoleComponent().MigrateDown()
 }
+
+// Generate code's file using database's tables
+// TODO Waiting https://gitea.com/xorm/reverse has release version
+//func (ctrl *MigrateController) Reverse() {
+//	if !camUtils.Console.HasCommand("reverse") {
+//		err := camUtils.Console.Start("go get xorm.io/reverse")
+//		if err != nil {
+//			panic(err)
+//		}
+//	}
+//
+//
+//	err := camUtils.Console.Start("reverse -f ./../common/xorm-reverse/config.yml")
+//	if err != nil {
+//		panic(err)
+//	}
+//}
 
 // get migration's filename. only filename, not absolute filename
 func (ctrl *MigrateController) getFilename(name string) string {
@@ -122,14 +143,18 @@ func (ctrl *MigrateController) getMigrationContent(filename string) []byte {
 	var retBytes = []byte("")
 
 	t, err := template.New(filename).Parse(ctrl.getTpl())
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	filename = strings.TrimSuffix(filename, ".go")
 	className := filename
 	buf := bytes.NewBuffer(retBytes)
 	data := MigrationTpl{ClassName: className}
 	err = t.Execute(buf, data)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	return buf.Bytes()
 }
@@ -138,7 +163,7 @@ func (ctrl *MigrateController) getMigrationContent(filename string) []byte {
 func (ctrl *MigrateController) validName(name string) bool {
 	re, err := regexp.Compile("([0-9]|[a-z]|[A-Z]|_)")
 	if err != nil {
-		camUtils.Error.Panic(err)
+		panic(err)
 	}
 	name = re.ReplaceAllString(name, "")
 	return len(name) == 0

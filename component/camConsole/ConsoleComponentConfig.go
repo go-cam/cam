@@ -3,6 +3,7 @@ package camConsole
 import (
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
+	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"strings"
 )
@@ -11,6 +12,7 @@ import (
 type ConsoleComponentConfig struct {
 	component.ComponentConfig
 	camRouter.RouterPluginConfig
+	camContext.ContextPluginConfig
 
 	DatabaseDir     string // DatabaseComponentConfig file storage path. Default is: /[path to run dir]/database
 	XormTemplateDir string // xorm template path.
@@ -26,6 +28,7 @@ func NewConsoleComponentConfig() *ConsoleComponentConfig {
 	config.SetXormTemplateDir(rootPath + "/common/templates")
 	config.RouterPluginConfig.Init()
 	config.registerFrameworkController()
+	config.SetContextStruct(&camContext.Context{})
 	return config
 }
 

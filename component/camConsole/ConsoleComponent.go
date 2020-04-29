@@ -5,6 +5,7 @@ import (
 	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
+	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"os"
 	"xorm.io/xorm"
@@ -14,6 +15,7 @@ import (
 type ConsoleComponent struct {
 	component.Component
 	camRouter.RouterPlugin
+	camContext.ContextPlugin
 
 	config *ConsoleComponentConfig
 }
@@ -31,6 +33,7 @@ func (comp *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
 
 	// init router plugin
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
+	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 }
 
 // run command
@@ -48,13 +51,15 @@ func (comp *ConsoleComponent) RunAction() {
 	if controller == nil || action == nil {
 		panic("route not found: " + route)
 	}
+	ctx := comp.NewContext()
 	controller.Init()
+	controller.SetContext(ctx)
 	if !controller.BeforeAction(action) {
 		panic("invalid call")
 		return
 	}
 	action.Call()
-	response := controller.AfterAction(action, controller.GetResponse())
+	response := controller.AfterAction(action, controller.GetContext().Read())
 	fmt.Println(string(response))
 }
 
@@ -62,7 +67,7 @@ func (comp *ConsoleComponent) RunAction() {
 func (comp *ConsoleComponent) GetMigrateUpVersionList() []string {
 	lastVersion := comp.MigrateLastVersion()
 	var versionList []string
-	for version, _ := range camBase.App.GetMigrateDict() {
+	for version := range camBase.App.GetMigrateDict() {
 		if version <= lastVersion {
 			continue
 		}
@@ -74,16 +79,22 @@ func (comp *ConsoleComponent) GetMigrateUpVersionList() []string {
 func (comp *ConsoleComponent) MigrateLastVersion() string {
 	session := comp.getDBSession()
 	exists, err := session.IsTableExist(new(Migration))
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 	if !exists {
 		err = comp.createMigrateVersionTable()
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 		return ""
 	}
 
 	migration := new(Migration)
 	has, err := session.Desc("version").Get(migration)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	version := ""
 	if has {
@@ -117,7 +128,9 @@ func (comp *ConsoleComponent) MigrateUp() {
 
 		session := comp.getDBSession()
 		err = session.Begin()
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 
 		for _, sqlStr := range sqlList {
 			_, err = session.Exec(sqlStr)
@@ -130,10 +143,12 @@ func (comp *ConsoleComponent) MigrateUp() {
 		_, err := session.Insert(migration)
 		if err != nil {
 			_ = session.Rollback()
-			camUtils.Error.Panic(err)
+			panic(err)
 		} else {
 			err = session.Commit()
-			camUtils.Error.Panic(err)
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		fmt.Println(" done.")
@@ -165,7 +180,9 @@ func (comp *ConsoleComponent) MigrateDown() {
 	var err error
 	session := comp.getDBSession()
 	err = session.Begin()
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 	defer func() {
 		if rec := recover(); rec != nil {
 			_ = session.Rollback()
@@ -182,7 +199,9 @@ func (comp *ConsoleComponent) MigrateDown() {
 	}
 
 	_, err = session.ID(lastVersion).Delete(Migration{})
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(" done.")
 }

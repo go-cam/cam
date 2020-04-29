@@ -7,12 +7,20 @@ import (
 )
 
 // xorm's console controller
+// Deprecated: remove on v0.5.0
 type XormController struct {
 	ConsoleController
 }
 
+// OVERWRITE
+func (ctrl *XormController) BeforeAction(action camBase.ControllerActionInterface) bool {
+	camBase.App.Warn("XormController", "`xorm` is deprecated, please use `migrate` instead it")
+	return ctrl.ConsoleController.BeforeAction(action)
+}
+
 // install github.com/go-xorm/cmd/xorm
 func (ctrl *XormController) InstallCmdXorm() {
+	// Deprecated: remove on v0.5.0
 	_ = camUtils.Console.Start("go get github.com/go-xorm/cmd/xorm")
 }
 
@@ -30,6 +38,7 @@ func (ctrl *XormController) InstallCmdXorm() {
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
 func (ctrl *XormController) Generate() {
+	// Deprecated: remove on v0.5.0
 	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")

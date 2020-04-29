@@ -17,12 +17,12 @@ type ConsoleUtil struct {
 
 // runs the command and returns its combined standard
 // output and standard error.
-func (util *ConsoleUtil) Run(command string) ([]byte, error) {
-	name, args := util.parseCommand(command)
+func (util *ConsoleUtil) Run(cmd string) ([]byte, error) {
+	name, args := util.parseCommand(cmd)
 
-	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
-	err := cmd.Run()
+	c := exec.Command(name, args...)
+	c.Stdout = os.Stdout
+	err := c.Run()
 	if err != nil {
 		return nil, err
 	}
@@ -38,14 +38,14 @@ func (util *ConsoleUtil) Run(command string) ([]byte, error) {
 
 // runs the command and returns its combined standard, and print output content realtime
 // output and standard error.
-func (util *ConsoleUtil) Start(command string) error {
-	name, args := util.parseCommand(command)
+func (util *ConsoleUtil) Start(cmd string) error {
+	name, args := util.parseCommand(cmd)
 
 	var err error
-	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
+	c := exec.Command(name, args...)
+	c.Stdout = os.Stdout
 	reader := bufio.NewReader(os.Stdout)
-	err = cmd.Start()
+	err = c.Start()
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (util *ConsoleUtil) Start(command string) error {
 	var index int
 	var contentArray = make([]string, 0, 5)
 	contentArray = contentArray[0:0]
-	// print while command run
+	// print while cmd run
 	for {
 
 		bytes, err := reader.ReadBytes('\n')
@@ -65,8 +65,21 @@ func (util *ConsoleUtil) Start(command string) error {
 		contentArray = append(contentArray, string(bytes))
 	}
 
-	err = cmd.Wait()
+	err = c.Wait()
 	return err
+}
+
+// Run and no output to console
+func (util *ConsoleUtil) RunNoOutput(cmd string) error {
+	name, args := util.parseCommand(cmd)
+
+	c := exec.Command(name, args...)
+	c.Stdout = nil
+	err := c.Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // parse command
@@ -106,4 +119,27 @@ func (util *ConsoleUtil) IsPressY() bool {
 // check is run by command mode.
 func (util *ConsoleUtil) IsRunByCommand() bool {
 	return len(os.Args) >= 2
+}
+
+// Check whether the system has the command
+func (util *ConsoleUtil) HasCommand(cmd string) bool {
+	if util.IsWindows() {
+		return util.hasCommandWindow(cmd)
+	}
+	// TODO linux support
+	return false
+}
+
+func (util *ConsoleUtil) hasCommandWindow(cmd string) (has bool) {
+	defer func() {
+		rec := recover()
+		has = rec == nil
+	}()
+
+	err := util.RunNoOutput("where " + cmd)
+	if err != nil {
+		panic(err)
+	}
+
+	return true
 }
