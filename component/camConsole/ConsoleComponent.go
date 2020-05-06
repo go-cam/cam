@@ -120,10 +120,13 @@ func (comp *ConsoleComponent) MigrateUp() {
 
 	lastVersion := comp.MigrateLastVersion()
 	var err error
-	for version, m := range camBase.App.GetMigrateDict() {
+	dict := camBase.App.GetMigrateDict()
+	versionList := comp.GetMigrateUpVersionList()
+	for _, version := range versionList {
 		if version <= lastVersion {
 			continue
 		}
+		m := dict[version]
 
 		fmt.Print("\tup version: " + version + " ...")
 
