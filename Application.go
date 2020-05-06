@@ -12,6 +12,7 @@ import (
 	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camValidation"
 	"reflect"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -283,7 +284,22 @@ func (app *Application) Stop() {
 }
 
 func (app *Application) GetMigrateDict() map[string]camBase.MigrationInterface {
-	return app.migrationDict
+	dict := map[string]camBase.MigrationInterface{}
+
+	// Sort
+	var versionList []string
+	for version := range app.migrationDict{
+		versionList = append(versionList, version)
+	}
+	sort.Slice(versionList, func(i, j int) bool {
+		return versionList[i] < versionList[j]
+	})
+
+	for _, version := range versionList {
+		dict[version] = app.migrationDict[version]
+	}
+
+	return dict
 }
 
 // get value form app.config.Params.

@@ -8,6 +8,7 @@ import (
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"os"
+	"sort"
 	"xorm.io/xorm"
 )
 
@@ -73,6 +74,9 @@ func (comp *ConsoleComponent) GetMigrateUpVersionList() []string {
 		}
 		versionList = append(versionList, version)
 	}
+	sort.Slice(versionList, func(i, j int) bool {
+		return versionList[i] < versionList[j]
+	})
 	return versionList
 }
 
