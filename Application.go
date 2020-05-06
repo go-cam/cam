@@ -292,7 +292,7 @@ func (app *Application) GetMigrateDict() map[string]camBase.MigrationInterface {
 		versionList = append(versionList, version)
 	}
 	sort.Slice(versionList, func(i, j int) bool {
-		return versionList[i] < versionList[j]
+		return versionList[i] > versionList[j]
 	})
 
 	for _, version := range versionList {
