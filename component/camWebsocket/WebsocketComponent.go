@@ -41,7 +41,7 @@ func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
 			return true
 		},
 	}
-	comp.recvMessageParseHandler = plugin.DefaultRecvToMessageHandler
+	comp.recvMessageParseHandler = comp.config.GetRecvMessageParseHandler()
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
