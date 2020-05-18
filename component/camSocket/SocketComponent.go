@@ -102,9 +102,9 @@ func (comp *SocketComponent) defaultConnHandler(conn net.Conn) {
 	for {
 		recv := comp.recv(conn)
 		ctx := comp.newSocketContext(conn, recv, sess)
-		msg, values := comp.recvMessageParseHandler(recv)
+		msg := comp.recvMessageParseHandler(recv)
 		ctx.SetMessage(msg)
-		comp.routeHandler(ctx, msg.Route, values)
+		comp.routeHandler(ctx, msg.Route, msg.Data)
 	}
 }
 

@@ -6,16 +6,14 @@ import (
 )
 
 // recvMessage parse handler
-type RecvMessageParseHandler func(recv []byte) (message *camStructs.Message, values map[string]interface{})
+type RecvMessageParseHandler func(recv []byte) *camStructs.Message
 
 // default RecvMessageParseHandler
-func DefaultRecvToMessageHandler(recv []byte) (*camStructs.Message, map[string]interface{}) {
+func DefaultRecvToMessageHandler(recv []byte) *camStructs.Message {
 	if recv == nil {
-		return nil, nil
+		return nil
 	}
 	msgStruct := new(camStructs.Message)
-	resStruct := new(camStructs.Response)
 	camUtils.Json.DecodeToObj(recv, msgStruct)
-	camUtils.Json.DecodeToObj([]byte(msgStruct.Data), resStruct)
-	return msgStruct, resStruct.Values
+	return msgStruct
 }
