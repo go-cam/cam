@@ -10,10 +10,15 @@ type WebsocketController struct {
 }
 
 // get *websocket.Conn
-func (controller *WebsocketController) GetConn() *websocket.Conn {
-	session, ok := controller.GetSession().(*WebsocketSession)
+func (ctrl *WebsocketController) GetConn() *websocket.Conn {
+	return ctrl.GetWebsocketContext().GetConn()
+}
+
+// get WebsocketContextInterface
+func (ctrl *WebsocketController) GetWebsocketContext() WebsocketContextInterface {
+	ctx, ok := ctrl.GetContext().(WebsocketContextInterface)
 	if !ok {
-		return nil
+		panic("context was not implement WebsocketContextInterface")
 	}
-	return session.GetConn()
+	return ctx
 }
