@@ -2,7 +2,6 @@ package camWebsocket
 
 import (
 	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
@@ -105,15 +104,7 @@ func (comp *WebsocketComponent) routeHandler(ctx WebsocketContextInterface, rout
 		return comp.callNext(ctx, route, values)
 	}
 	res := comp.CallWithMiddleware(ctx, route, next)
-
-	recvMsg := ctx.GetMessage()
-	sendMsg := new(camStructs.Message)
-	sendMsg.Id = recvMsg.Id
-	sendMsg.Route = recvMsg.Route
-	camUtils.Json.DecodeToObj(res, &sendMsg.Data)
-	send := camUtils.Json.Encode(sendMsg)
-
-	if err := ctx.GetConn().WriteMessage(websocket.TextMessage, send); err != nil {
+	if err := ctx.GetConn().WriteMessage(websocket.TextMessage, res); err != nil {
 		panic(err)
 	}
 }

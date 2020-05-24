@@ -119,7 +119,6 @@ func (comp *SocketComponent) routeHandler(ctx SocketContextInterface, route stri
 		return comp.callNext(ctx, route, values)
 	}
 	res := comp.CallWithMiddleware(ctx, route, next)
-	// TODO: Add Message sturct
 	comp.send(ctx.GetConn(), res)
 }
 
