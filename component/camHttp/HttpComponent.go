@@ -201,7 +201,9 @@ func (comp *HttpComponent) listenAndServe() {
 		Handler: mux,
 	}
 	err := server.ListenAndServe()
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // enable server with SSl
@@ -213,7 +215,9 @@ func (comp *HttpComponent) listenAndServeTLS() {
 		Handler: mux,
 	}
 	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // get request params
