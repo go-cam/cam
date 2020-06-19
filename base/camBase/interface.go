@@ -156,6 +156,11 @@ type HttpContextInterface interface {
 	SetHttpRequest(request *http.Request)
 	GetHttpRequest() *http.Request
 	CloseHandler(handler func())
+	GetCookie(name string) *http.Cookie
+	SetCookie(cookie *http.Cookie)
+	DelCookie(name string)
+	SetCookieValue(name string, value string)
+	GetCookieValue(name string) string
 	Close()
 }
 
@@ -164,11 +169,11 @@ type SessionInterface interface {
 	// get sessionId
 	GetSessionId() string
 	// set key-value in session
-	Set(key interface{}, value interface{})
+	Set(key string, value interface{})
 	// get value by key
-	Get(key interface{}) interface{}
+	Get(key string) interface{}
 	// delete value by key
-	Del(key interface{})
+	Del(key string)
 	// destroy session
 	Destroy()
 }

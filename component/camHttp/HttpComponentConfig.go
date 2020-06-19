@@ -17,9 +17,15 @@ type HttpComponentConfig struct {
 	camSsl.SslPluginConfig
 	camMiddleware.MiddlewarePluginConfig
 
-	Port        uint16
+	Port uint16
+	// Deprecated: remove on v0.6.0
 	SessionName string
-	SessionKey  string
+	// Deprecated: remove on v0.6.0
+	SessionKey string
+
+	sessionStore Store
+	// The name of the session stored in the cookie
+	cookieSessionIdName string
 
 	// Deprecated: remove on v0.5.0
 	routeHandlerDict map[string]camBase.HttpRouteHandler
@@ -37,6 +43,8 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 	config.ContextPluginConfig.Init()
 	config.SslPluginConfig.Init()
 	config.MiddlewarePluginConfig.Init()
+	config.cookieSessionIdName = "SessionID"
+	config.sessionStore = nil
 	config.SetContextStruct(&HttpContext{})
 	return config
 }
@@ -45,6 +53,25 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 // its priority is higher than the controller.
 // Deprecated: remove on v0.5.0  It's not support middleware
 // Instead: HttpComponentConfig.MiddlewarePluginConfig.AddRoute()
-func (config *HttpComponentConfig) AddRoute(route string, handler camBase.HttpRouteHandler) {
-	config.routeHandlerDict[route] = handler
+func (conf *HttpComponentConfig) AddRoute(route string, handler camBase.HttpRouteHandler) {
+	conf.routeHandlerDict[route] = handler
+}
+
+func (conf *HttpComponentConfig) SetSessionStore(store Store) {
+	conf.sessionStore = store
+}
+
+func (conf *HttpComponentConfig) SetCookieSessionIdName(name string) {
+	conf.cookieSessionIdName = name
+}
+
+func (conf *HttpComponentConfig) getSessionStore() Store {
+	if conf.sessionStore == nil {
+		return conf.defaultSessionStore()
+	}
+	return conf.sessionStore
+}
+
+func (conf *HttpComponentConfig) defaultSessionStore() Store {
+	return NewCacheStore("SESSION")
 }

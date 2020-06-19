@@ -24,7 +24,10 @@ type HttpComponent struct {
 	camMiddleware.MiddlewarePlugin
 
 	config *HttpComponentConfig
-	store  *sessions.FilesystemStore
+	// Deprecated
+	store *sessions.FilesystemStore
+
+	sessStore *SessionStoreManager
 }
 
 // init
@@ -41,6 +44,7 @@ func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
 	comp.store = comp.getFilesystemStore()
+	comp.sessStore = NewSessionStoreManager(comp.config.cookieSessionIdName, comp.config.getSessionStore())
 }
 
 // start
@@ -275,6 +279,7 @@ func (comp *HttpComponent) getRequestValuesByJson(request *http.Request) map[str
 }
 
 // get http session
+// Deprecated: remove on v0.5.0
 func (comp *HttpComponent) getStoreSession(request *http.Request) *sessions.Session {
 	session, err := comp.store.Get(request, comp.config.SessionName)
 	if err != nil {
@@ -308,21 +313,32 @@ func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler
 
 // new HttpContext
 func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWriter) camBase.HttpContextInterface {
-	storeSess := comp.getStoreSession(r)
-	sess := NewHttpSession(storeSess)
+	//storeSess := comp.getStoreSession(r)
+	//sess := NewHttpSession(storeSess)
 	ctx := comp.NewContext()
 	httpCtx, ok := ctx.(camBase.HttpContextInterface)
 	if !ok {
 		panic("invalid HttpContext struct. Must implements camBase.ContextHttpInterface")
 	}
-	httpCtx.SetSession(sess)
 	httpCtx.SetHttpRequest(r)
 	httpCtx.SetHttpResponseWriter(rw)
+	sessI, err := comp.sessStore.GetSession(httpCtx)
+	if err != nil {
+		panic(err)
+	}
+	httpCtx.SetSession(sessI)
 	httpCtx.CloseHandler(func() {
-		err := storeSess.Save(r, rw)
+		err := comp.sessStore.store.Save(sessI)
 		if err != nil {
 			panic(err)
 		}
 	})
+
+	// read request cookies and write to response
+	cookies := r.Cookies()
+	for _, cookie := range cookies {
+		http.SetCookie(rw, cookie)
+	}
+
 	return httpCtx
 }

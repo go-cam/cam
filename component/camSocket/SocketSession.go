@@ -28,12 +28,12 @@ func (sess *SocketSession) GetSessionId() string {
 }
 
 // set session value
-func (sess *SocketSession) Set(key interface{}, value interface{}) {
+func (sess *SocketSession) Set(key string, value interface{}) {
 	sess.values.Store(key, value)
 }
 
 // get session value
-func (sess *SocketSession) Get(key interface{}) interface{} {
+func (sess *SocketSession) Get(key string) interface{} {
 	value, ok := sess.values.Load(key)
 	if !ok {
 		return nil
@@ -42,7 +42,7 @@ func (sess *SocketSession) Get(key interface{}) interface{} {
 }
 
 // delete key
-func (sess *SocketSession) Del(key interface{}) {
+func (sess *SocketSession) Del(key string) {
 	sess.values.Delete(key)
 }
 

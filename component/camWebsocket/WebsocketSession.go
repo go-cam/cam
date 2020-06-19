@@ -36,12 +36,12 @@ func (sess *WebsocketSession) GetSessionId() string {
 }
 
 // set session value
-func (sess *WebsocketSession) Set(key interface{}, value interface{}) {
+func (sess *WebsocketSession) Set(key string, value interface{}) {
 	sess.values.Store(key, value)
 }
 
 // get session value
-func (sess *WebsocketSession) Get(key interface{}) interface{} {
+func (sess *WebsocketSession) Get(key string) interface{} {
 	value, ok := sess.values.Load(key)
 	if !ok {
 		return nil
@@ -50,7 +50,7 @@ func (sess *WebsocketSession) Get(key interface{}) interface{} {
 }
 
 // delete key
-func (sess *WebsocketSession) Del(key interface{}) {
+func (sess *WebsocketSession) Del(key string) {
 	sess.values.Delete(key)
 }
 
