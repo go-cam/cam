@@ -48,6 +48,9 @@ func (ctx *HttpContext) GetCookie(name string) *http.Cookie {
 }
 
 func (ctx *HttpContext) SetCookie(cookie *http.Cookie) {
+	if cookie.Path == "" {
+		cookie.Path = "/"
+	}
 	http.SetCookie(ctx.responseWriter, cookie)
 }
 

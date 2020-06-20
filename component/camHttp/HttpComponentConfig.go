@@ -18,9 +18,9 @@ type HttpComponentConfig struct {
 	camMiddleware.MiddlewarePluginConfig
 
 	Port uint16
-	// Deprecated: remove on v0.6.0
+	// Deprecated: remove on v0.5.0
 	SessionName string
-	// Deprecated: remove on v0.6.0
+	// Deprecated: remove on v0.5.0
 	SessionKey string
 
 	sessionStore  Store

@@ -291,11 +291,5 @@ func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWrite
 		}
 	})
 
-	// read request cookies and write to response
-	cookies := r.Cookies()
-	for _, cookie := range cookies {
-		http.SetCookie(rw, cookie)
-	}
-
 	return httpCtx
 }

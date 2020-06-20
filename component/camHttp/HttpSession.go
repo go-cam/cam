@@ -11,8 +11,9 @@ type HttpSession struct {
 	// Deprecated
 	session *sessions.Session
 
-	id     string
-	values map[string]interface{}
+	id             string
+	values         map[string]interface{}
+	destroyHandler func()
 }
 
 type HttpSessionInterface interface {
@@ -30,7 +31,7 @@ type HttpSessionInterface interface {
 	Destroy()
 }
 
-// Deprecated
+// Deprecated: remove on v0.5.0
 func NewHttpSession(storeSession *sessions.Session) *HttpSession {
 	session := new(HttpSession)
 	session.session = storeSession
@@ -41,6 +42,7 @@ func newHttpSession(sessId string, values map[string]interface{}) *HttpSession {
 	sess := new(HttpSession)
 	sess.id = sessId
 	sess.values = values
+	sess.destroyHandler = func() {}
 	return sess
 }
 
@@ -73,7 +75,10 @@ func (sess *HttpSession) Values() map[string]interface{} {
 }
 
 // destroy session
-// TODO fix it
 func (sess *HttpSession) Destroy() {
-	//sess.session.Values = map[string]interface{}{}
+	sess.destroyHandler()
+}
+
+func (sess *HttpSession) SetDestroyHandler(handler func()) {
+	sess.destroyHandler = handler
 }

@@ -38,7 +38,15 @@ func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
 	var values = map[string]interface{}{}
 	camUtils.Json.DecodeToObj([]byte(str), &values)
 
-	return newHttpSession(sessId, values), nil
+	sess := newHttpSession(sessId, values)
+	sess.SetDestroyHandler(func() {
+		err := store.Del(sess)
+		if err != nil {
+			camBase.App.Error("HttpSession.destroyHandler", "err:"+err.Error())
+		}
+	})
+
+	return sess, nil
 }
 
 func (store *cacheStore) Save(sessI HttpSessionInterface) error {
