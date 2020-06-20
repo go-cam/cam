@@ -7,13 +7,10 @@ import (
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
 	"github.com/go-cam/cam/plugin/camRouter"
-	"github.com/gorilla/sessions"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 // http server component
@@ -24,8 +21,6 @@ type HttpComponent struct {
 	camMiddleware.MiddlewarePlugin
 
 	config *HttpComponentConfig
-	// Deprecated
-	store *sessions.FilesystemStore
 
 	sessStore *SessionStoreManager
 }
@@ -43,8 +38,7 @@ func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
-	comp.store = comp.getFilesystemStore()
-	comp.sessStore = NewSessionStoreManager(comp.config.cookieSessionIdName, comp.config.getSessionStore())
+	comp.sessStore = NewSessionStoreManager(comp.config.getSessionStore(), comp.config.getSessionOption())
 }
 
 // start
@@ -184,18 +178,6 @@ func (comp *HttpComponent) tryRecover(rw http.ResponseWriter, r *http.Request, v
 	comp.routeHandler(ctx, recoverRoute)
 }
 
-// get session store
-func (comp *HttpComponent) getFilesystemStore() *sessions.FilesystemStore {
-	runtimeDir := camUtils.File.GetRunPath() + "/runtime/session"
-	if !camUtils.File.Exists(runtimeDir) {
-		err := camUtils.File.Mkdir(runtimeDir)
-		if err != nil {
-			panic("create runtime dir failed! " + err.Error())
-		}
-	}
-	return sessions.NewFilesystemStore(runtimeDir, []byte("none"))
-}
-
 // enable server
 func (comp *HttpComponent) listenAndServe() {
 	mux := http.NewServeMux()
@@ -278,29 +260,6 @@ func (comp *HttpComponent) getRequestValuesByJson(request *http.Request) map[str
 	return values
 }
 
-// get http session
-// Deprecated: remove on v0.5.0
-func (comp *HttpComponent) getStoreSession(request *http.Request) *sessions.Session {
-	session, err := comp.store.Get(request, comp.config.SessionName)
-	if err != nil {
-		osPathErr, ok := err.(*os.PathError)
-		if !ok {
-			panic(err.Error())
-		}
-		syscallErr, ok := osPathErr.Err.(syscall.Errno)
-		if !ok {
-			panic(osPathErr.Err.Error())
-		}
-
-		// allow error: syscall.ERROR_FILE_NOT_FOUND
-		if syscallErr != syscall.ERROR_FILE_NOT_FOUND {
-			panic(syscallErr.Error())
-		}
-	}
-
-	return session
-}
-
 // get custom route handler
 // Deprecated: remove on v0.5.0
 func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
@@ -313,8 +272,6 @@ func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler
 
 // new HttpContext
 func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWriter) camBase.HttpContextInterface {
-	//storeSess := comp.getStoreSession(r)
-	//sess := NewHttpSession(storeSess)
 	ctx := comp.NewContext()
 	httpCtx, ok := ctx.(camBase.HttpContextInterface)
 	if !ok {

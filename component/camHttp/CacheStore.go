@@ -8,6 +8,7 @@ import (
 
 type cacheStore struct {
 	cachePrefix string
+	option      *SessionOption
 }
 
 func NewCacheStore(cachePrefix string) *cacheStore {
@@ -18,6 +19,10 @@ func NewCacheStore(cachePrefix string) *cacheStore {
 
 func (store *cacheStore) getCacheKey(sessId string) string {
 	return store.cachePrefix + sessId
+}
+
+func (store *cacheStore) SetSessionOption(opt *SessionOption) {
+	store.option = opt
 }
 
 func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
@@ -39,7 +44,7 @@ func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
 func (store *cacheStore) Save(sessI HttpSessionInterface) error {
 	key := store.getCacheKey(sessI.GetSessionId())
 	str := camUtils.Json.EncodeStr(sessI.Values())
-	return camBase.App.GetCache().Set(key, str)
+	return camBase.App.GetCache().SetDuration(key, str, store.option.Expires)
 }
 
 func (store *cacheStore) Del(sessI HttpSessionInterface) error {

@@ -23,9 +23,8 @@ type HttpComponentConfig struct {
 	// Deprecated: remove on v0.6.0
 	SessionKey string
 
-	sessionStore Store
-	// The name of the session stored in the cookie
-	cookieSessionIdName string
+	sessionStore  Store
+	sessionOption *SessionOption
 
 	// Deprecated: remove on v0.5.0
 	routeHandlerDict map[string]camBase.HttpRouteHandler
@@ -43,8 +42,8 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 	config.ContextPluginConfig.Init()
 	config.SslPluginConfig.Init()
 	config.MiddlewarePluginConfig.Init()
-	config.cookieSessionIdName = "SessionID"
 	config.sessionStore = nil
+	config.sessionOption = nil
 	config.SetContextStruct(&HttpContext{})
 	return config
 }
@@ -61,8 +60,8 @@ func (conf *HttpComponentConfig) SetSessionStore(store Store) {
 	conf.sessionStore = store
 }
 
-func (conf *HttpComponentConfig) SetCookieSessionIdName(name string) {
-	conf.cookieSessionIdName = name
+func (conf *HttpComponentConfig) SetSessionOption(opt *SessionOption) {
+	conf.sessionOption = opt
 }
 
 func (conf *HttpComponentConfig) getSessionStore() Store {
@@ -74,4 +73,11 @@ func (conf *HttpComponentConfig) getSessionStore() Store {
 
 func (conf *HttpComponentConfig) defaultSessionStore() Store {
 	return NewCacheStore("SESSION")
+}
+
+func (conf *HttpComponentConfig) getSessionOption() *SessionOption {
+	if conf.sessionOption == nil {
+		return new(SessionOption)
+	}
+	return conf.sessionOption
 }
