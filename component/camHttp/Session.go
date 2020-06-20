@@ -24,6 +24,7 @@ func NewSessionStoreManager(store Store, option *SessionOption) *SessionStoreMan
 	m := new(SessionStoreManager)
 	m.store = store
 	m.option = m.makeSessionOption(option)
+	m.store.SetSessionOption(m.option)
 	return m
 }
 
