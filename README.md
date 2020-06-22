@@ -28,10 +28,11 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
     - [Upload file](#upload-file)
     - [Validation](#validation)
     - [Middleware](#middleware)
+- [Contact](#Contact)
 
 ## Framework structure
 
-![Framework structure](./../cam-doc/image/framework-structure-uml.jpg)
+![Framework structure](https://raw.githubusercontent.com/go-cam/cam-doc/master/image/framework-structure-uml.jpg)
 
 ## Easy start
 
@@ -261,3 +262,10 @@ func (mid *AMiddleware) Handler(ctx camBase.ContextInterface, next camBase.NextH
 	return res
 }
 ```
+
+# Contact
+
+| Type | Content |
+| ----- | ----- |
+| QQ Group | 740731115 |
+| Email | 1105412681@qq.com |
