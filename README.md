@@ -32,7 +32,7 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 
 ## Framework structure
 
-![Framework structure](https://raw.githubusercontent.com/go-cam/cam-doc/master/image/framework-structure-uml.jpg)
+![Framework structure](https://cinling.net/cdn/framework-structure-uml.jpg)
 
 ## Easy start
 
