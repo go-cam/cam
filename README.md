@@ -15,41 +15,23 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 # Contents
 
 - [Cam](#cam)
-  - [Start with template](#start-with-template)
+  - [Framework structure](#framework-structure)
+  - Start with template. Jump to [cam-template](https://github.com/go-cam/cam-template)
   - [Easy start](#easy-start) 
     - If you don't want cumbersome configuration. You can try this. But most documents are based on the the [cam-template](https://github.com/go-cam/cam-template)
   - [Template struct](#template-struct)
   - [Environment support](#environment-support)
+    - Jump to [XORM](https://xorm.io)
+  - [Components](#Components)
   - [Examples](#examples)
     - [.Env file](#env-file)
     - [Upload file](#upload-file)
     - [Validation](#validation)
     - [Middleware](#middleware)
 
-## Start with template
+## Framework structure
 
-### 1. Clone cam-template from github
-
-    git clone --depth=1 https://github.com/go-cam/cam-template.git -b v0.3.0
-
-### 2. Rename folder to your project name
-
-    mv cam-template my-project
-    
-### 3. Update dependency Library
-
-    cd my-project
-    go mod tidy
-
-### 4. Build and run server module
-
-    cd server
-    go build main.go
-    ./main
-
-### 5. Check whether it runs successfully
-
-Open the browser and open link: http://127.0.0.1:8800/hello
+![Framework structure](./../cam-doc/image/framework-structure-uml.jpg)
 
 ## Easy start
 
@@ -62,7 +44,7 @@ module app
 go 1.14
 
 require (
-	github.com/go-cam/cam v0.4.0-alpha.3
+	github.com/go-cam/cam v0.4.4
 )
 ```
 
@@ -147,6 +129,12 @@ Open the browser and open link: http://127.0.0.1:20200/hello/cam
 - Cache engine
   - File
   - Redis
+
+## Components
+
+Components are the functions provided by the framework. Such as: http, websocket, cache, database, console, etc. It is a package of individual functions. 
+
+You can also package components according to your requirements, as long as you implement camBase.ComponentInterface And corresponding configuration implementation camBase.ComponentConfigInterface that will do
   
 ## Examples
 
@@ -162,10 +150,12 @@ DB_PASSWORD = 123456
 ```
 
 use in code:
-```text
-username := cam.App.GetEnv("DB_USERNAME") // username = "root"
-password := cam.App.GetEnv("DB_PASSWORD") // password = "123456"
-fmt.println(username + " " + password) // output: "root 123456"
+```go
+func test() {
+  username := cam.App.GetEnv("DB_USERNAME") // username = "root"
+  password := cam.App.GetEnv("DB_PASSWORD") // password = "123456"
+  fmt.println(username + " " + password) // output: "root 123456"
+}
 ```
 
 ### Upload file
@@ -229,19 +219,19 @@ func (user *User) Rules() []camBase.RuleInterface {
 }
 
 func init() {
-    user := new(User)
-    user.Email = "123123"
-    user.MyEmail = "123@123.com"
-    firstErr, _ := cam.Valid(user)
-    if firstErr != nil {
-        panic(firstErr)
-    }
+	user := new(User)
+	user.Email = "123123"
+	user.MyEmail = "123@123.com"
+	firstErr, _ := cam.Valid(user)
+	if firstErr != nil {
+		panic(firstErr)
+	}
 }
 ```
 
 # Middleware
 
-Support Component: HttpComponent, WebsocketComponent (after v0.4.1-release), SocketComponent (after v0.4.1-release)
+Support Component: HttpComponent, WebsocketComponent, SocketComponent
 
 add in ComponentConfig
 ```go
