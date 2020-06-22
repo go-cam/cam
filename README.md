@@ -32,7 +32,7 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
 
 ## Framework structure
 
-![Framework structure](https://cinling.net/cdn/framework-structure-uml.jpg)
+<img src="https://cinling.net/cdn/framework-structure-uml.jpg" width="700" alt="Framework structure"/>
 
 ## Easy start
 
