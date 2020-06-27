@@ -6,8 +6,8 @@ import (
 	"github.com/go-cam/cam/base/camUtils"
 )
 
+// Deprecated: remove on v0.6.0
 // xorm's console controller
-// Deprecated: remove on v0.5.0
 type XormController struct {
 	ConsoleController
 }
@@ -18,9 +18,10 @@ func (ctrl *XormController) BeforeAction(action camBase.ControllerActionInterfac
 	return ctrl.ConsoleController.BeforeAction(action)
 }
 
+// Deprecated: remove on v0.6.0
 // install github.com/go-xorm/cmd/xorm
 func (ctrl *XormController) InstallCmdXorm() {
-	// Deprecated: remove on v0.5.0
+
 	_ = camUtils.Console.Start("go get github.com/go-xorm/cmd/xorm")
 }
 
@@ -38,7 +39,6 @@ func (ctrl *XormController) InstallCmdXorm() {
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
 func (ctrl *XormController) Generate() {
-	// Deprecated: remove on v0.5.0
 	db := camBase.App.GetDB()
 	if db == nil {
 		panic("no database.")

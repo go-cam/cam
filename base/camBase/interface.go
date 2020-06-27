@@ -134,6 +134,10 @@ type ContextInterface interface {
 	SetRecover(rec RecoverInterface)
 	// Get RecoverInterface
 	GetRecover() RecoverInterface
+	// Set route
+	SetRoute(route string)
+	// Get route
+	GetRoute() string
 }
 
 // http context

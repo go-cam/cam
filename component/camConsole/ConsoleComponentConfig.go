@@ -16,6 +16,7 @@ type ConsoleComponentConfig struct {
 
 	DatabaseDir     string // DatabaseComponentConfig file storage path. Default is: /[path to run dir]/database
 	XormTemplateDir string // xorm template path.
+	grpcOption      *GrpcOption
 }
 
 // new console config
@@ -29,23 +30,29 @@ func NewConsoleComponentConfig() *ConsoleComponentConfig {
 	config.RouterPluginConfig.Init()
 	config.registerFrameworkController()
 	config.SetContextStruct(&camContext.Context{})
+	config.grpcOption = &GrpcOption{}
 	return config
 }
 
 // register controller in the framework
-func (config *ConsoleComponentConfig) registerFrameworkController() {
-	config.RouterPluginConfig.Register(&MigrateController{})
-	config.RouterPluginConfig.Register(&XormController{})
+func (conf *ConsoleComponentConfig) registerFrameworkController() {
+	conf.RouterPluginConfig.Register(&MigrateController{})
+	conf.RouterPluginConfig.Register(&XormController{})
 }
 
 // set migration's file dir
-func (config *ConsoleComponentConfig) SetDatabaseDir(dir string) *ConsoleComponentConfig {
-	config.DatabaseDir = strings.Replace(dir, "\\", "/", -1)
-	return config
+func (conf *ConsoleComponentConfig) SetDatabaseDir(dir string) *ConsoleComponentConfig {
+	conf.DatabaseDir = strings.Replace(dir, "\\", "/", -1)
+	return conf
 }
 
 // set xorm dir
-func (config *ConsoleComponentConfig) SetXormTemplateDir(dir string) *ConsoleComponentConfig {
-	config.XormTemplateDir = strings.Replace(dir, "\\", "/", -1)
-	return config
+func (conf *ConsoleComponentConfig) SetXormTemplateDir(dir string) *ConsoleComponentConfig {
+	conf.XormTemplateDir = strings.Replace(dir, "\\", "/", -1)
+	return conf
+}
+
+// set grpc option
+func (conf *ConsoleComponentConfig) SetGrpcOption(option *GrpcOption) {
+	conf.grpcOption = option
 }

@@ -104,6 +104,10 @@ func (comp *SocketComponent) defaultConnHandler(conn net.Conn) {
 		ctx := comp.newSocketContext(conn, recv, sess)
 		msg := comp.recvMessageParseHandler(recv)
 		ctx.SetMessage(msg)
+		route := msg.Route
+		if route == "" {
+			route = comp.config.DefaultRoute()
+		}
 		comp.routeHandler(ctx, msg.Route, msg.Data)
 	}
 }

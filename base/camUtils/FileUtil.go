@@ -1,6 +1,7 @@
 package camUtils
 
 import (
+	"github.com/go-cam/cam/base/camBase"
 	"io"
 	"io/ioutil"
 	"os"
@@ -15,7 +16,10 @@ var File = new(FileUtil)
 
 // Get the path where the program is running
 func (util *FileUtil) GetRunPath() string {
-	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		camBase.App.Error("FileUtil.GetRunPath", err.Error())
+	}
 	return dir
 }
 

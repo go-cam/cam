@@ -3,9 +3,10 @@ package camContext
 import "github.com/go-cam/cam/base/camBase"
 
 type Context struct {
-	sess camBase.SessionInterface
-	res  []byte
-	rec  camBase.RecoverInterface
+	sess  camBase.SessionInterface
+	res   []byte
+	rec   camBase.RecoverInterface
+	route string
 }
 
 func (ctx *Context) SetSession(session camBase.SessionInterface) {
@@ -30,4 +31,12 @@ func (ctx *Context) SetRecover(rec camBase.RecoverInterface) {
 
 func (ctx *Context) GetRecover() camBase.RecoverInterface {
 	return ctx.rec
+}
+
+func (ctx *Context) SetRoute(route string) {
+	ctx.route = route
+}
+
+func (ctx *Context) GetRoute() string {
+	return ctx.route
 }

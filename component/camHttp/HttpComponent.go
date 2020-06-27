@@ -46,11 +46,11 @@ func (comp *HttpComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.SslOnly {
-		camBase.App.Trace("HttpComponent", "listen http://:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		camBase.App.Trace("HttpComponent", "listen http://localhost:"+strconv.FormatUint(uint64(comp.config.Port), 10))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsSslOn {
-		camBase.App.Trace("HttpComponent", "listen https://:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+		camBase.App.Trace("HttpComponent", "listen https://localhost:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -68,15 +68,7 @@ func (comp *HttpComponent) handlerFunc(rw http.ResponseWriter, r *http.Request) 
 		}
 	}()
 
-	route := ""
-	url := r.URL.String()
-	dirs := camUtils.Url.SplitUrl(url)
-	dirLen := len(dirs)
-	if dirLen == 1 {
-		route = dirs[0]
-	} else {
-		route = dirs[0] + "/" + dirs[1]
-	}
+	route := comp.getRoute(r)
 
 	// Deprecated: remove this block in v0.5.0  It's not support middleware
 	// =========== START ===========
@@ -284,6 +276,7 @@ func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWrite
 		panic(err)
 	}
 	httpCtx.SetSession(sessI)
+	httpCtx.SetRoute(comp.getRoute(r))
 	httpCtx.CloseHandler(func() {
 		err := comp.sessStore.store.Save(sessI)
 		if err != nil {
@@ -292,4 +285,22 @@ func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWrite
 	})
 
 	return httpCtx
+}
+
+// Get route by request
+func (comp *HttpComponent) getRoute(r *http.Request) string {
+	route := ""
+	url := r.URL.String()
+	dirs := camUtils.Url.SplitUrl(url)
+	dirLen := len(dirs)
+	if dirLen == 1 {
+		route = dirs[0]
+	} else {
+		route = dirs[0] + "/" + dirs[1]
+	}
+	if route == "" {
+		return comp.config.DefaultRoute()
+	}
+
+	return route
 }

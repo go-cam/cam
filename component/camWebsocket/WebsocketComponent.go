@@ -87,6 +87,10 @@ func (comp *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Reque
 			ctx := comp.newWebsocketContext(conn, recv, sess)
 			msg := comp.recvMessageParseHandler(recv)
 			ctx.SetMessage(msg)
+			route := msg.Route
+			if route == "" {
+				route = comp.config.DefaultRoute()
+			}
 			comp.routeHandler(ctx, msg.Route, msg.Data)
 		}
 	}

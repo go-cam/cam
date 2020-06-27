@@ -1,8 +1,11 @@
 package template
 
-import "github.com/go-cam/cam/base/camBase"
+const (
+	CamModuleTypeApplication = "application"
+	CamModuleTypeLibrary     = "library"
+	CamModuleTypeGrpc        = "grpc"
+)
 
 type CamModule struct {
-	Name string                `json:"name"`
-	Type camBase.CamModuleType `json:"type"`
+	Type string `json:"type"`
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/base/camStructs"
+	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
@@ -135,8 +136,8 @@ func NewMailConfig(email string, password string, host string) *camMail.MailComp
 	return camMail.NewMailConfig(email, password, host)
 }
 
-func NewTemplateCommand() *template.Command {
-	return template.NewCommand()
+func NewCamManager() *template.CamManager {
+	return template.NewCamManager()
 }
 
 func NewRecover(message string) *camStructs.Recover {
@@ -164,3 +165,11 @@ func NewRule(fields []string, handlers ...camBase.ValidHandler) *camStructs.Rule
 var Rule = camValidation.Rule
 
 // #################### [END] instance export ####################
+
+// #################### [START] other export ####################
+// Framework version
+func Version() string {
+	return camUtils.C.Version()
+}
+
+// #################### [END] other export ####################

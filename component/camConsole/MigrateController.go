@@ -168,3 +168,7 @@ func (ctrl *MigrateController) validName(name string) bool {
 	name = re.ReplaceAllString(name, "")
 	return len(name) == 0
 }
+
+func (ctrl *MigrateController) Sync() {
+	// TODO
+}

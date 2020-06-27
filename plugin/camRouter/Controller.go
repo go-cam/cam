@@ -2,6 +2,7 @@ package camRouter
 
 import (
 	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camUtils"
 )
 
 // base controller
@@ -78,6 +79,11 @@ func (ctrl *Controller) GetValue(key string) interface{} {
 		value = nil
 	}
 	return value
+}
+
+// get the value with string type
+func (ctrl *Controller) GetString(key string) string {
+	return camUtils.C.InterfaceToString(ctrl.GetValue(key))
 }
 
 // set response content
