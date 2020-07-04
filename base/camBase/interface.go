@@ -1,6 +1,7 @@
 package camBase
 
 import (
+	"google.golang.org/grpc"
 	"net/http"
 	"time"
 	"xorm.io/xorm"
@@ -274,4 +275,10 @@ type ValidationComponentInterface interface {
 type MiddlewareInterface interface {
 	// call when route has middleware
 	Handler(ctx ContextInterface, next NextHandler) []byte
+}
+
+// grpc component interface
+type GRpcComponentInterface interface {
+	// get client conn
+	Conn() *grpc.ClientConn
 }
