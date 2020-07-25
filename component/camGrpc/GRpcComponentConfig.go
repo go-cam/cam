@@ -44,6 +44,7 @@ type GRpcComponentConfig struct {
 	srvList []interface{}
 }
 
+// Deprecated: instead by camGRpcClient and camGRpcServer
 // new GrpcComponent config
 func NewGRpcConfig(opt *Option) *GRpcComponentConfig {
 	conf := new(GRpcComponentConfig)

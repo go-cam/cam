@@ -51,3 +51,6 @@ type NextHandler func() []byte
 // route Handler
 // Such as: Custom Handler, ControllerAction Handler
 type RouteHandler func(ctxI ContextInterface) []byte
+
+// load balancing login
+type GRpcLoadBalancingLogic int
