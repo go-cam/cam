@@ -51,12 +51,12 @@ func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
 func (comp *WebsocketComponent) Start() {
 	comp.Component.Start()
 
-	if !comp.config.SslOnly {
+	if !comp.config.TlsOnly {
 		camBase.App.Trace("WebsocketComponent", "listen ws://:"+camUtils.C.Uint16ToString(comp.config.Port))
 		go comp.listenAndServe()
 	}
-	if comp.config.IsSslOn {
-		camBase.App.Trace("WebsocketComponent", "listen wss://:"+camUtils.C.Uint16ToString(comp.config.SslPort))
+	if comp.config.IsTlsOn {
+		camBase.App.Trace("WebsocketComponent", "listen wss://:"+camUtils.C.Uint16ToString(comp.config.TlsPort))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -181,10 +181,10 @@ func (comp *WebsocketComponent) listenAndServeTLS() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(comp.config.SslPort), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.TlsPort), 10),
 		Handler: mux,
 	}
-	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
+	err := server.ListenAndServeTLS(comp.config.TlsCertFile, comp.config.TlsKeyFile)
 	if err != nil {
 		panic(err)
 	}

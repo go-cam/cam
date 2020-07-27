@@ -5,6 +5,7 @@ import (
 	"github.com/go-cam/cam/base/camConstants"
 	"github.com/go-cam/cam/component"
 	"google.golang.org/grpc"
+	"sync"
 )
 
 type sequenceOption struct {
@@ -41,7 +42,11 @@ type GRpcClientComponent struct {
 	conf     *GRpcClientComponentConfig
 	connDict map[string]*grpc.ClientConn
 	// only sequence logic will be create
-	seqOpt   *sequenceOption
+	seqOpt *sequenceOption
+	// lock func reconnect()
+	checkAndReconnectMutex sync.Mutex
+	// If it true, when call GetConn() doesn't need to wait for a connection to be detected
+	canGoOn                bool
 }
 
 // init conf
@@ -55,25 +60,24 @@ func (comp *GRpcClientComponent) Init(confI camBase.ComponentConfigInterface) {
 	}
 	comp.conf = conf
 	comp.connDict = map[string]*grpc.ClientConn{}
+	comp.checkAndReconnectMutex = sync.Mutex{}
+	comp.canGoOn = false
 }
 
 // start
 func (comp *GRpcClientComponent) Start() {
 	comp.Component.Start()
 
-	// Create connections
-	if comp.conf.option.Servers != nil {
-		for _, server := range comp.conf.option.Servers {
-			conn, err := grpc.Dial(server.Addr, server.DialOptions...)
-			if err != nil {
-				camBase.App.Error("GRpcClientComponent.Start()", err.Error())
-				continue
-			}
-			comp.connDict[server.Addr] = conn
-		}
+	if len(comp.conf.Servers) == 0 {
+		camBase.App.Fatal("GRpcClientComponent", "There are not connections.")
+		return
 	}
-	if len(comp.connDict) == 0 {
-		panic("There's no connection")
+
+	// Create connections
+	if comp.conf.Servers != nil {
+		for _, server := range comp.conf.Servers {
+			comp.createConn(server)
+		}
 	}
 	comp.initOptionByLoadBalancingLogin()
 }
@@ -83,9 +87,9 @@ func (comp *GRpcClientComponent) Stop() {
 	defer comp.Component.Stop()
 }
 
-// init option by load balancing login
+// init Option by load balancing login
 func (comp *GRpcClientComponent) initOptionByLoadBalancingLogin() {
-	switch comp.conf.option.LoadBalancingLogic {
+	switch comp.conf.LoadBalancingLogic {
 	case camConstants.GRpcLoadBalancingLogicSequence:
 		comp.seqOpt = newSequenceOption(comp.connDict)
 	default:
@@ -97,15 +101,68 @@ func (comp *GRpcClientComponent) initOptionByLoadBalancingLogin() {
 func (comp *GRpcClientComponent) GetConn() *grpc.ClientConn {
 	var conn *grpc.ClientConn
 
-	switch comp.conf.option.LoadBalancingLogic {
+	var goOn = make(chan bool)
+	go comp.reconnect(goOn)
+	if <- goOn {
+	}
+
+	switch comp.conf.LoadBalancingLogic {
 	case camConstants.GRpcLoadBalancingLogicSequence:
 		conn = comp.getConnBySequence()
 	}
 
+	// TODO check conn status, if cannot used, get new one
+
 	return conn
+}
+
+// Create to gRpc server connection.
+// Return:
+//	true: 	conn success.
+//	false:	conn failed.
+func (comp *GRpcClientComponent) createConn(server *Server) bool {
+	conn, err := grpc.Dial(server.Addr, server.DialOptions...)
+	if err != nil {
+		camBase.App.Error("GRpcClientComponent", "Connective failed: "+err.Error())
+		comp.connDict[server.Addr] = nil
+		return false
+	}
+
+	camBase.App.Trace("GRpcClientComponent", "Connect to addr: " + server.Addr)
+	comp.connDict[server.Addr] = conn
+	return true
+}
+
+func (comp *GRpcClientComponent) reconnect(goOn chan bool) {
+	comp.checkAndReconnectMutex.Lock()
+	defer func() {
+		comp.checkAndReconnectMutex.Unlock()
+		goOn <- true
+	}()
+
+	if comp.canGoOn {
+		goOn <- true
+		return
+	}
+
+	for _, server := range comp.conf.Servers {
+		conn, has := comp.connDict[server.Addr]
+		if has && conn != nil {
+			goOn <- true
+			continue
+		}
+		done := comp.createConn(server)
+		if done {
+			goOn <- true
+		}
+	}
 }
 
 func (comp *GRpcClientComponent) getConnBySequence() *grpc.ClientConn {
 	key := comp.seqOpt.nextKey()
-	return comp.connDict[key]
+	conn := comp.connDict[key]
+	if conn == nil {
+		return comp.getConnBySequence()
+	}
+	return conn
 }

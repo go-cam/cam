@@ -37,6 +37,7 @@ type Option struct {
 	Server ServerOption
 }
 
+// Deprecated
 type GRpcComponentConfig struct {
 	component.ComponentConfig
 

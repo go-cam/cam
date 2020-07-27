@@ -45,12 +45,12 @@ func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
 func (comp *HttpComponent) Start() {
 	comp.Component.Start()
 
-	if !comp.config.SslOnly {
+	if !comp.config.TlsOnly {
 		camBase.App.Trace("HttpComponent", "listen http://localhost:"+strconv.FormatUint(uint64(comp.config.Port), 10))
 		go comp.listenAndServe()
 	}
-	if comp.config.IsSslOn {
-		camBase.App.Trace("HttpComponent", "listen https://localhost:"+strconv.FormatUint(uint64(comp.config.SslPort), 10))
+	if comp.config.IsTlsOn {
+		camBase.App.Trace("HttpComponent", "listen https://localhost:"+strconv.FormatUint(uint64(comp.config.TlsPort), 10))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -189,10 +189,10 @@ func (comp *HttpComponent) listenAndServeTLS() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", comp.handlerFunc)
 	server := &http.Server{
-		Addr:    ":" + strconv.FormatUint(uint64(comp.config.SslPort), 10),
+		Addr:    ":" + strconv.FormatUint(uint64(comp.config.TlsPort), 10),
 		Handler: mux,
 	}
-	err := server.ListenAndServeTLS(comp.config.SslCertFile, comp.config.SslKeyFile)
+	err := server.ListenAndServeTLS(comp.config.TlsCertFile, comp.config.TlsKeyFile)
 	if err != nil {
 		panic(err)
 	}

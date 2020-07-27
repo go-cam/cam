@@ -6,7 +6,7 @@ import (
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
 	"github.com/go-cam/cam/plugin/camRouter"
-	"github.com/go-cam/cam/plugin/camSsl"
+	"github.com/go-cam/cam/plugin/camTls"
 )
 
 // http server config
@@ -14,7 +14,7 @@ type HttpComponentConfig struct {
 	component.ComponentConfig
 	camRouter.RouterPluginConfig
 	camContext.ContextPluginConfig
-	camSsl.SslPluginConfig
+	camTls.TlsPluginConfig
 	camMiddleware.MiddlewarePluginConfig
 
 	Port uint16
@@ -40,7 +40,7 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 	config.routeHandlerDict = map[string]camBase.HttpRouteHandler{}
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
-	config.SslPluginConfig.Init()
+	config.TlsPluginConfig.Init()
 	config.MiddlewarePluginConfig.Init()
 	config.sessionStore = nil
 	config.sessionOption = nil

@@ -18,7 +18,7 @@ type Server struct {
 }
 
 // client options
-type GRpcClientOption struct {
+type Option struct {
 	LoadBalancingLogic camBase.GRpcLoadBalancingLogic
 	// Server config
 	Servers []*Server
@@ -27,20 +27,21 @@ type GRpcClientOption struct {
 // gRpc client component's conf
 type GRpcClientComponentConfig struct {
 	component.ComponentConfig
-	option *GRpcClientOption
+	Option
 }
 
 // new gRpc client conf
 func NewGRpcClient() *GRpcClientComponentConfig {
 	conf := new(GRpcClientComponentConfig)
 	conf.Component = &GRpcClientComponent{}
+	conf.Option = Option{}
 	return conf
 }
 
-// set option
-func (conf *GRpcClientComponentConfig) SetOption(option *GRpcClientOption) {
-	conf.option = option
-	if conf.option.LoadBalancingLogic == 0 {
-		conf.option.LoadBalancingLogic = camConstants.GRpcLoadBalancingLogicSequence
+// set Option
+func (conf *GRpcClientComponentConfig) SetOption(option *Option) {
+	conf.Option = *option
+	if conf.LoadBalancingLogic == 0 {
+		conf.LoadBalancingLogic = camConstants.GRpcLoadBalancingLogicSequence
 	}
 }

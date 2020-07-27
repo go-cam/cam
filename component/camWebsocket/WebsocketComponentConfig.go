@@ -6,13 +6,13 @@ import (
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
 	"github.com/go-cam/cam/plugin/camRouter"
-	"github.com/go-cam/cam/plugin/camSsl"
+	"github.com/go-cam/cam/plugin/camTls"
 )
 
 // websocket server 所需的配置
 type WebsocketComponentConfig struct {
 	component.ComponentConfig
-	camSsl.SslPluginConfig
+	camTls.TlsPluginConfig
 	camRouter.RouterPluginConfig
 	camContext.ContextPluginConfig
 	camMiddleware.MiddlewarePluginConfig
@@ -28,7 +28,7 @@ func NewWebsocketComponentConfig(port uint16) *WebsocketComponentConfig {
 	config.Component = &WebsocketComponent{}
 	config.Port = port
 	config.routeHandlerDict = map[string]camBase.WebsocketRouteHandler{}
-	config.SslPluginConfig.Init()
+	config.TlsPluginConfig.Init()
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
 	config.MiddlewarePluginConfig.Init()
