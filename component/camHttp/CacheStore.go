@@ -2,7 +2,7 @@ package camHttp
 
 import (
 	"errors"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 )
 
@@ -27,7 +27,7 @@ func (store *cacheStore) SetSessionOption(opt *SessionOption) {
 
 func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
 	key := store.getCacheKey(sessId)
-	i := camBase.App.GetCache().Get(key)
+	i := camStatics.App.GetCache().Get(key)
 	if i == nil {
 		i = "{}"
 	}
@@ -42,7 +42,7 @@ func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
 	sess.SetDestroyHandler(func() {
 		err := store.Del(sess)
 		if err != nil {
-			camBase.App.Error("HttpSession.destroyHandler", "err:"+err.Error())
+			camStatics.App.Error("HttpSession.destroyHandler", "err:"+err.Error())
 		}
 	})
 
@@ -52,10 +52,10 @@ func (store *cacheStore) Get(sessId string) (HttpSessionInterface, error) {
 func (store *cacheStore) Save(sessI HttpSessionInterface) error {
 	key := store.getCacheKey(sessI.GetSessionId())
 	str := camUtils.Json.EncodeStr(sessI.Values())
-	return camBase.App.GetCache().SetDuration(key, str, store.option.Expires)
+	return camStatics.App.GetCache().SetDuration(key, str, store.option.Expires)
 }
 
 func (store *cacheStore) Del(sessI HttpSessionInterface) error {
 	key := store.getCacheKey(sessI.GetSessionId())
-	return camBase.App.GetCache().Del(key)
+	return camStatics.App.GetCache().Del(key)
 }

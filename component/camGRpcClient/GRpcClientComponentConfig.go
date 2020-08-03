@@ -1,8 +1,7 @@
 package camGRpcClient
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"google.golang.org/grpc"
 )
@@ -19,7 +18,7 @@ type Server struct {
 
 // client options
 type Option struct {
-	LoadBalancingLogic camBase.GRpcLoadBalancingLogic
+	LoadBalancingLogic camStatics.GRpcLoadBalancingLogic
 	// Server config
 	Servers []*Server
 }
@@ -42,6 +41,6 @@ func NewGRpcClient() *GRpcClientComponentConfig {
 func (conf *GRpcClientComponentConfig) SetOption(option *Option) {
 	conf.Option = *option
 	if conf.LoadBalancingLogic == 0 {
-		conf.LoadBalancingLogic = camConstants.GRpcLoadBalancingLogicSequence
+		conf.LoadBalancingLogic = camStatics.GRpcLoadBalancingLogicSequence
 	}
 }

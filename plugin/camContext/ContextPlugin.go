@@ -1,12 +1,12 @@
 package camContext
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"reflect"
 )
 
 type ContextPlugin struct {
-	camBase.PluginInterface
+	camStatics.PluginInterface
 
 	config *ContextPluginConfig
 }
@@ -16,7 +16,7 @@ func (plugin *ContextPlugin) Init(config *ContextPluginConfig) {
 }
 
 // new context by type
-func (plugin *ContextPlugin) NewContext() camBase.ContextInterface {
+func (plugin *ContextPlugin) NewContext() camStatics.ContextInterface {
 	contextValue := reflect.New(plugin.config.contextType)
-	return contextValue.Interface().(camBase.ContextInterface)
+	return contextValue.Interface().(camStatics.ContextInterface)
 }

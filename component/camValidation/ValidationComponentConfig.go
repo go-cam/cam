@@ -1,8 +1,7 @@
 package camValidation
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 )
 
@@ -11,9 +10,9 @@ type ValidationComponentConfig struct {
 	component.ComponentConfig
 
 	// valid mode
-	Mode camBase.ValidMode
+	Mode camStatics.ValidMode
 	// custom valid handler dict
-	CustomValidDict map[string]camBase.ValidHandler
+	CustomValidDict map[string]camStatics.ValidHandler
 	// stop valid when has first error
 	StopWhenFirstErr bool
 	// for each to valid sub struct(or ptr), map and splice
@@ -24,14 +23,14 @@ type ValidationComponentConfig struct {
 func NewValidationConfig() *ValidationComponentConfig {
 	conf := new(ValidationComponentConfig)
 	conf.Component = &ValidationComponent{}
-	conf.Mode = camConstants.ModeInterface
-	conf.CustomValidDict = map[string]camBase.ValidHandler{}
+	conf.Mode = camStatics.ModeInterface
+	conf.CustomValidDict = map[string]camStatics.ValidHandler{}
 	conf.StopWhenFirstErr = true
 	conf.Each = true
 	return conf
 }
 
 // add custom valid handler
-func (conf *ValidationComponentConfig) AddValidHandler(name string, handler camBase.ValidHandler) {
+func (conf *ValidationComponentConfig) AddValidHandler(name string, handler camStatics.ValidHandler) {
 	conf.CustomValidDict[name] = handler
 }

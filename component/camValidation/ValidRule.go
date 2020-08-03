@@ -2,7 +2,7 @@ package camValidation
 
 import (
 	"errors"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"reflect"
 	"regexp"
@@ -26,7 +26,7 @@ func (comp *ValidRule) Email(value reflect.Value) error {
 
 // limit string length
 // length limit. only support string value
-func (comp *ValidRule) Length(min int, max int) camBase.ValidHandler {
+func (comp *ValidRule) Length(min int, max int) camStatics.ValidHandler {
 	return func(value reflect.Value) error {
 		if value.Kind() != reflect.String {
 			return errors.New("length only support string type. not support <" + value.Type().String() + " Type>")
@@ -44,7 +44,7 @@ func (comp *ValidRule) Length(min int, max int) camBase.ValidHandler {
 }
 
 // Limit value maximum
-func (comp *ValidRule) Max(max float64) camBase.ValidHandler {
+func (comp *ValidRule) Max(max float64) camStatics.ValidHandler {
 	return func(value reflect.Value) error {
 		switch value.Kind() {
 		case reflect.Float32:
@@ -92,7 +92,7 @@ func (comp *ValidRule) Max(max float64) camBase.ValidHandler {
 }
 
 // Limit value minimum
-func (comp *ValidRule) Min(min float64) camBase.ValidHandler {
+func (comp *ValidRule) Min(min float64) camStatics.ValidHandler {
 	return func(value reflect.Value) error {
 		switch value.Kind() {
 		case reflect.Float32:
@@ -141,7 +141,7 @@ func (comp *ValidRule) Min(min float64) camBase.ValidHandler {
 
 // number range
 // support string and number of float or int
-func (comp *ValidRule) Range(min float64, max float64) camBase.ValidHandler {
+func (comp *ValidRule) Range(min float64, max float64) camStatics.ValidHandler {
 	return func(value reflect.Value) error {
 		switch value.Kind() {
 		case reflect.Float32:

@@ -3,9 +3,8 @@ package cam
 // export common constants, structures, methods
 
 import (
-	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConfig"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component/camCache"
@@ -26,22 +25,22 @@ import (
 
 // Log
 const (
-	LogLevelTrace   = camConstants.LevelTrace   // log level: trace
-	LogLevelDebug   = camConstants.LevelDebug   // log level: debug
-	LogLevelInfo    = camConstants.LevelInfo    // log level: info
-	LogLevelWarn    = camConstants.LevelWarn    // log level: warning
-	LogLevelError   = camConstants.LevelError   // log level: error
-	LogLevelFatal   = camConstants.LevelFatal   // log level: fatal
-	LogLevelNone    = camConstants.LevelNone    // none
-	LogLevelSuggest = camConstants.LevelSuggest // suggest this level to write file
-	LogLevelAll     = camConstants.LevelAll     // all
+	LogLevelTrace   = camStatics.LevelTrace   // log level: trace
+	LogLevelDebug   = camStatics.LevelDebug   // log level: debug
+	LogLevelInfo    = camStatics.LevelInfo    // log level: info
+	LogLevelWarn    = camStatics.LevelWarn    // log level: warning
+	LogLevelError   = camStatics.LevelError   // log level: error
+	LogLevelFatal   = camStatics.LevelFatal   // log level: fatal
+	LogLevelNone    = camStatics.LevelNone    // none
+	LogLevelSuggest = camStatics.LevelSuggest // suggest this level to write file
+	LogLevelAll     = camStatics.LevelAll     // all
 )
 
 // Validation
 const (
-	ValidModeInterface = camConstants.ModeInterface // Interface mode
-	ValidModeTag       = camConstants.ModeTag       // Tag mode
-	ValidModeBot       = camConstants.ModeBoth      // Interface and Tag mode
+	ValidModeInterface = camStatics.ModeInterface // Interface mode
+	ValidModeTag       = camStatics.ModeTag       // Tag mode
+	ValidModeBot       = camStatics.ModeBoth      // Interface and Tag mode
 )
 
 // #################### [END] constant export ####################
@@ -69,11 +68,11 @@ type Context struct {
 }
 
 type ValidInterface interface {
-	camBase.ValidInterface
+	camStatics.ValidInterface
 }
 
 type MiddlewareInterface interface {
-	camBase.MiddlewareInterface
+	camStatics.MiddlewareInterface
 }
 
 // #################### [END] struct export ####################
@@ -155,7 +154,7 @@ func NewValidationConfig() *camValidation.ValidationComponentConfig {
 }
 
 // new rule
-func NewRule(fields []string, handlers ...camBase.ValidHandler) *camStructs.Rule {
+func NewRule(fields []string, handlers ...camStatics.ValidHandler) *camStructs.Rule {
 	return camStructs.NewRule(fields, handlers...)
 }
 

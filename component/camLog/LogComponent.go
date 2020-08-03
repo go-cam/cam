@@ -2,8 +2,7 @@ package camLog
 
 import (
 	"errors"
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"log"
@@ -19,24 +18,24 @@ type LogComponent struct {
 	component.Component
 	config *LogComponentConfig
 
-	logRootDir             string                      // file log dir
-	levelLabels            map[camBase.LogLevel]string // log level label. It will output on console and file
-	lastCheckFileTimestamp int64                       // last check file time
-	titleMaxLen            int                         // title max len
-	consoleLogger          *log.Logger                 // console logger
-	fileLogger             *log.Logger                 // file logger
-	logFile                *os.File                    // log file
-	fileRenameMutex        sync.Mutex                  // log file rename mutex
+	logRootDir             string                         // file log dir
+	levelLabels            map[camStatics.LogLevel]string // log level label. It will output on console and file
+	lastCheckFileTimestamp int64                          // last check file time
+	titleMaxLen            int                            // title max len
+	consoleLogger          *log.Logger                    // console logger
+	fileLogger             *log.Logger                    // file logger
+	logFile                *os.File                       // log file
+	fileRenameMutex        sync.Mutex                     // log file rename mutex
 }
 
 // on App init
-func (comp *LogComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *LogComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*LogComponentConfig)
 	if !ok {
-		camBase.App.Fatal("LogComponent", "invalid config")
+		camStatics.App.Fatal("LogComponent", "invalid config")
 		return
 	}
 
@@ -63,7 +62,7 @@ func (comp *LogComponent) Start() {
 func (comp *LogComponent) Stop() {
 	defer comp.Component.Stop()
 }
-func (comp *LogComponent) Record(level camBase.LogLevel, title string, content string) error {
+func (comp *LogComponent) Record(level camStatics.LogLevel, title string, content string) error {
 	if !comp.isBaseLevel(level) {
 		return errors.New("level is not basic level")
 	}
@@ -90,18 +89,18 @@ func (comp *LogComponent) Record(level camBase.LogLevel, title string, content s
 
 // init level labels
 func (comp *LogComponent) initLevelLabels() {
-	comp.levelLabels = map[camBase.LogLevel]string{
-		camConstants.LevelTrace: "TRACE",
-		camConstants.LevelDebug: "DEBUG",
-		camConstants.LevelInfo:  "INFO ",
-		camConstants.LevelWarn:  "WARN ",
-		camConstants.LevelError: "ERROR",
-		camConstants.LevelFatal: "FATAL",
+	comp.levelLabels = map[camStatics.LogLevel]string{
+		camStatics.LevelTrace: "TRACE",
+		camStatics.LevelDebug: "DEBUG",
+		camStatics.LevelInfo:  "INFO ",
+		camStatics.LevelWarn:  "WARN ",
+		camStatics.LevelError: "ERROR",
+		camStatics.LevelFatal: "FATAL",
 	}
 }
 
 // get level labels
-func (comp *LogComponent) getLevelLabels(level camBase.LogLevel) string {
+func (comp *LogComponent) getLevelLabels(level camStatics.LogLevel) string {
 	label, has := comp.levelLabels[level]
 	if !has {
 		return ""
@@ -110,12 +109,12 @@ func (comp *LogComponent) getLevelLabels(level camBase.LogLevel) string {
 }
 
 // Whether output is required for detection level
-func (comp *LogComponent) isOutputLevel(targetLevel camBase.LogLevel, outputLevel camBase.LogLevel) bool {
+func (comp *LogComponent) isOutputLevel(targetLevel camStatics.LogLevel, outputLevel camStatics.LogLevel) bool {
 	return targetLevel&outputLevel == targetLevel
 }
 
 // Whether level is basic level (debug, info, warn, error)
-func (comp *LogComponent) isBaseLevel(level camBase.LogLevel) bool {
+func (comp *LogComponent) isBaseLevel(level camStatics.LogLevel) bool {
 	_, has := comp.levelLabels[level]
 	return has
 }
@@ -138,7 +137,7 @@ func (comp *LogComponent) checkAndRenameFile() {
 	comp.fileLogger.SetOutput(nil)
 	err := comp.logFile.Close()
 	if err != nil {
-		_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", "failed to close file. err: "+err.Error())
+		_ = comp.Record(camStatics.LevelFatal, "LogComponent.checkAndRenameFile", "failed to close file. err: "+err.Error())
 		return
 	}
 
@@ -149,7 +148,7 @@ func (comp *LogComponent) checkAndRenameFile() {
 		newFilename := comp.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
 		err := camUtils.File.Rename(filename, newFilename)
 		if err != nil {
-			_ = comp.Record(camConstants.LevelFatal, "LogComponent.checkAndRenameFile", "failed to rename. err: "+err.Error())
+			_ = comp.Record(camStatics.LevelFatal, "LogComponent.checkAndRenameFile", "failed to rename. err: "+err.Error())
 			return
 		}
 	}
@@ -184,7 +183,7 @@ func (comp *LogComponent) resetFileLoggerOutput() {
 	var err error
 	comp.logFile, err = os.OpenFile(comp.getLogFilename(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		camBase.App.Fatal("LogComponent.getLogFileWriter", err.Error())
+		camStatics.App.Fatal("LogComponent.getLogFileWriter", err.Error())
 		return
 	}
 
@@ -200,6 +199,6 @@ func (comp *LogComponent) createLogFile() {
 
 	err := camUtils.File.WriteFile(logFilename, []byte(""))
 	if err != nil {
-		camBase.App.Fatal("LogComponent.createLogFile", "can't create log file. err: "+err.Error())
+		camStatics.App.Fatal("LogComponent.createLogFile", "can't create log file. err: "+err.Error())
 	}
 }

@@ -1,7 +1,7 @@
 package camWebsocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/gorilla/websocket"
@@ -9,7 +9,7 @@ import (
 
 // websocket context
 type WebsocketContextInterface interface {
-	camBase.ContextInterface
+	camStatics.ContextInterface
 	camContext.MessageContextInterface
 	SetConn(conn *websocket.Conn)
 	GetConn() *websocket.Conn

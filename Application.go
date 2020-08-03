@@ -1,9 +1,8 @@
 package cam
 
 import (
-	"github.com/go-cam/cam/base/camBase"
 	"github.com/go-cam/cam/base/camConfig"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
@@ -18,34 +17,34 @@ import (
 
 // framework Application global instance struct define
 type Application struct {
-	camBase.ApplicationInterface
+	camStatics.ApplicationInterface
 
-	status        camBase.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config        *camConfig.Config                     // Application config
-	logComponent  *camLog.LogComponent                  // log component
-	cache         camBase.CacheComponentInterface       // cache component
-	valid         camBase.ValidationComponentInterface  // validation component
-	componentDict map[string]camBase.ComponentInterface // components dict
-	migrationDict map[string]camBase.MigrationInterface // migration map
+	status        camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
+	config        *camConfig.Config                        // Application config
+	logComponent  *camLog.LogComponent                     // log component
+	cache         camStatics.CacheComponentInterface       // cache component
+	valid         camStatics.ValidationComponentInterface  // validation component
+	componentDict map[string]camStatics.ComponentInterface // components dict
+	migrationDict map[string]camStatics.MigrationInterface // migration map
 }
 
-var App camBase.ApplicationInterface
+var App camStatics.ApplicationInterface
 
 func init() {
-	camBase.App = NewApplication()
-	App = camBase.App
+	camStatics.App = NewApplication()
+	App = camStatics.App
 }
 
 // new Application instance
 func NewApplication() *Application {
 	app := new(Application)
-	app.status = camConstants.AppStatusBeforeInit
+	app.status = camStatics.AppStatusBeforeInit
 	app.config = NewConfig()
 	app.config.AppConfig = NewAppConfig()
 	app.cache = nil
 	app.valid = nil
-	app.componentDict = map[string]camBase.ComponentInterface{}
-	app.migrationDict = map[string]camBase.MigrationInterface{}
+	app.componentDict = map[string]camStatics.ComponentInterface{}
+	app.migrationDict = map[string]camStatics.MigrationInterface{}
 	return app
 }
 
@@ -53,7 +52,7 @@ func NewApplication() *Application {
 // Merge as much as possible, otherwise overwrite.
 //
 // config: new config
-func (app *Application) AddConfig(configI camBase.AppConfigInterface) {
+func (app *Application) AddConfig(configI camStatics.AppConfigInterface) {
 	config, ok := configI.(*camConfig.Config)
 	if !ok {
 		panic("Wrong type. need: *camModels.Config")
@@ -94,7 +93,7 @@ func (app *Application) onInit() {
 	// init core component
 	app.initCoreComponent()
 
-	app.status = camConstants.AppStatusBeforeStart
+	app.status = camStatics.AppStatusBeforeStart
 }
 
 // startup all components
@@ -105,7 +104,7 @@ func (app *Application) onStart() {
 	}
 	app.Trace("Application.onStart", "Application start finished.")
 
-	app.status = camConstants.AppStatusAfterStart
+	app.status = camStatics.AppStatusAfterStart
 }
 
 // stop all components
@@ -117,7 +116,7 @@ func (app *Application) onStop() {
 	}
 	app.Trace("Application.onStop", "Application stop finished.")
 
-	app.status = camConstants.AppStatusAfterStop
+	app.status = camStatics.AppStatusAfterStop
 }
 
 // Wait until the app call Stop()
@@ -175,8 +174,8 @@ func (app *Application) callConsole() {
 }
 
 // get component and the name in the dict
-func (app *Application) getComponentAndName(v camBase.ComponentInterface) (camBase.ComponentInterface, string) {
-	var componentIns camBase.ComponentInterface = nil
+func (app *Application) getComponentAndName(v camStatics.ComponentInterface) (camStatics.ComponentInterface, string) {
+	var componentIns camStatics.ComponentInterface = nil
 	var componentName = ""
 
 	targetName := camUtils.Reflect.GetStructName(v)
@@ -193,7 +192,7 @@ func (app *Application) getComponentAndName(v camBase.ComponentInterface) (camBa
 
 // Overwrite:
 // Try to get instance using struct type
-func (app *Application) GetComponent(v camBase.ComponentInterface) camBase.ComponentInterface {
+func (app *Application) GetComponent(v camStatics.ComponentInterface) camStatics.ComponentInterface {
 	ins, _ := app.getComponentAndName(v)
 	return ins
 }
@@ -201,7 +200,7 @@ func (app *Application) GetComponent(v camBase.ComponentInterface) camBase.Compo
 // Overwrite:
 // Try to get component instance by name.
 // The name is define in config
-func (app *Application) GetComponentByName(name string) camBase.ComponentInterface {
+func (app *Application) GetComponentByName(name string) camStatics.ComponentInterface {
 	componentIns, has := app.componentDict[name]
 	if !has {
 		return nil
@@ -210,7 +209,7 @@ func (app *Application) GetComponentByName(name string) camBase.ComponentInterfa
 }
 
 // get default db component
-func (app *Application) GetDB() camBase.DatabaseComponentInterface {
+func (app *Application) GetDB() camStatics.DatabaseComponentInterface {
 	dbCompI := app.GetComponentByName(app.config.AppConfig.DefaultDBName)
 	if dbCompI == nil {
 		dbCompI = app.GetComponent(&camDatabase.DatabaseComponent{})
@@ -219,7 +218,7 @@ func (app *Application) GetDB() camBase.DatabaseComponentInterface {
 		}
 	}
 
-	dbComp, ok := dbCompI.(camBase.DatabaseComponentInterface)
+	dbComp, ok := dbCompI.(camStatics.DatabaseComponentInterface)
 	if !ok {
 		return nil
 	}
@@ -228,13 +227,13 @@ func (app *Application) GetDB() camBase.DatabaseComponentInterface {
 }
 
 // add migration struct
-func (app *Application) AddMigration(m camBase.MigrationInterface) {
+func (app *Application) AddMigration(m camStatics.MigrationInterface) {
 	id := camUtils.Reflect.GetStructName(m)
 	app.migrationDict[id] = m
 }
 
 // base log
-func (app *Application) basicLog(logLevel camBase.LogLevel, title string, content string) {
+func (app *Application) basicLog(logLevel camStatics.LogLevel, title string, content string) {
 	err := app.logComponent.Record(logLevel, title, content)
 	if err != nil {
 		panic(err)
@@ -278,11 +277,11 @@ func (app *Application) GetEvn(key string) string {
 
 // stop Application
 func (app *Application) Stop() {
-	app.status = camConstants.AppStatusBeforeStop
+	app.status = camStatics.AppStatusBeforeStop
 	app.onStop()
 }
 
-func (app *Application) GetMigrateDict() map[string]camBase.MigrationInterface {
+func (app *Application) GetMigrateDict() map[string]camStatics.MigrationInterface {
 	return app.migrationDict
 }
 
@@ -296,7 +295,7 @@ func (app *Application) GetParam(key string) interface{} {
 }
 
 // get cache component
-func (app *Application) GetCache() camBase.CacheComponentInterface {
+func (app *Application) GetCache() camStatics.CacheComponentInterface {
 	if app.cache != nil {
 		return app.cache
 	}
@@ -309,7 +308,7 @@ func (app *Application) GetCache() camBase.CacheComponentInterface {
 			app.Fatal("Application.GetCache", "create default cache fail")
 		}
 	}
-	app.cache, ok = compI.(camBase.CacheComponentInterface)
+	app.cache, ok = compI.(camStatics.CacheComponentInterface)
 	if !ok {
 		app.Fatal("Application.GetCache", "convert fail")
 		return nil
@@ -319,7 +318,7 @@ func (app *Application) GetCache() camBase.CacheComponentInterface {
 }
 
 // get valid
-func (app *Application) getValid() camBase.ValidationComponentInterface {
+func (app *Application) getValid() camStatics.ValidationComponentInterface {
 	if app.valid != nil {
 		return app.valid
 	}
@@ -332,7 +331,7 @@ func (app *Application) getValid() camBase.ValidationComponentInterface {
 		}
 	}
 
-	app.valid, ok = compI.(camBase.ValidationComponentInterface)
+	app.valid, ok = compI.(camStatics.ValidationComponentInterface)
 	if !ok {
 		app.Fatal("Application.getValid", "convert fail")
 		return nil
@@ -342,7 +341,7 @@ func (app *Application) getValid() camBase.ValidationComponentInterface {
 }
 
 // add component after app ran
-func (app *Application) AddComponentAfterRun(name string, conf camBase.ComponentConfigInterface) camBase.ComponentInterface {
+func (app *Application) AddComponentAfterRun(name string, conf camStatics.ComponentConfigInterface) camStatics.ComponentInterface {
 	compI := conf.NewComponent()
 	compName := name
 
@@ -354,10 +353,10 @@ func (app *Application) AddComponentAfterRun(name string, conf camBase.Component
 		compName = name + "_" + strconv.Itoa(i)
 	}
 
-	if app.status >= camConstants.AppStatusBeforeStart {
+	if app.status >= camStatics.AppStatusBeforeStart {
 		compI.Init(conf)
 	}
-	if app.status >= camConstants.AppStatusAfterStart {
+	if app.status >= camStatics.AppStatusAfterStart {
 		compI.Start()
 	}
 
@@ -366,12 +365,12 @@ func (app *Application) AddComponentAfterRun(name string, conf camBase.Component
 }
 
 // get mail component
-func (app *Application) GetMail() camBase.MailComponentInterface {
+func (app *Application) GetMail() camStatics.MailComponentInterface {
 	compI := app.GetComponent(&camMail.MailComponent{})
 	if compI == nil {
 		return nil
 	}
-	mailCompI, ok := compI.(camBase.MailComponentInterface)
+	mailCompI, ok := compI.(camStatics.MailComponentInterface)
 	if !ok {
 		return nil
 	}

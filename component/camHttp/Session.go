@@ -1,7 +1,7 @@
 package camHttp
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"time"
 )
@@ -40,7 +40,7 @@ func (m *SessionStoreManager) makeSessionOption(opt *SessionOption) *SessionOpti
 }
 
 // get session or new by Context
-func (m *SessionStoreManager) GetSession(ctx camBase.HttpContextInterface) (HttpSessionInterface, error) {
+func (m *SessionStoreManager) GetSession(ctx camStatics.HttpContextInterface) (HttpSessionInterface, error) {
 	sessId := ctx.GetCookieValue(m.option.CookieSessionIdName)
 	if sessId == "" {
 		sessId = m.generateSessionId()

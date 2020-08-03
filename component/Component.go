@@ -1,23 +1,22 @@
 package component
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"reflect"
 )
 
 // base component struct
 type Component struct {
-	camBase.ComponentInterface
+	camStatics.ComponentInterface
 
 	// component name
 	name string
 	// recover handler
-	recoverHandler camBase.RecoverHandler
+	recoverHandler camStatics.RecoverHandler
 }
 
 // init config
-func (comp *Component) Init(configInterface camBase.ComponentConfigInterface) {
+func (comp *Component) Init(configInterface camStatics.ComponentConfigInterface) {
 	comp.name = comp.getComponentName(configInterface.NewComponent())
 	comp.recoverHandler = configInterface.GetRecoverHandler()
 	if comp.recoverHandler == nil {
@@ -36,7 +35,7 @@ func (comp *Component) Stop() {
 }
 
 // get component struct name
-func (comp *Component) getComponentName(componentInterface camBase.ComponentInterface) string {
+func (comp *Component) getComponentName(componentInterface camStatics.ComponentInterface) string {
 	t := reflect.TypeOf(componentInterface)
 	return t.Elem().Name()
 }
@@ -48,12 +47,12 @@ func (comp *Component) Name() string {
 
 // recover
 func (comp *Component) Recover(rec interface{}) {
-	if comp.recoverHandler(rec) == camConstants.RecoverHandlerResultPanic {
+	if comp.recoverHandler(rec) == camStatics.RecoverHandlerResultPanic {
 		panic(rec)
 	}
 }
 
 // default recover handler
-func (comp *Component) defaultRecoverHandler(rec interface{}) camBase.RecoverHandlerResult {
-	return camConstants.RecoverHandlerResultPanic
+func (comp *Component) defaultRecoverHandler(rec interface{}) camStatics.RecoverHandlerResult {
+	return camStatics.RecoverHandlerResultPanic
 }

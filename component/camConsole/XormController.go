@@ -2,7 +2,7 @@ package camConsole
 
 import (
 	"fmt"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 )
 
@@ -13,8 +13,8 @@ type XormController struct {
 }
 
 // OVERWRITE
-func (ctrl *XormController) BeforeAction(action camBase.ControllerActionInterface) bool {
-	camBase.App.Warn("XormController", "`xorm` is deprecated, please use `migrate` instead it")
+func (ctrl *XormController) BeforeAction(action camStatics.ControllerActionInterface) bool {
+	camStatics.App.Warn("XormController", "`xorm` is deprecated, please use `migrate` instead it")
 	return ctrl.ConsoleController.BeforeAction(action)
 }
 
@@ -39,7 +39,7 @@ func (ctrl *XormController) InstallCmdXorm() {
 //		generated all codes in model dir
 //		tableFilterReg    Table name filter regexp
 func (ctrl *XormController) Generate() {
-	db := camBase.App.GetDB()
+	db := camStatics.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}

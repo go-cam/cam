@@ -1,7 +1,7 @@
 package camWebsocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/gorilla/websocket"
 	"sync"
@@ -9,7 +9,7 @@ import (
 
 // websocket session
 type WebsocketSession struct {
-	camBase.SessionInterface
+	camStatics.SessionInterface
 
 	// Deprecated: remove on v0.5.0
 	conn      *websocket.Conn // websocket connection

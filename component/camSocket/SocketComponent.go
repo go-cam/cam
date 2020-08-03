@@ -3,7 +3,7 @@ package camSocket
 import (
 	"bufio"
 	"fmt"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
@@ -22,19 +22,19 @@ type SocketComponent struct {
 
 	config *SocketComponentConfig
 
-	connHandler camBase.SocketConnHandler
+	connHandler camStatics.SocketConnHandler
 	// receive message parse handler
 	recvMessageParseHandler plugin.RecvMessageParseHandler
 }
 
 // init config
-func (comp *SocketComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *SocketComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*SocketComponentConfig)
 	if !ok {
-		camBase.App.Fatal("SocketComponent", "invalid config")
+		camStatics.App.Fatal("SocketComponent", "invalid config")
 		return
 	}
 
@@ -52,7 +52,7 @@ func (comp *SocketComponent) Init(configI camBase.ComponentConfigInterface) {
 // start
 func (comp *SocketComponent) Start() {
 	comp.Component.Start()
-	camBase.App.Trace("SocketComponent", "listen tcp://:"+camUtils.C.Uint16ToString(comp.config.Port))
+	camStatics.App.Trace("SocketComponent", "listen tcp://:"+camUtils.C.Uint16ToString(comp.config.Port))
 	go comp.listenAndServe()
 }
 
@@ -87,12 +87,12 @@ func (comp *SocketComponent) defaultConnHandler(conn net.Conn) {
 	defer func() {
 		_ = conn.Close()
 		if rec := recover(); rec != nil {
-			camBase.App.Fatal("SocketComponent.defaultConnHandler", fmt.Sprint(rec))
+			camStatics.App.Fatal("SocketComponent.defaultConnHandler", fmt.Sprint(rec))
 		}
 	}()
 
 	if comp.config.Trace {
-		camBase.App.Trace("SocketComponent.defaultConnHandler", "new connection: "+conn.RemoteAddr().String())
+		camStatics.App.Trace("SocketComponent.defaultConnHandler", "new connection: "+conn.RemoteAddr().String())
 	}
 
 	sess := NewSocketSession()
@@ -134,7 +134,7 @@ func (comp *SocketComponent) callNext(ctx SocketContextInterface, route string, 
 
 	ctrl, action := comp.GetControllerAction(route)
 	if ctrl == nil || action == nil {
-		camBase.App.Warn("SocketComponent", "404. not found route: "+route)
+		camStatics.App.Warn("SocketComponent", "404. not found route: "+route)
 		return nil
 	}
 	// init ctrl
@@ -206,7 +206,7 @@ func (comp *SocketComponent) send(conn net.Conn, send []byte) {
 
 // try to recover
 func (comp *SocketComponent) tryRecover(oldCtx SocketContextInterface, v interface{}) {
-	rec, ok := v.(camBase.RecoverInterface)
+	rec, ok := v.(camStatics.RecoverInterface)
 	if !ok {
 		comp.Recover(v)
 		return

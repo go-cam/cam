@@ -3,7 +3,7 @@ package cam
 // Help framework easy start, default setting, simplified application method
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/plugin/camRouter"
 )
 
@@ -11,19 +11,19 @@ import (
 type defaultAo struct {
 	camRouter.RouterPluginConfig
 
-	compDict map[string]camBase.ComponentConfigInterface
+	compDict map[string]camStatics.ComponentConfigInterface
 }
 
 var ao = newDefaultAo()
 
 func newDefaultAo() *defaultAo {
 	ao := new(defaultAo)
-	ao.compDict = map[string]camBase.ComponentConfigInterface{}
+	ao.compDict = map[string]camStatics.ComponentConfigInterface{}
 	return ao
 }
 
 // default http server config
-func defaultHttpConfig() camBase.ComponentConfigInterface {
+func defaultHttpConfig() camStatics.ComponentConfigInterface {
 	conf := NewHttpConfig(20200)
 	conf.SessionName = "cam"
 	conf.RouterPluginConfig = ao.RouterPluginConfig
@@ -31,14 +31,14 @@ func defaultHttpConfig() camBase.ComponentConfigInterface {
 }
 
 // default websocket server config
-func defaultWebsocketConfig() camBase.ComponentConfigInterface {
+func defaultWebsocketConfig() camStatics.ComponentConfigInterface {
 	conf := NewWebsocketConfig(20201)
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
 
 // default tcp socket server config
-func defaultSocketConfig() camBase.ComponentConfigInterface {
+func defaultSocketConfig() camStatics.ComponentConfigInterface {
 	conf := NewSocketConfig(20202)
 	conf.Trace = true
 	conf.RouterPluginConfig = ao.RouterPluginConfig
@@ -46,19 +46,19 @@ func defaultSocketConfig() camBase.ComponentConfigInterface {
 }
 
 // must run before cam.RunDefault
-func AddComponent(name string, conf camBase.ComponentConfigInterface) {
+func AddComponent(name string, conf camStatics.ComponentConfigInterface) {
 	ao.compDict[name] = conf
 }
 
 // must run before cam.RunDefault register controller
-func RegisterController(ctrl camBase.ControllerInterface) {
+func RegisterController(ctrl camStatics.ControllerInterface) {
 	ao.Register(ctrl)
 }
 
 // run application
 func RunDefault() {
 	conf := NewConfig()
-	conf.ComponentDict = map[string]camBase.ComponentConfigInterface{
+	conf.ComponentDict = map[string]camStatics.ComponentConfigInterface{
 		"http": defaultHttpConfig(),
 		"ws":   defaultWebsocketConfig(),
 		"tcp":  defaultSocketConfig(),

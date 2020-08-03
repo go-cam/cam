@@ -1,7 +1,7 @@
 package camWebsocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
@@ -19,7 +19,7 @@ type WebsocketComponentConfig struct {
 
 	Port uint16 // server port
 	// Deprecated: remove on v0.5.0  it's not support Middleware
-	routeHandlerDict map[string]camBase.WebsocketRouteHandler
+	routeHandlerDict map[string]camStatics.WebsocketRouteHandler
 }
 
 // new websocket component
@@ -27,7 +27,7 @@ func NewWebsocketComponentConfig(port uint16) *WebsocketComponentConfig {
 	config := new(WebsocketComponentConfig)
 	config.Component = &WebsocketComponent{}
 	config.Port = port
-	config.routeHandlerDict = map[string]camBase.WebsocketRouteHandler{}
+	config.routeHandlerDict = map[string]camStatics.WebsocketRouteHandler{}
 	config.TlsPluginConfig.Init()
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
@@ -40,6 +40,6 @@ func NewWebsocketComponentConfig(port uint16) *WebsocketComponentConfig {
 // its priority is higher than the controller.
 // Deprecated: remove on v0.5.0  it's not support Middleware
 // Instead: WebsocketComponentConfig.RouterPluginConfig.AddRoute()
-func (config *WebsocketComponentConfig) AddRoute(route string, handler camBase.WebsocketRouteHandler) {
+func (config *WebsocketComponentConfig) AddRoute(route string, handler camStatics.WebsocketRouteHandler) {
 	config.routeHandlerDict[route] = handler
 }

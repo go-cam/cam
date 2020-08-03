@@ -1,19 +1,19 @@
 package camRouter
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 )
 
 // base controller
 type Controller struct {
-	camBase.ControllerInterface
+	camStatics.ControllerInterface
 
-	context camBase.ContextInterface
+	context camStatics.ContextInterface
 
-	values        map[string]interface{}   // controller values
-	responseBytes []byte                   // response bytes
-	recover       camBase.RecoverInterface // get recover
+	values        map[string]interface{}      // controller values
+	responseBytes []byte                      // response bytes
+	recover       camStatics.RecoverInterface // get recover
 }
 
 // OVERWRITE:
@@ -23,36 +23,36 @@ func (ctrl *Controller) Init() {
 }
 
 // OVERWRITE
-func (ctrl *Controller) BeforeAction(action camBase.ControllerActionInterface) bool {
+func (ctrl *Controller) BeforeAction(action camStatics.ControllerActionInterface) bool {
 	return true
 }
 
 // OVERWRITE
-func (ctrl *Controller) AfterAction(action camBase.ControllerActionInterface, response []byte) []byte {
+func (ctrl *Controller) AfterAction(action camStatics.ControllerActionInterface, response []byte) []byte {
 	return response
 }
 
 // OVERWRITE
-func (ctrl *Controller) SetContext(context camBase.ContextInterface) {
+func (ctrl *Controller) SetContext(context camStatics.ContextInterface) {
 	ctrl.context = context
 }
 
 // OVERWRITE
-func (ctrl *Controller) GetContext() camBase.ContextInterface {
+func (ctrl *Controller) GetContext() camStatics.ContextInterface {
 	return ctrl.context
 }
 
 // OVERWRITE
 // Deprecated: remove on v0.5.0
 // Instead: GetContext().SetSession();
-func (ctrl *Controller) SetSession(session camBase.SessionInterface) {
+func (ctrl *Controller) SetSession(session camStatics.SessionInterface) {
 	ctrl.context.SetSession(session)
 }
 
 // OVERWRITE
 // Deprecated: remove on v0.5.0
 // Instead: GetContext().GetSession();
-func (ctrl *Controller) GetSession() camBase.SessionInterface {
+func (ctrl *Controller) GetSession() camStatics.SessionInterface {
 	return ctrl.context.GetSession()
 }
 
@@ -109,11 +109,11 @@ func (ctrl *Controller) GetDefaultActionName() string {
 
 // set recover
 // Deprecated
-func (ctrl *Controller) SetRecover(rec camBase.RecoverInterface) {
+func (ctrl *Controller) SetRecover(rec camStatics.RecoverInterface) {
 	ctrl.GetContext().SetRecover(rec)
 }
 
 // get recover
-func (ctrl *Controller) GetRecover() camBase.RecoverInterface {
+func (ctrl *Controller) GetRecover() camStatics.RecoverInterface {
 	return ctrl.GetContext().GetRecover()
 }

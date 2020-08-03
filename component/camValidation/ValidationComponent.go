@@ -2,29 +2,28 @@ package camValidation
 
 import (
 	"errors"
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"reflect"
 )
 
 // validation component
 type ValidationComponent struct {
-	camBase.ValidationComponentInterface
+	camStatics.ValidationComponentInterface
 	component.Component
 
 	conf      *ValidationComponentConfig
-	validDict map[string]camBase.ValidHandler
+	validDict map[string]camStatics.ValidHandler
 }
 
 // init
-func (comp *ValidationComponent) Init(conf camBase.ComponentConfigInterface) {
+func (comp *ValidationComponent) Init(conf camStatics.ComponentConfigInterface) {
 	comp.Component.Init(conf)
 
 	var ok bool
 	comp.conf, ok = conf.(*ValidationComponentConfig)
 	if !ok {
-		camBase.App.Fatal("ValidationComponent", "invalid config")
+		camStatics.App.Fatal("ValidationComponent", "invalid config")
 		return
 	}
 
@@ -43,7 +42,7 @@ func (comp *ValidationComponent) Stop() {
 
 // init valid dict
 func (comp *ValidationComponent) initValidDict() {
-	comp.validDict = map[string]camBase.ValidHandler{
+	comp.validDict = map[string]camStatics.ValidHandler{
 		"email": Rule.Email,
 	}
 }
@@ -52,7 +51,7 @@ func (comp *ValidationComponent) initValidDict() {
 func (comp *ValidationComponent) Valid(v interface{}) map[string][]error {
 	errs := map[string][]error{}
 
-	if comp.conf.Mode == camConstants.ModeInterface {
+	if comp.conf.Mode == camStatics.ModeInterface {
 		errs = comp.validInterface(v)
 	}
 
@@ -63,7 +62,7 @@ func (comp *ValidationComponent) Valid(v interface{}) map[string][]error {
 func (comp *ValidationComponent) validInterface(v interface{}) map[string][]error {
 	errDict := map[string][]error{}
 
-	valid, ok := v.(camBase.ValidInterface)
+	valid, ok := v.(camStatics.ValidInterface)
 	if !ok {
 		// not implement camBase.ValidInterface, pass
 		return errDict
@@ -110,8 +109,8 @@ func (comp *ValidationComponent) validInterface(v interface{}) map[string][]erro
 }
 
 // get valid handler list
-func (comp *ValidationComponent) getValidHandlers(names []string) ([]camBase.ValidHandler, error) {
-	var validHandlers []camBase.ValidHandler
+func (comp *ValidationComponent) getValidHandlers(names []string) ([]camStatics.ValidHandler, error) {
+	var validHandlers []camStatics.ValidHandler
 
 	for _, name := range names {
 		validHandler, has := comp.validDict[name]

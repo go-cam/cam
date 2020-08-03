@@ -1,8 +1,7 @@
 package camSocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
@@ -43,7 +42,7 @@ type SocketComponentConfig struct {
 	SendTimeout time.Duration
 
 	// socket conn handler
-	ConnHandler camBase.SocketConnHandler
+	ConnHandler camStatics.SocketConnHandler
 	// trace recv and send message
 	Trace bool
 }
@@ -53,8 +52,8 @@ func NewSocketComponentConfig(port uint16) *SocketComponentConfig {
 	config.Component = &SocketComponent{}
 	config.Port = port
 	config.Etb = '\x17'
-	config.RecvMaxLen = camConstants.MB
-	config.SendMaxLen = 128 * camConstants.MB
+	config.RecvMaxLen = camStatics.MB
+	config.SendMaxLen = 128 * camStatics.MB
 	config.RecvTimeout = 15 * time.Second
 	config.SendTimeout = 60 * time.Second
 	config.ConnHandler = nil

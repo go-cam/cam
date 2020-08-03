@@ -2,7 +2,7 @@ package camCache
 
 import (
 	"errors"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"time"
 )
@@ -70,7 +70,7 @@ func (cache *FileCache) Get(key string) interface{} {
 		depth := 1
 		err := cache.gcSubPath(filename, &depth)
 		if err != nil {
-			camBase.App.Error("FileCache.Get", err.Error())
+			camStatics.App.Error("FileCache.Get", err.Error())
 		}
 		return nil
 	}
@@ -189,7 +189,7 @@ func (cache *FileCache) Flush() error {
 func (cache *FileCache) getFileCacheAo(filename string) *FileCacheAo {
 	bytes, err := camUtils.File.ReadFile(filename)
 	if err != nil {
-		camBase.App.Error("FileCache.Get", err.Error())
+		camStatics.App.Error("FileCache.Get", err.Error())
 		return nil
 	}
 

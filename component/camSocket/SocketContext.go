@@ -1,13 +1,13 @@
 package camSocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/plugin/camContext"
 	"net"
 )
 
 type SocketContextInterface interface {
-	camBase.ContextInterface
+	camStatics.ContextInterface
 	camContext.MessageContextInterface
 	SetConn(conn net.Conn)
 	GetConn() net.Conn

@@ -1,7 +1,7 @@
 package camRouter
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/plugin"
 )
 
@@ -18,26 +18,26 @@ type RouterOption struct {
 // router plugin.
 // it can inject component if it need to
 type RouterPluginConfig struct {
-	camBase.PluginConfigInterface
+	camStatics.PluginConfigInterface
 
 	option *RouterOption
 
 	// controller list
-	controllerList []camBase.ControllerInterface
+	controllerList []camStatics.ControllerInterface
 	// custom handler
-	customHandlerDict map[string]camBase.RouteHandler
+	customHandlerDict map[string]camStatics.RouteHandler
 }
 
 // init
 func (conf *RouterPluginConfig) Init() {
 	conf.option = &RouterOption{}
-	conf.controllerList = []camBase.ControllerInterface{}
-	conf.customHandlerDict = map[string]camBase.RouteHandler{}
+	conf.controllerList = []camStatics.ControllerInterface{}
+	conf.customHandlerDict = map[string]camStatics.RouteHandler{}
 }
 
 // register controller
 // controller: Inout &Controller{} OR new(Controller) OR Controller{} is ok
-func (conf *RouterPluginConfig) Register(controller camBase.ControllerInterface) {
+func (conf *RouterPluginConfig) Register(controller camStatics.ControllerInterface) {
 	conf.controllerList = append(conf.controllerList, controller)
 }
 
@@ -50,7 +50,7 @@ func (conf *RouterPluginConfig) RecoverRoute(route string) {
 
 // add router handler.
 // its priority is higher than the controller.
-func (conf *RouterPluginConfig) AddRoute(route string, handler camBase.RouteHandler) {
+func (conf *RouterPluginConfig) AddRoute(route string, handler camStatics.RouteHandler) {
 	conf.customHandlerDict[route] = handler
 }
 

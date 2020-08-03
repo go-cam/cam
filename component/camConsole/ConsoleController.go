@@ -1,7 +1,7 @@
 package camConsole
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"os"
 )
@@ -32,7 +32,7 @@ func (ctrl *ConsoleController) GetArgv(key int) string {
 
 // get console component
 func (ctrl *ConsoleController) GetConsoleComponent() *ConsoleComponent {
-	componentI := camBase.App.GetComponent(&ConsoleComponent{})
+	componentI := camStatics.App.GetComponent(&ConsoleComponent{})
 	console, ok := componentI.(*ConsoleComponent)
 	if !ok {
 		panic("console component is not enable")

@@ -1,7 +1,7 @@
 package camCache
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"time"
 )
@@ -9,25 +9,25 @@ import (
 // cache component
 type CacheComponent struct {
 	component.Component
-	camBase.CacheComponentInterface
+	camStatics.CacheComponentInterface
 
 	config *CacheComponentConfig
 }
 
 // init config
-func (comp *CacheComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *CacheComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*CacheComponentConfig)
 	if !ok {
-		camBase.App.Fatal("CacheComponent", "invalid config")
+		camStatics.App.Fatal("CacheComponent", "invalid config")
 		return
 	}
 
 	err := comp.config.Engine.Init()
 	if err != nil {
-		camBase.App.Error("CacheComponent.Init", err.Error())
+		camStatics.App.Error("CacheComponent.Init", err.Error())
 	}
 }
 
@@ -80,10 +80,10 @@ func (comp *CacheComponent) Flush() error {
 func (comp *CacheComponent) gcLoop() {
 	interval := comp.config.Engine.GetGCInterval()
 	for {
-		camBase.App.Trace("CacheComponent.gcLoop", "")
+		camStatics.App.Trace("CacheComponent.gcLoop", "")
 		err := comp.config.Engine.GC()
 		if err != nil {
-			camBase.App.Error("CacheComponent.gcLoop", err.Error())
+			camStatics.App.Error("CacheComponent.gcLoop", err.Error())
 		}
 
 		time.Sleep(interval)

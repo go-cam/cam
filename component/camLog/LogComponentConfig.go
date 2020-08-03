@@ -1,8 +1,7 @@
 package camLog
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"log"
 )
@@ -13,11 +12,11 @@ type LogComponentConfig struct {
 	// print log level
 	// Binary switch used.
 	// constant defined in constant.go and cam.constant.go
-	PrintLevel camBase.LogLevel
+	PrintLevel camStatics.LogLevel
 	// write log level
 	// Binary switch used
 	// constant defined in constant.go and cam.constant.go
-	WriteLevel camBase.LogLevel
+	WriteLevel camStatics.LogLevel
 	// log file max size
 	// When the log file exceeds this size, a new file will be created. Old file will be renamed
 	FileMaxSize int64
@@ -40,8 +39,8 @@ type LogComponentConfig struct {
 func NewLogConfig() *LogComponentConfig {
 	config := new(LogComponentConfig)
 	config.Component = &LogComponent{}
-	config.PrintLevel = camConstants.LevelAll
-	config.WriteLevel = camConstants.LevelSuggest
+	config.PrintLevel = camStatics.LevelAll
+	config.WriteLevel = camStatics.LevelSuggest
 	config.FileMaxSize = 10 * 1024 * 1024
 	config.Prefix = "[cam] "
 	config.Flag = log.LstdFlags

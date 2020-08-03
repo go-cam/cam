@@ -2,7 +2,7 @@ package camMail
 
 import (
 	"crypto/tls"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"net/smtp"
 	"strconv"
@@ -16,13 +16,13 @@ type MailComponent struct {
 	addr string
 }
 
-func (comp *MailComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *MailComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*MailComponentConfig)
 	if !ok {
-		camBase.App.Error("MailComponent", "invalid config")
+		camStatics.App.Error("MailComponent", "invalid config")
 	}
 
 	comp.addr = comp.config.Host + ":" + strconv.FormatInt(int64(comp.config.Port), 10)

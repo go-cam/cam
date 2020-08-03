@@ -1,17 +1,19 @@
 package camStructs
 
-import "github.com/go-cam/cam/base/camBase"
+import (
+	"github.com/go-cam/cam/base/camStatics"
+)
 
 // validation's rule
 type Rule struct {
-	camBase.RuleInterface
+	camStatics.RuleInterface
 
 	fields   []string
-	handlers []camBase.ValidHandler
+	handlers []camStatics.ValidHandler
 }
 
 // new rule
-func NewRule(fields []string, handlers ...camBase.ValidHandler) *Rule {
+func NewRule(fields []string, handlers ...camStatics.ValidHandler) *Rule {
 	rule := new(Rule)
 	rule.fields = fields
 	rule.handlers = handlers
@@ -24,6 +26,6 @@ func (rule *Rule) Fields() []string {
 }
 
 // get handlers
-func (rule *Rule) Handlers() []camBase.ValidHandler {
+func (rule *Rule) Handlers() []camStatics.ValidHandler {
 	return rule.handlers
 }

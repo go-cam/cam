@@ -1,10 +1,12 @@
 package camTls
 
-import "github.com/go-cam/cam/base/camBase"
+import (
+	"github.com/go-cam/cam/base/camStatics"
+)
 
 // tls plugin config
 type TlsPluginConfig struct {
-	camBase.PluginConfigInterface
+	camStatics.PluginConfigInterface
 
 	IsTlsOn     bool   // enable SSL mode
 	TlsPort     uint16 // SSL listen port

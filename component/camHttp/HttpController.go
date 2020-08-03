@@ -1,7 +1,7 @@
 package camHttp
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/plugin/camRouter"
 	"net/http"
 )
@@ -44,9 +44,9 @@ func (ctrl *HttpController) GetRequest() *http.Request {
 }
 
 // Get HttpContextInterface
-func (ctrl *HttpController) GetHttpContext() camBase.HttpContextInterface {
+func (ctrl *HttpController) GetHttpContext() camStatics.HttpContextInterface {
 	ctxI := ctrl.GetContext()
-	httpCtxI, ok := ctxI.(camBase.HttpContextInterface)
+	httpCtxI, ok := ctxI.(camStatics.HttpContextInterface)
 	if !ok {
 		return nil
 	}
@@ -63,7 +63,7 @@ func (ctrl *HttpController) GetFile(key string) *UploadFile {
 
 	file, header, err := ctxI.GetHttpRequest().FormFile(key)
 	if err != nil {
-		camBase.App.Error("HttpController.GetFile", err.Error())
+		camStatics.App.Error("HttpController.GetFile", err.Error())
 		return nil
 	}
 

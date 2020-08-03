@@ -1,19 +1,19 @@
 package component
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"reflect"
 )
 
 // base config
 type ComponentConfig struct {
-	camBase.ComponentConfigInterface
-	Component      camBase.ComponentInterface // Instance of corresponding component
-	recoverHandler camBase.RecoverHandler
+	camStatics.ComponentConfigInterface
+	Component      camStatics.ComponentInterface // Instance of corresponding component
+	recoverHandler camStatics.RecoverHandler
 }
 
 // get component instance
-func (config *ComponentConfig) NewComponent() camBase.ComponentInterface {
+func (config *ComponentConfig) NewComponent() camStatics.ComponentInterface {
 	if config.Component == nil {
 		return nil
 	}
@@ -21,20 +21,20 @@ func (config *ComponentConfig) NewComponent() camBase.ComponentInterface {
 	t := reflect.TypeOf(config.Component)
 	componentType := t.Elem()
 	componentValue := reflect.New(componentType)
-	componentI := componentValue.Interface().(camBase.ComponentInterface)
+	componentI := componentValue.Interface().(camStatics.ComponentInterface)
 
 	return componentI
 }
 
 // get recover handler
-func (config *ComponentConfig) GetRecoverHandler() camBase.RecoverHandler {
+func (config *ComponentConfig) GetRecoverHandler() camStatics.RecoverHandler {
 	return config.recoverHandler
 }
 
 // set recover handler
 // It can recover panic, but not all, only component release.
 // For example, the panic thrown by the controller can be handled
-func (config *ComponentConfig) RecoverHandler(handler camBase.RecoverHandler) {
+func (config *ComponentConfig) RecoverHandler(handler camStatics.RecoverHandler) {
 	config.recoverHandler = handler
 }
 

@@ -1,7 +1,7 @@
 package camUtils
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"io"
 	"io/ioutil"
 	"os"
@@ -18,7 +18,7 @@ var File = new(FileUtil)
 func (util *FileUtil) GetRunPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		camBase.App.Error("FileUtil.GetRunPath", err.Error())
+		camStatics.App.Error("FileUtil.GetRunPath", err.Error())
 	}
 	return dir
 }

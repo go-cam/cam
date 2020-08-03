@@ -1,14 +1,14 @@
 package camSocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"net"
 	"sync"
 )
 
 type SocketSession struct {
-	camBase.SessionInterface
+	camStatics.SessionInterface
 
 	// Deprecated: remove on v0.5.0
 	conn      net.Conn // socket connection

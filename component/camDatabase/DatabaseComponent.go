@@ -1,7 +1,7 @@
 package camDatabase
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/component/camConsole"
@@ -11,19 +11,19 @@ import (
 // database component
 type DatabaseComponent struct {
 	component.Component
-	camBase.DatabaseComponentInterface
+	camStatics.DatabaseComponentInterface
 
 	config *DatabaseComponentConfig
 	engine *xorm.Engine
 }
 
 // init
-func (comp *DatabaseComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *DatabaseComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 	var ok bool
 	comp.config, ok = configI.(*DatabaseComponentConfig)
 	if !ok {
-		camBase.App.Fatal("DatabaseComponent", "invalid config")
+		camStatics.App.Fatal("DatabaseComponent", "invalid config")
 		return
 	}
 	comp.engine = nil

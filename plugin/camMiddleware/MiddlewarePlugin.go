@@ -1,14 +1,14 @@
 package camMiddleware
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"reflect"
 	"strings"
 )
 
 // middleware plugin
 type MiddlewarePlugin struct {
-	camBase.PluginInterface
+	camStatics.PluginInterface
 	conf *MiddlewarePluginConfig
 }
 
@@ -18,8 +18,8 @@ func (plugin *MiddlewarePlugin) Init(config *MiddlewarePluginConfig) {
 }
 
 // get list of camBase.MiddlewareInterface
-func (plugin *MiddlewarePlugin) GetMiddlewareList(route string) []camBase.MiddlewareInterface {
-	var midIList []camBase.MiddlewareInterface
+func (plugin *MiddlewarePlugin) GetMiddlewareList(route string) []camStatics.MiddlewareInterface {
+	var midIList []camStatics.MiddlewareInterface
 	for prefix, tmpMidIList := range plugin.conf.middlewareDict {
 		if strings.HasPrefix(route, prefix) {
 			for _, midI := range tmpMidIList {
@@ -31,13 +31,13 @@ func (plugin *MiddlewarePlugin) GetMiddlewareList(route string) []camBase.Middle
 }
 
 // call next with middleware
-func (plugin *MiddlewarePlugin) CallWithMiddleware(ctx camBase.ContextInterface, route string, next camBase.NextHandler) []byte {
+func (plugin *MiddlewarePlugin) CallWithMiddleware(ctx camStatics.ContextInterface, route string, next camStatics.NextHandler) []byte {
 	midIList := plugin.GetMiddlewareList(route)
 	return plugin.recursionCall(ctx, midIList, next)
 }
 
 // recursion call
-func (plugin *MiddlewarePlugin) recursionCall(ctx camBase.ContextInterface, midIList []camBase.MiddlewareInterface, next camBase.NextHandler) []byte {
+func (plugin *MiddlewarePlugin) recursionCall(ctx camStatics.ContextInterface, midIList []camStatics.MiddlewareInterface, next camStatics.NextHandler) []byte {
 	length := len(midIList)
 	if length == 0 {
 		return next()
@@ -46,7 +46,7 @@ func (plugin *MiddlewarePlugin) recursionCall(ctx camBase.ContextInterface, midI
 	midI := midIList[0]
 	midIList = midIList[1:]
 	midV := reflect.New(reflect.TypeOf(midI).Elem())
-	mid, ok := midV.Interface().(camBase.MiddlewareInterface)
+	mid, ok := midV.Interface().(camStatics.MiddlewareInterface)
 	if !ok {
 		panic("middleware not implements camBase.MiddlewareInterface")
 	}

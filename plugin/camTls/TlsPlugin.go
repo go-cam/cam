@@ -1,9 +1,11 @@
 package camTls
 
-import "github.com/go-cam/cam/base/camBase"
+import (
+	"github.com/go-cam/cam/base/camStatics"
+)
 
 type TlsPlugin struct {
-	camBase.PluginInterface
+	camStatics.PluginInterface
 	conf       *TlsPluginConfig
 	handler    func()
 	tlsHandler func()

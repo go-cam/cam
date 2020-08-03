@@ -2,7 +2,7 @@ package camConsole
 
 import (
 	"fmt"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
@@ -22,13 +22,13 @@ type ConsoleComponent struct {
 }
 
 // init
-func (comp *ConsoleComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *ConsoleComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*ConsoleComponentConfig)
 	if !ok {
-		camBase.App.Fatal("ConsoleComponent", "invalid config")
+		camStatics.App.Fatal("ConsoleComponent", "invalid config")
 		return
 	}
 
@@ -68,7 +68,7 @@ func (comp *ConsoleComponent) RunAction() {
 func (comp *ConsoleComponent) GetMigrateUpVersionList() []string {
 	lastVersion := comp.MigrateLastVersion()
 	var versionList []string
-	for version := range camBase.App.GetMigrateDict() {
+	for version := range camStatics.App.GetMigrateDict() {
 		if version <= lastVersion {
 			continue
 		}
@@ -120,7 +120,7 @@ func (comp *ConsoleComponent) MigrateUp() {
 
 	lastVersion := comp.MigrateLastVersion()
 	var err error
-	dict := camBase.App.GetMigrateDict()
+	dict := camStatics.App.GetMigrateDict()
 	versionList := comp.GetMigrateUpVersionList()
 	for _, version := range versionList {
 		if version <= lastVersion {
@@ -166,7 +166,7 @@ func (comp *ConsoleComponent) MigrateUp() {
 // down last database version
 func (comp *ConsoleComponent) MigrateDown() {
 	lastVersion := comp.MigrateLastVersion()
-	m, has := camBase.App.GetMigrateDict()[lastVersion]
+	m, has := camStatics.App.GetMigrateDict()[lastVersion]
 	if !has {
 		if lastVersion == "" {
 			fmt.Println("no version can be down.")
@@ -215,7 +215,7 @@ func (comp *ConsoleComponent) MigrateDown() {
 
 // get database session
 func (comp *ConsoleComponent) getDBSession() *xorm.Session {
-	db := camBase.App.GetDB()
+	db := camStatics.App.GetDB()
 	if db == nil {
 		panic("no database")
 	}

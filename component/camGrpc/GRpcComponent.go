@@ -1,7 +1,7 @@
 package camGrpc
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"google.golang.org/grpc"
 )
@@ -12,13 +12,13 @@ type GRpcComponent struct {
 	conf *GRpcComponentConfig
 }
 
-func (comp *GRpcComponent) Init(confI camBase.ComponentConfigInterface) {
+func (comp *GRpcComponent) Init(confI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(confI)
 
 	var ok bool
 	comp.conf, ok = confI.(*GRpcComponentConfig)
 	if !ok {
-		camBase.App.Fatal("GRpcComponent", "invalid config")
+		camStatics.App.Fatal("GRpcComponent", "invalid config")
 		return
 	}
 }

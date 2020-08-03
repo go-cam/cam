@@ -1,7 +1,7 @@
 package camHttp
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camMiddleware"
@@ -27,7 +27,7 @@ type HttpComponentConfig struct {
 	sessionOption *SessionOption
 
 	// Deprecated: remove on v0.5.0
-	routeHandlerDict map[string]camBase.HttpRouteHandler
+	routeHandlerDict map[string]camStatics.HttpRouteHandler
 }
 
 // new config
@@ -37,7 +37,7 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 	config.Port = port
 	config.SessionName = "cam"
 	config.SessionKey = "cam"
-	config.routeHandlerDict = map[string]camBase.HttpRouteHandler{}
+	config.routeHandlerDict = map[string]camStatics.HttpRouteHandler{}
 	config.RouterPluginConfig.Init()
 	config.ContextPluginConfig.Init()
 	config.TlsPluginConfig.Init()
@@ -52,7 +52,7 @@ func NewHttpComponentConfig(port uint16) *HttpComponentConfig {
 // its priority is higher than the controller.
 // Deprecated: remove on v0.5.0  It's not support middleware
 // Instead: HttpComponentConfig.MiddlewarePluginConfig.AddRoute()
-func (conf *HttpComponentConfig) AddRoute(route string, handler camBase.HttpRouteHandler) {
+func (conf *HttpComponentConfig) AddRoute(route string, handler camStatics.HttpRouteHandler) {
 	conf.routeHandlerDict[route] = handler
 }
 

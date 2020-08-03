@@ -1,8 +1,7 @@
 package camGRpcClient
 
 import (
-	"github.com/go-cam/cam/base/camBase"
-	"github.com/go-cam/cam/base/camConstants"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -29,12 +28,12 @@ type GRpcClientComponent struct {
 }
 
 // init conf
-func (comp *GRpcClientComponent) Init(confI camBase.ComponentConfigInterface) {
+func (comp *GRpcClientComponent) Init(confI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(confI)
 
 	conf, ok := confI.(*GRpcClientComponentConfig)
 	if !ok {
-		camBase.App.Fatal("GRpcClientComponentConfig", "invalid conf")
+		camStatics.App.Fatal("GRpcClientComponentConfig", "invalid conf")
 		return
 	}
 	comp.conf = conf
@@ -49,7 +48,7 @@ func (comp *GRpcClientComponent) Start() {
 	comp.Component.Start()
 
 	if len(comp.conf.Servers) == 0 {
-		camBase.App.Fatal("GRpcClientComponent", "There are not connections.")
+		camStatics.App.Fatal("GRpcClientComponent", "There are not connections.")
 		return
 	}
 
@@ -71,7 +70,7 @@ func (comp *GRpcClientComponent) Stop() {
 // init Option by load balancing login
 func (comp *GRpcClientComponent) initOptionByLoadBalancingLogin() {
 	switch comp.conf.LoadBalancingLogic {
-	case camConstants.GRpcLoadBalancingLogicSequence:
+	case camStatics.GRpcLoadBalancingLogicSequence:
 		comp.seqOpt = newSequenceOption(comp.connDict)
 	default:
 		panic("There's no gRpc Load Balancing config")
@@ -83,7 +82,7 @@ func (comp *GRpcClientComponent) GetConn() *grpc.ClientConn {
 	var conn *grpc.ClientConn
 
 	switch comp.conf.LoadBalancingLogic {
-	case camConstants.GRpcLoadBalancingLogicSequence:
+	case camStatics.GRpcLoadBalancingLogicSequence:
 		conn = comp.getConnBySequence()
 	}
 
@@ -105,17 +104,17 @@ func (comp *GRpcClientComponent) GetConn() *grpc.ClientConn {
 func (comp *GRpcClientComponent) createConn(server *Server) bool {
 	conn, err := grpc.Dial(server.Addr, server.DialOptions...)
 	if err != nil {
-		camBase.App.Error("GRpcClientComponent", "Connective failed: "+err.Error())
+		camStatics.App.Error("GRpcClientComponent", "Connective failed: "+err.Error())
 		comp.connDict.Set(server.Addr, nil)
 		return false
 	}
 
 	if !comp.checkConn(conn) {
-		camBase.App.Error("GRpcClientComponent", "Connective failed")
+		camStatics.App.Error("GRpcClientComponent", "Connective failed")
 		return false
 	}
 	comp.connDict.Set(server.Addr, conn)
-	camBase.App.Trace("GRpcClientComponent", "Connect to addr: " + server.Addr)
+	camStatics.App.Trace("GRpcClientComponent", "Connect to addr: " + server.Addr)
 	return true
 }
 
@@ -175,7 +174,7 @@ func (comp *GRpcClientComponent) getConnBySequence() *grpc.ClientConn {
 func (comp *GRpcClientComponent) getServerOptByAddr(addr string) *Server {
 	i, has := comp.serverAddrIndexDict[addr]
 	if !has {
-		camBase.App.Fatal("GRpcClientComponent.getServerOptByAddr()", "addr has no config. addr: " + addr)
+		camStatics.App.Fatal("GRpcClientComponent.getServerOptByAddr()", "addr has no config. addr: " + addr)
 		return nil
 	}
 	return comp.conf.Servers[i]

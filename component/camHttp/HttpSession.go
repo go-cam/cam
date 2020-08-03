@@ -1,13 +1,13 @@
 package camHttp
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/gorilla/sessions"
 )
 
 // session
 type HttpSession struct {
-	camBase.SessionInterface
+	camStatics.SessionInterface
 	// Deprecated
 	session *sessions.Session
 

@@ -1,7 +1,7 @@
 package camHttp
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin/camContext"
@@ -26,13 +26,13 @@ type HttpComponent struct {
 }
 
 // init
-func (comp *HttpComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *HttpComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*HttpComponentConfig)
 	if !ok {
-		camBase.App.Fatal("HttpComponent", "invalid config")
+		camStatics.App.Fatal("HttpComponent", "invalid config")
 		return
 	}
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
@@ -46,11 +46,11 @@ func (comp *HttpComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.TlsOnly {
-		camBase.App.Trace("HttpComponent", "listen http://localhost:"+strconv.FormatUint(uint64(comp.config.Port), 10))
+		camStatics.App.Trace("HttpComponent", "listen http://localhost:"+strconv.FormatUint(uint64(comp.config.Port), 10))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsTlsOn {
-		camBase.App.Trace("HttpComponent", "listen https://localhost:"+strconv.FormatUint(uint64(comp.config.TlsPort), 10))
+		camStatics.App.Trace("HttpComponent", "listen https://localhost:"+strconv.FormatUint(uint64(comp.config.TlsPort), 10))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -85,7 +85,7 @@ func (comp *HttpComponent) handlerFunc(rw http.ResponseWriter, r *http.Request) 
 }
 
 // Handle route and set httpResponse
-func (comp *HttpComponent) routeHandler(ctx camBase.HttpContextInterface, route string) {
+func (comp *HttpComponent) routeHandler(ctx camStatics.HttpContextInterface, route string) {
 	next := func() []byte {
 		return comp.callNext(ctx, route)
 	}
@@ -97,7 +97,7 @@ func (comp *HttpComponent) routeHandler(ctx camBase.HttpContextInterface, route 
 }
 
 // call controller or custom route handler
-func (comp *HttpComponent) callNext(ctx camBase.HttpContextInterface, route string) []byte {
+func (comp *HttpComponent) callNext(ctx camStatics.HttpContextInterface, route string) []byte {
 	// Use custom handler first
 	handler := comp.GetCustomHandler(route)
 	if handler != nil {
@@ -108,7 +108,7 @@ func (comp *HttpComponent) callNext(ctx camBase.HttpContextInterface, route stri
 	ctrl, action := comp.GetControllerAction(route)
 	if ctrl == nil || action == nil {
 		rw := ctx.GetHttpResponseWriter()
-		camBase.App.Warn("HttpComponent", "404. Not found route: "+route)
+		camStatics.App.Warn("HttpComponent", "404. Not found route: "+route)
 		rw.WriteHeader(404)
 		return nil
 	}
@@ -117,7 +117,7 @@ func (comp *HttpComponent) callNext(ctx camBase.HttpContextInterface, route stri
 }
 
 // Encapsulate the flow of call control
-func (comp *HttpComponent) callNextControllerAction(ctx camBase.HttpContextInterface, ctrl camBase.ControllerInterface, action camBase.ControllerActionInterface) []byte {
+func (comp *HttpComponent) callNextControllerAction(ctx camStatics.HttpContextInterface, ctrl camStatics.ControllerInterface, action camStatics.ControllerActionInterface) []byte {
 	rw := ctx.GetHttpResponseWriter()
 	r := ctx.GetHttpRequest()
 	var err error
@@ -146,8 +146,8 @@ func (comp *HttpComponent) callNextControllerAction(ctx camBase.HttpContextInter
 }
 
 // inject *http.Request and http.ResponseWriter into context
-func (comp *HttpComponent) injectHttpInContext(ctx camBase.ContextInterface, responseWriter http.ResponseWriter, request *http.Request) {
-	ctxHttp, ok := ctx.(camBase.HttpContextInterface)
+func (comp *HttpComponent) injectHttpInContext(ctx camStatics.ContextInterface, responseWriter http.ResponseWriter, request *http.Request) {
+	ctxHttp, ok := ctx.(camStatics.HttpContextInterface)
 	if !ok {
 		return
 	}
@@ -157,7 +157,7 @@ func (comp *HttpComponent) injectHttpInContext(ctx camBase.ContextInterface, res
 
 // try to recover panic
 func (comp *HttpComponent) tryRecover(rw http.ResponseWriter, r *http.Request, v interface{}) {
-	rec, ok := v.(camBase.RecoverInterface)
+	rec, ok := v.(camStatics.RecoverInterface)
 	if !ok {
 		comp.Recover(v)
 		return
@@ -254,7 +254,7 @@ func (comp *HttpComponent) getRequestValuesByJson(request *http.Request) map[str
 
 // get custom route handler
 // Deprecated: remove on v0.5.0
-func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler {
+func (comp *HttpComponent) getCustomRoute(route string) camStatics.HttpRouteHandler {
 	handler, has := comp.config.routeHandlerDict[route]
 	if !has {
 		return nil
@@ -263,9 +263,9 @@ func (comp *HttpComponent) getCustomRoute(route string) camBase.HttpRouteHandler
 }
 
 // new HttpContext
-func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWriter) camBase.HttpContextInterface {
+func (comp *HttpComponent) newHttpContext(r *http.Request, rw http.ResponseWriter) camStatics.HttpContextInterface {
 	ctx := comp.NewContext()
-	httpCtx, ok := ctx.(camBase.HttpContextInterface)
+	httpCtx, ok := ctx.(camStatics.HttpContextInterface)
 	if !ok {
 		panic("invalid HttpContext struct. Must implements camBase.ContextHttpInterface")
 	}

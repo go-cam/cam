@@ -1,14 +1,14 @@
 package camRouter
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"reflect"
 	"strings"
 )
 
 type RouterPlugin struct {
-	camBase.PluginInterface
+	camStatics.PluginInterface
 
 	config *RouterPluginConfig // plugin config
 
@@ -39,7 +39,7 @@ func (plugin *RouterPlugin) parseController() {
 		plugin.controllerDict[controllerName] = controllerType
 
 		controllerValue := reflect.New(controllerType)
-		controllerInterface := controllerValue.Interface().(camBase.ControllerInterface)
+		controllerInterface := controllerValue.Interface().(camStatics.ControllerInterface)
 		if controllerInterface == nil {
 			panic(controllerName + " must be implement base.ControllerBakInterface")
 		}
@@ -71,7 +71,7 @@ func (plugin *RouterPlugin) parseController() {
 //						return nil if action not exists
 // controllerName: 		Example: "User"
 // actionName: 			Example: "RegisterAndLogin"
-func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
+func (plugin *RouterPlugin) GetControllerAction(route string) (controller camStatics.ControllerInterface, action camStatics.ControllerActionInterface) {
 	controllerName, actionName := plugin.GetControllerActionName(route)
 
 	controllerType, has := plugin.controllerDict[controllerName]
@@ -80,7 +80,7 @@ func (plugin *RouterPlugin) GetControllerAction(route string) (controller camBas
 	}
 
 	controllerValue := reflect.New(controllerType)
-	controller = controllerValue.Interface().(camBase.ControllerInterface)
+	controller = controllerValue.Interface().(camStatics.ControllerInterface)
 
 	actionValue := controllerValue.MethodByName(actionName)
 	if !actionValue.IsValid() { // method not exists
@@ -109,7 +109,7 @@ func (plugin *RouterPlugin) GetControllerActionName(route string) (controllerNam
 	if tmpArrLen >= 2 && tmpArr[1] != "" {
 		actionName = camUtils.Url.UrlToHump(tmpArr[1])
 	} else if tmpArrLen == 1 || (tmpArrLen >= 2 && tmpArr[1] == "") {
-		controller := controllerValue.Interface().(camBase.ControllerInterface)
+		controller := controllerValue.Interface().(camStatics.ControllerInterface)
 		actionName = controller.GetDefaultActionName()
 	}
 
@@ -132,7 +132,7 @@ func (plugin *RouterPlugin) getExcludeActionDict() map[string]bool {
 }
 
 // Get recover controller and action
-func (plugin *RouterPlugin) GetRecoverControllerAction() (controller camBase.ControllerInterface, action camBase.ControllerActionInterface) {
+func (plugin *RouterPlugin) GetRecoverControllerAction() (controller camStatics.ControllerInterface, action camStatics.ControllerActionInterface) {
 	return plugin.GetControllerAction(plugin.config.option.RecoverRoute)
 }
 
@@ -142,7 +142,7 @@ func (plugin *RouterPlugin) GetRecoverRoute() string {
 }
 
 // Get custom route
-func (plugin *RouterPlugin) GetCustomHandler(route string) camBase.RouteHandler {
+func (plugin *RouterPlugin) GetCustomHandler(route string) camStatics.RouteHandler {
 	handler, has := plugin.config.customHandlerDict[route]
 	if !has {
 		return nil

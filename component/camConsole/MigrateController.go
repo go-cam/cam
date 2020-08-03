@@ -3,7 +3,7 @@ package camConsole
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"html/template"
 	"regexp"
@@ -57,7 +57,7 @@ func (ctrl *MigrateController) Create() {
 
 // migrate up
 func (ctrl *MigrateController) Up() {
-	db := camBase.App.GetDB()
+	db := camStatics.App.GetDB()
 	if db == nil {
 		panic("no database.")
 	}
@@ -128,11 +128,11 @@ type {{ .ClassName}} struct {
 }
 
 // up
-func (migration *{{ .ClassName}}) Up() {
+func (m *{{ .ClassName}}) Up() {
 }
 
 // down
-func (migration *{{ .ClassName}}) Down() {
+func (m *{{ .ClassName}}) Down() {
 }
 `
 }

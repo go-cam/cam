@@ -1,7 +1,7 @@
 package camWebsocket
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
@@ -27,13 +27,13 @@ type WebsocketComponent struct {
 }
 
 // init
-func (comp *WebsocketComponent) Init(configI camBase.ComponentConfigInterface) {
+func (comp *WebsocketComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.Component.Init(configI)
 
 	var ok bool
 	comp.config, ok = configI.(*WebsocketComponentConfig)
 	if !ok {
-		camBase.App.Fatal("WebsocketComponent", "invalid config")
+		camStatics.App.Fatal("WebsocketComponent", "invalid config")
 		return
 	}
 	comp.upgrader = websocket.Upgrader{
@@ -52,11 +52,11 @@ func (comp *WebsocketComponent) Start() {
 	comp.Component.Start()
 
 	if !comp.config.TlsOnly {
-		camBase.App.Trace("WebsocketComponent", "listen ws://:"+camUtils.C.Uint16ToString(comp.config.Port))
+		camStatics.App.Trace("WebsocketComponent", "listen ws://:"+camUtils.C.Uint16ToString(comp.config.Port))
 		go comp.listenAndServe()
 	}
 	if comp.config.IsTlsOn {
-		camBase.App.Trace("WebsocketComponent", "listen wss://:"+camUtils.C.Uint16ToString(comp.config.TlsPort))
+		camStatics.App.Trace("WebsocketComponent", "listen wss://:"+camUtils.C.Uint16ToString(comp.config.TlsPort))
 		go comp.listenAndServeTLS()
 	}
 }
@@ -131,7 +131,7 @@ func (comp *WebsocketComponent) callNext(ctx WebsocketContextInterface, route st
 
 	ctrl, action := comp.GetControllerAction(route)
 	if ctrl == nil || action == nil {
-		camBase.App.Warn("WebsocketComponent", "404. not found route: "+route)
+		camStatics.App.Warn("WebsocketComponent", "404. not found route: "+route)
 		return nil
 	}
 	// init ctrl
@@ -149,7 +149,7 @@ func (comp *WebsocketComponent) callNext(ctx WebsocketContextInterface, route st
 }
 
 func (comp *WebsocketComponent) tryRecover(oldCtx WebsocketContextInterface, v interface{}) {
-	rec, ok := v.(camBase.RecoverInterface)
+	rec, ok := v.(camStatics.RecoverInterface)
 	if !ok {
 		comp.Recover(v)
 		return
@@ -192,7 +192,7 @@ func (comp *WebsocketComponent) listenAndServeTLS() {
 
 // get custom route handler
 // Deprecated: remove on v0.5.0  it's not support Middleware
-func (comp *WebsocketComponent) getCustomHandler(route string) camBase.WebsocketRouteHandler {
+func (comp *WebsocketComponent) getCustomHandler(route string) camStatics.WebsocketRouteHandler {
 	handler, has := comp.config.routeHandlerDict[route]
 	if !has {
 		return nil

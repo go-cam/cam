@@ -1,7 +1,7 @@
 package camConsole
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
 )
 
@@ -19,7 +19,7 @@ type GrpcController struct {
 func (ctrl *GrpcController) DownloadProtocGenGo() {
 	err := camUtils.Console.Start("go get github.com/golang/protobuf/protoc-gen-go@v1.3.5")
 	if err != nil {
-		camBase.App.Error("GrpcController.DownloadProtocGenGo", "err: "+err.Error())
+		camStatics.App.Error("GrpcController.DownloadProtocGenGo", "err: "+err.Error())
 	}
 }
 

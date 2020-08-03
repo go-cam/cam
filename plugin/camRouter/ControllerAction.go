@@ -1,13 +1,13 @@
 package camRouter
 
 import (
-	"github.com/go-cam/cam/base/camBase"
+	"github.com/go-cam/cam/base/camStatics"
 	"reflect"
 )
 
 // controller action
 type ControllerAction struct {
-	camBase.ControllerActionInterface
+	camStatics.ControllerActionInterface
 
 	route  string
 	rValue *reflect.Value
