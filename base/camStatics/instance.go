@@ -1,3 +1,3 @@
-package camBase
+package camStatics
 
 var App ApplicationInterface

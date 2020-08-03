@@ -1,4 +1,4 @@
-package camBase
+package camStatics
 
 import (
 	"google.golang.org/grpc"

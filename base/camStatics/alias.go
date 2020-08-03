@@ -1,4 +1,4 @@
-package camBase
+package camStatics
 
 import (
 	"github.com/gorilla/websocket"

@@ -1,4 +1,4 @@
-package camConstants
+package camStatics
 
 const (
 	B  uint64 = 1
