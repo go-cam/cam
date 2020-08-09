@@ -71,6 +71,20 @@ func (m *MysqlBuilder) CreateUnique(indexName, tableName string, columnNames... 
 	return "ALTER TABLE `" + tableName + "` ADD UNIQUE `" + indexName + "` (" + columnStr + ");"
 }
 
+// Create foreign key
+func (m *MysqlBuilder) CreateForeignKey(name, table string, columns []string, refTable string, refColumns []string) string {
+	for key, col := range columns {
+		columns[key] = "`" + col + "`"
+	}
+	columnStr := strings.Join(columns, ", ")
+	for key, col := range refColumns {
+		refColumns[key] = "`" + col + "`"
+	}
+	refColumnStr := strings.Join(refColumns, ", ")
+
+	return "ALTER TABLE `" + table + "` ADD CONSTRAINT `" + name + "` FOREIGN KEY(" + columnStr + ") REFERENCES `" + refTable + "`(" + refColumnStr + ");"
+}
+
 // Add column
 func (m *MysqlBuilder) AddColumn(tableName string, column camStatics.MysqlColumnBuilderInterface) string {
 	return "ALTER TABLE `" + tableName + "` ADD " + column.ToSql()
@@ -104,6 +118,11 @@ func (m *MysqlBuilder) DropIndex(tableName, indexName string) string {
 // Drop table
 func (m *MysqlBuilder) DropTable(tableName string) string {
 	return "DROP TABLE `" + tableName + "`;"
+}
+
+// Table options
+func (m *MysqlBuilder) Option(comment, engine, charset, collate string) string {
+	return "CHARACTER SET " + charset + " COLLATE " + collate + " ENGINE=" + engine + " COMMENT = '" + comment + "'"
 }
 
 func (m *MysqlBuilder) tplToSql(tpl string, params map[string]string) string {

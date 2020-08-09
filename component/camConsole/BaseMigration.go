@@ -17,10 +17,6 @@ func (m *BaseMigration) Exec(sql string) {
 	m.addSql(sql)
 }
 
-func (m *BaseMigration) addSql(sql string) {
-	m.sqlList = append(m.sqlList, sql)
-}
-
 // get sql list
 func (m *BaseMigration) GetSqlList() []string {
 	return m.sqlList
@@ -62,6 +58,12 @@ func (m *BaseMigration) CreateIndex(indexName, tableName string, columnNames... 
 // Create unique
 func (m *BaseMigration) CreateUnique(indexName, tableName string, columnNames... string) {
 	sql := camStructs.NewMysqlBuilder().CreateUnique(indexName, tableName, columnNames...)
+	m.addSql(sql)
+}
+
+// Create foreign key
+func (m *BaseMigration) CreateForeignKey(name, table string, columns []string, refTable string, refColumns []string) {
+	sql := camStructs.NewMysqlBuilder().CreateForeignKey(name, table, columns, refTable, refColumns)
 	m.addSql(sql)
 }
 
@@ -281,6 +283,14 @@ func (m *BaseMigration) Timestamp() camStatics.MysqlColumnBuilderInterface {
 	return col
 }
 
+func (m *BaseMigration) DefaultOption(comment string) string {
+	return camStructs.NewMysqlBuilder().Option(comment, "InnoDB", "utf8mb4", "utf8mb4_unicode_ci")
+}
+
+func (m *BaseMigration) Option(comment, engine, charset, collate string) string {
+	return camStructs.NewMysqlBuilder().Option(comment, engine, charset, collate)
+}
+
 func (m *BaseMigration) autoSetSize(col *camStructs.MysqlColumnBuilder, sizes []int) {
 	switch len(sizes) {
 	case 0:
@@ -292,4 +302,8 @@ func (m *BaseMigration) autoSetSize(col *camStructs.MysqlColumnBuilder, sizes []
 	default:
 		panic("Invalid size nums")
 	}
+}
+
+func (m *BaseMigration) addSql(sql string) {
+	m.sqlList = append(m.sqlList, sql)
 }
