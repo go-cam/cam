@@ -54,3 +54,13 @@ type RouteHandler func(ctxI ContextInterface) []byte
 
 // load balancing login
 type GRpcLoadBalancingLogic int
+
+// Mysql column type
+type MysqlColumnType string
+
+// Mysql nullable type
+type MysqlNullableType int
+
+// Mysql key type
+// Example: Primary Key, Index, Unique
+type MysqlKeyType string

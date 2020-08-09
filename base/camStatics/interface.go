@@ -282,3 +282,19 @@ type GRpcComponentInterface interface {
 	// get client conn
 	Conn() *grpc.ClientConn
 }
+
+// Mysql column's builder
+type MysqlColumnBuilderInterface interface {
+	Unsigned() MysqlColumnBuilderInterface
+	NotNull() MysqlColumnBuilderInterface
+	Null() MysqlColumnBuilderInterface
+	Default(value interface{}) MysqlColumnBuilderInterface
+	AutoIncrement() MysqlColumnBuilderInterface
+	Comment(comment string) MysqlColumnBuilderInterface
+	After(name string) MysqlColumnBuilderInterface
+	PrimaryKey() MysqlColumnBuilderInterface
+	Index() MysqlColumnBuilderInterface
+	Unique() MysqlColumnBuilderInterface
+	ToSql() string
+	GetKeyPartSql() string
+}
