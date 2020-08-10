@@ -70,15 +70,6 @@ func (comp *HttpComponent) handlerFunc(rw http.ResponseWriter, r *http.Request) 
 
 	route := comp.getRoute(r)
 
-	// Deprecated: remove this block in v0.5.0  It's not support middleware
-	// =========== START ===========
-	handler := comp.getCustomRoute(route)
-	if handler != nil {
-		handler(rw, r)
-		return
-	}
-	// =========== END ===========
-
 	ctx := comp.newHttpContext(r, rw)
 	defer func() { ctx.Close() }()
 	comp.routeHandler(ctx, route)
@@ -119,17 +110,10 @@ func (comp *HttpComponent) callNext(ctx camStatics.HttpContextInterface, route s
 // Encapsulate the flow of call control
 func (comp *HttpComponent) callNextControllerAction(ctx camStatics.HttpContextInterface, ctrl camStatics.ControllerInterface, action camStatics.ControllerActionInterface) []byte {
 	rw := ctx.GetHttpResponseWriter()
-	r := ctx.GetHttpRequest()
 	var err error
-
-	// Compatible. Remove on v0.5.0
-	if httpCtrlI, ok := ctrl.(HttpControllerInterface); ok {
-		httpCtrlI.setResponseWriterAndRequest(&rw, r)
-	}
 
 	values := comp.getRequestValues(ctx.GetHttpRequest())
 	ctrl.SetContext(ctx)
-	ctrl.SetSession(ctx.GetSession()) // Compatible. Remove on v0.5.0
 	ctrl.SetValues(values)
 
 	if !ctrl.BeforeAction(action) {
@@ -250,16 +234,6 @@ func (comp *HttpComponent) getRequestValuesByJson(request *http.Request) map[str
 	bytes, _ := ioutil.ReadAll(request.Body)
 	camUtils.Json.DecodeToObj(bytes, &values)
 	return values
-}
-
-// get custom route handler
-// Deprecated: remove on v0.5.0
-func (comp *HttpComponent) getCustomRoute(route string) camStatics.HttpRouteHandler {
-	handler, has := comp.config.routeHandlerDict[route]
-	if !has {
-		return nil
-	}
-	return handler
 }
 
 // new HttpContext

@@ -2,14 +2,11 @@ package camHttp
 
 import (
 	"github.com/go-cam/cam/base/camStatics"
-	"github.com/gorilla/sessions"
 )
 
 // session
 type HttpSession struct {
 	camStatics.SessionInterface
-	// Deprecated
-	session *sessions.Session
 
 	id             string
 	values         map[string]interface{}
@@ -29,13 +26,6 @@ type HttpSessionInterface interface {
 	Values() map[string]interface{}
 	// destroy session
 	Destroy()
-}
-
-// Deprecated: remove on v0.5.0
-func NewHttpSession(storeSession *sessions.Session) *HttpSession {
-	session := new(HttpSession)
-	session.session = storeSession
-	return session
 }
 
 func newHttpSession(sessId string, values map[string]interface{}) *HttpSession {

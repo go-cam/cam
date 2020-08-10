@@ -25,7 +25,6 @@ func newDefaultAo() *defaultAo {
 // default http server config
 func defaultHttpConfig() camStatics.ComponentConfigInterface {
 	conf := NewHttpConfig(20200)
-	conf.SessionName = "cam"
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
