@@ -8,7 +8,7 @@ var C = new(CUtil)
 
 // Framework version
 func (c *CUtil) Version() string {
-	return "v0.5.0-alpha.0-dev"
+	return "v0.5.0-beta.1"
 }
 
 func (c *CUtil) Uint64ToString(num uint64) string {

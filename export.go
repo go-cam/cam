@@ -25,21 +25,33 @@ import (
 
 // Log
 const (
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelTrace   = camStatics.LevelTrace   // log level: trace
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelDebug   = camStatics.LevelDebug   // log level: debug
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelInfo    = camStatics.LevelInfo    // log level: info
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelWarn    = camStatics.LevelWarn    // log level: warning
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelError   = camStatics.LevelError   // log level: error
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelFatal   = camStatics.LevelFatal   // log level: fatal
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelNone    = camStatics.LevelNone    // none
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelSuggest = camStatics.LevelSuggest // suggest this level to write file
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelAll     = camStatics.LevelAll     // all
 )
 
 // Validation
 const (
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	ValidModeInterface = camStatics.ModeInterface // Interface mode
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	ValidModeTag       = camStatics.ModeTag       // Tag mode
+	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	ValidModeBot       = camStatics.ModeBoth      // Interface and Tag mode
 )
 
@@ -47,30 +59,37 @@ const (
 
 // #################### [START] struct export ####################
 
+// Deprecated: Remove on v0.6.0
 type Controller struct {
 	camRouter.Controller
 }
 
+// Deprecated: Remove on v0.6.0
 type ConstantController struct {
 	camConsole.ConsoleController
 }
 
+// Deprecated: Remove on v0.6.0
 type HttpController struct {
 	camHttp.HttpController
 }
 
+// Deprecated: Remove on v0.6.0
 type ControllerAction struct {
 	camRouter.ControllerAction
 }
 
+// Deprecated: Remove on v0.6.0
 type Context struct {
 	camContext.Context
 }
 
+// Deprecated: Remove on v0.6.0
 type ValidInterface interface {
 	camStatics.ValidInterface
 }
 
+// Deprecated: Remove on v0.6.0
 type MiddlewareInterface interface {
 	camStatics.MiddlewareInterface
 }
@@ -86,51 +105,61 @@ func NewAppConfig() *camConfig.AppConfig {
 	return appConfig
 }
 
+// Deprecated: Remove on v0.6.0
 // new WebsocketComponent config
 func NewWebsocketConfig(port uint16) *camWebsocket.WebsocketComponentConfig {
 	return camWebsocket.NewWebsocketComponentConfig(port)
 }
 
+// Deprecated: Remove on v0.6.0
 // new ConsoleComponent config
 func NewHttpConfig(port uint16) *camHttp.HttpComponentConfig {
 	return camHttp.NewHttpComponentConfig(port)
 }
 
+// Deprecated: Remove on v0.6.0
 // new DatabaseComponent config
 func NewDatabaseConfig(driverName string, host string, port string, name string, username string, password string) *camDatabase.DatabaseComponentConfig {
 	return camDatabase.NewDatabaseComponentConfig(driverName, host, port, name, username, password)
 }
 
+// Deprecated: Remove on v0.6.0
 // new ConsoleComponent config
 func NewConsoleConfig() *camConsole.ConsoleComponentConfig {
 	return camConsole.NewConsoleComponentConfig()
 }
 
+// Deprecated: Remove on v0.6.0
 // new log config
 func NewLogConfig() *camLog.LogComponentConfig {
 	return camLog.NewLogConfig()
 }
 
+// Deprecated: Remove on v0.6.0
 // new config
 func NewConfig() *camConfig.Config {
 	return camConfig.NewConfig()
 }
 
+// Deprecated: Remove on v0.6.0
 // new cache config
 func NewCacheConfig() *camCache.CacheComponentConfig {
 	return camCache.NewCacheConfig()
 }
 
+// Deprecated: Remove on v0.6.0
 // new file cache engine
 func NewFileCache() *camCache.FileCache {
 	return camCache.NewFileCache()
 }
 
+// Deprecated: Remove on v0.6.0
 // new redis engine
 func NewRedisCache() *camCache.RedisCache {
 	return camCache.NewRedisEngine()
 }
 
+// Deprecated: Remove on v0.6.0
 func NewMailConfig(email string, password string, host string) *camMail.MailComponentConfig {
 	return camMail.NewMailConfig(email, password, host)
 }
@@ -139,20 +168,24 @@ func NewCamManager() *template.CamManager {
 	return template.NewCamManager()
 }
 
+// Deprecated: Remove on v0.6.0
 func NewRecover(message string) *camStructs.Recover {
 	return camStructs.NewRecoverable(message)
 }
 
+// Deprecated: Remove on v0.6.0
 // new SocketComponentConfig
 func NewSocketConfig(port uint16) *camSocket.SocketComponentConfig {
 	return camSocket.NewSocketComponentConfig(port)
 }
 
+// Deprecated: Remove on v0.6.0
 // new ValidationComponentConfig
 func NewValidationConfig() *camValidation.ValidationComponentConfig {
 	return camValidation.NewValidationConfig()
 }
 
+// Deprecated: Remove on v0.6.0
 // new rule
 func NewRule(fields []string, handlers ...camStatics.ValidHandler) *camStructs.Rule {
 	return camStructs.NewRule(fields, handlers...)
