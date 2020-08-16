@@ -13,15 +13,15 @@ const (
 
 // LogComponent
 const (
-	LevelTrace   LogLevel = 1                                                             // trace log
-	LevelDebug            = LevelTrace << 1                                               // debug log
-	LevelInfo             = LevelDebug << 1                                               // info log
-	LevelWarn             = LevelInfo << 1                                                // warning log
-	LevelError            = LevelWarn << 1                                                // error log
-	LevelFatal            = LevelError << 1                                               // fatal log
-	LevelNone             = 0                                                             // none
-	LevelSuggest          = LevelInfo | LevelWarn | LevelError | LevelFatal               // suggest this level to write file
-	LevelAll              = LevelTrace | LevelDebug | LevelWarn | LevelError | LevelFatal // all
+	LogLevelTrace   LogLevel = 1                                                                            // trace log
+	LogLevelDebug            = LogLevelTrace << 1                                                           // debug log
+	LogLevelInfo             = LogLevelDebug << 1                                                           // info log
+	LogLevelWarn             = LogLevelInfo << 1                                                            // warning log
+	LogLevelError            = LogLevelWarn << 1                                                            // error log
+	LogLevelFatal            = LogLevelError << 1                                                           // fatal log
+	LogLevelNone             = 0                                                                            // none
+	LogLevelSuggest          = LogLevelInfo | LogLevelWarn | LogLevelError | LogLevelFatal                  // suggest this level to write file
+	LogLevelAll              = LogLevelTrace | LogLevelDebug | LogLevelWarn | LogLevelError | LogLevelFatal // all
 )
 
 // ValidationComponent

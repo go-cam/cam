@@ -90,12 +90,12 @@ func (comp *LogComponent) Record(level camStatics.LogLevel, title string, conten
 // init level labels
 func (comp *LogComponent) initLevelLabels() {
 	comp.levelLabels = map[camStatics.LogLevel]string{
-		camStatics.LevelTrace: "TRACE",
-		camStatics.LevelDebug: "DEBUG",
-		camStatics.LevelInfo:  "INFO ",
-		camStatics.LevelWarn:  "WARN ",
-		camStatics.LevelError: "ERROR",
-		camStatics.LevelFatal: "FATAL",
+		camStatics.LogLevelTrace: "TRACE",
+		camStatics.LogLevelDebug: "DEBUG",
+		camStatics.LogLevelInfo:  "INFO ",
+		camStatics.LogLevelWarn:  "WARN ",
+		camStatics.LogLevelError: "ERROR",
+		camStatics.LogLevelFatal: "FATAL",
 	}
 }
 
@@ -137,7 +137,7 @@ func (comp *LogComponent) checkAndRenameFile() {
 	comp.fileLogger.SetOutput(nil)
 	err := comp.logFile.Close()
 	if err != nil {
-		_ = comp.Record(camStatics.LevelFatal, "LogComponent.checkAndRenameFile", "failed to close file. err: "+err.Error())
+		_ = comp.Record(camStatics.LogLevelFatal, "LogComponent.checkAndRenameFile", "failed to close file. err: "+err.Error())
 		return
 	}
 
@@ -148,7 +148,7 @@ func (comp *LogComponent) checkAndRenameFile() {
 		newFilename := comp.logRootDir + "/app_" + strconv.FormatInt(now, 10) + ".log"
 		err := camUtils.File.Rename(filename, newFilename)
 		if err != nil {
-			_ = comp.Record(camStatics.LevelFatal, "LogComponent.checkAndRenameFile", "failed to rename. err: "+err.Error())
+			_ = comp.Record(camStatics.LogLevelFatal, "LogComponent.checkAndRenameFile", "failed to rename. err: "+err.Error())
 			return
 		}
 	}

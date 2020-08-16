@@ -110,7 +110,7 @@ func Fatal(title, content string) {
 	App.Fatal(title, content)
 }
 
-// valid struct
+// validComp struct
 func Valid(v interface{}) (firstErr error, errDict map[string][]error) {
 	return App.Valid(v)
 }

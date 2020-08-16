@@ -17,15 +17,19 @@ import (
 
 // framework Application global instance struct define
 type Application struct {
-	camStatics.ApplicationInterface
-
-	status        camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config        *camConfig.Config                        // Application config
-	logComponent  *camLog.LogComponent                     // log component
-	cache         camStatics.CacheComponentInterface       // cache component
-	valid         camStatics.ValidationComponentInterface  // validation component
-	componentDict map[string]camStatics.ComponentInterface // components dict
-	migrationDict map[string]camStatics.MigrationInterface // migration map
+	status               camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
+	config              *camConfig.Config                        // Application config
+	logComp            *camLog.LogComponent                     // Log component
+	cacheComp          camStatics.CacheComponentInterface       // Cache component
+	validComp          camStatics.ValidationComponentInterface  // Validation component
+	componentDict      map[string]camStatics.ComponentInterface // Components dict
+	migrationDict      map[string]camStatics.MigrationInterface // Migration dict
+	beforeInitHandler  func()
+	afterInitHandler   func()
+	beforeStartHandler func()
+	afterStartHandler  func()
+	beforeStopHandler  func()
+	afterStopHandler   func()
 }
 
 var App camStatics.ApplicationInterface
@@ -39,12 +43,18 @@ func init() {
 func NewApplication() *Application {
 	app := new(Application)
 	app.status = camStatics.AppStatusBeforeInit
-	app.config = NewConfig()
+	app.config = camConfig.NewConfig()
 	app.config.AppConfig = NewAppConfig()
-	app.cache = nil
-	app.valid = nil
+	app.cacheComp = nil
+	app.validComp = nil
 	app.componentDict = map[string]camStatics.ComponentInterface{}
 	app.migrationDict = map[string]camStatics.MigrationInterface{}
+	app.beforeInitHandler = func() {}
+	app.afterInitHandler = func() {}
+	app.beforeStartHandler = func() {}
+	app.afterStartHandler = func() {}
+	app.beforeStopHandler = func() {}
+	app.afterStopHandler = func() {}
 	return app
 }
 
@@ -84,6 +94,8 @@ func (app *Application) Run() {
 
 // init Application and components
 func (app *Application) onInit() {
+	app.beforeInitHandler()
+
 	// read config component
 	for name, config := range app.config.ComponentDict {
 		componentI := config.NewComponent()
@@ -94,10 +106,13 @@ func (app *Application) onInit() {
 	app.initCoreComponent()
 
 	app.status = camStatics.AppStatusBeforeStart
+	app.afterInitHandler()
 }
 
 // startup all components
 func (app *Application) onStart() {
+	app.beforeStartHandler()
+
 	for name, component := range app.componentDict {
 		go component.Start()
 		app.Trace("Application.onStart", "start component:"+name)
@@ -105,10 +120,16 @@ func (app *Application) onStart() {
 	app.Trace("Application.onStart", "Application start finished.")
 
 	app.status = camStatics.AppStatusAfterStart
+	go func() {
+		time.Sleep(500 * time.Millisecond)
+		app.afterStartHandler()
+	}()
 }
 
 // stop all components
 func (app *Application) onStop() {
+	app.beforeStopHandler()
+
 	for name, component := range app.componentDict {
 		component.Stop()
 		delete(app.componentDict, name)
@@ -117,6 +138,7 @@ func (app *Application) onStop() {
 	app.Trace("Application.onStop", "Application stop finished.")
 
 	app.status = camStatics.AppStatusAfterStop
+	app.afterStopHandler()
 }
 
 // Wait until the app call Stop()
@@ -135,7 +157,7 @@ func (app *Application) initCoreComponent() {
 func (app *Application) initCoreComponentLog() {
 	logComponent, _ := app.getComponentAndName(new(camLog.LogComponent))
 	if logComponent != nil {
-		app.logComponent = logComponent.(*camLog.LogComponent)
+		app.logComp = logComponent.(*camLog.LogComponent)
 	} else {
 		var name = "log"
 		var has = true
@@ -150,7 +172,7 @@ func (app *Application) initCoreComponentLog() {
 		logComponent = new(camLog.LogComponent)
 		logConfig.Component = logComponent
 		logComponent.Init(logConfig)
-		app.logComponent = logComponent.(*camLog.LogComponent)
+		app.logComp = logComponent.(*camLog.LogComponent)
 		app.componentDict[name] = logComponent
 	}
 }
@@ -234,7 +256,7 @@ func (app *Application) AddMigration(m camStatics.MigrationInterface) {
 
 // base log
 func (app *Application) basicLog(logLevel camStatics.LogLevel, title string, content string) {
-	err := app.logComponent.Record(logLevel, title, content)
+	err := app.logComp.Record(logLevel, title, content)
 	if err != nil {
 		panic(err)
 	}
@@ -242,32 +264,32 @@ func (app *Application) basicLog(logLevel camStatics.LogLevel, title string, con
 
 // log trace
 func (app *Application) Trace(title string, content string) {
-	app.basicLog(LogLevelTrace, title, content)
+	app.basicLog(camStatics.LogLevelTrace, title, content)
 }
 
 // log debug
 func (app *Application) Debug(title string, content string) {
-	app.basicLog(LogLevelDebug, title, content)
+	app.basicLog(camStatics.LogLevelDebug, title, content)
 }
 
 // log info
 func (app *Application) Info(title string, content string) {
-	app.basicLog(LogLevelInfo, title, content)
+	app.basicLog(camStatics.LogLevelInfo, title, content)
 }
 
 // log warning
 func (app *Application) Warn(title string, content string) {
-	app.basicLog(LogLevelWarn, title, content)
+	app.basicLog(camStatics.LogLevelWarn, title, content)
 }
 
 // log error
 func (app *Application) Error(title string, content string) {
-	app.basicLog(LogLevelError, title, content)
+	app.basicLog(camStatics.LogLevelError, title, content)
 }
 
 // log fatal
 func (app *Application) Fatal(title string, content string) {
-	app.basicLog(LogLevelFatal, title, content)
+	app.basicLog(camStatics.LogLevelFatal, title, content)
 }
 
 // get one .evn file values
@@ -294,50 +316,50 @@ func (app *Application) GetParam(key string) interface{} {
 	return i
 }
 
-// get cache component
+// get cacheComp component
 func (app *Application) GetCache() camStatics.CacheComponentInterface {
-	if app.cache != nil {
-		return app.cache
+	if app.cacheComp != nil {
+		return app.cacheComp
 	}
 
 	var ok bool
 	compI := app.GetComponent(&camCache.CacheComponent{})
 	if compI == nil {
-		compI = app.AddComponentAfterRun("cache", NewCacheConfig())
+		compI = app.AddComponentAfterRun("cacheComp", camCache.NewCacheConfig())
 		if compI == nil {
-			app.Fatal("Application.GetCache", "create default cache fail")
+			app.Fatal("Application.GetCache", "create default cacheComp fail")
 		}
 	}
-	app.cache, ok = compI.(camStatics.CacheComponentInterface)
+	app.cacheComp, ok = compI.(camStatics.CacheComponentInterface)
 	if !ok {
 		app.Fatal("Application.GetCache", "convert fail")
 		return nil
 	}
 
-	return app.cache
+	return app.cacheComp
 }
 
-// get valid
+// get validComp
 func (app *Application) getValid() camStatics.ValidationComponentInterface {
-	if app.valid != nil {
-		return app.valid
+	if app.validComp != nil {
+		return app.validComp
 	}
 	var ok bool
 	compI := app.GetComponent(&camValidation.ValidationComponent{})
 	if compI == nil {
-		compI = app.AddComponentAfterRun("valid", NewValidationConfig())
+		compI = app.AddComponentAfterRun("validComp", camValidation.NewValidationConfig())
 		if compI == nil {
 			app.Fatal("Application.getValid", "create default validation fail")
 		}
 	}
 
-	app.valid, ok = compI.(camStatics.ValidationComponentInterface)
+	app.validComp, ok = compI.(camStatics.ValidationComponentInterface)
 	if !ok {
 		app.Fatal("Application.getValid", "convert fail")
 		return nil
 	}
 
-	return app.valid
+	return app.validComp
 }
 
 // add component after app ran
@@ -377,11 +399,11 @@ func (app *Application) GetMail() camStatics.MailComponentInterface {
 	return mailCompI
 }
 
-// valid struct
+// validComp struct
 func (app *Application) Valid(v interface{}) (firstErr error, errDict map[string][]error) {
 	valid := app.getValid()
 	if valid == nil {
-		app.Fatal("Application.Valid", "not valid instance")
+		app.Fatal("Application.Valid", "not validComp instance")
 		return nil, nil
 	}
 	errDict = valid.Valid(v)
@@ -392,4 +414,28 @@ func (app *Application) Valid(v interface{}) (firstErr error, errDict map[string
 	fieldName := reflect.ValueOf(errDict).MapKeys()[0].Interface().(string)
 	firstErr = errDict[fieldName][0]
 	return firstErr, errDict
+}
+
+func (app *Application) BeforeInit(handler func()) {
+	app.beforeInitHandler = handler
+}
+
+func (app *Application) AfterInit(handler func()) {
+	app.afterInitHandler = handler
+}
+
+func (app *Application) BeforeStart(handler func()) {
+	app.beforeStartHandler = handler
+}
+
+func (app *Application) AfterStart(handler func()) {
+	app.afterStartHandler = handler
+}
+
+func (app *Application) BeforeStop(handler func()) {
+	app.beforeStopHandler = handler
+}
+
+func (app *Application) AfterStop(handler func()) {
+	app.afterStopHandler = handler
 }

@@ -39,8 +39,8 @@ type LogComponentConfig struct {
 func NewLogConfig() *LogComponentConfig {
 	config := new(LogComponentConfig)
 	config.Component = &LogComponent{}
-	config.PrintLevel = camStatics.LevelAll
-	config.WriteLevel = camStatics.LevelSuggest
+	config.PrintLevel = camStatics.LogLevelAll
+	config.WriteLevel = camStatics.LogLevelSuggest
 	config.FileMaxSize = 10 * 1024 * 1024
 	config.Prefix = "[cam] "
 	config.Flag = log.LstdFlags

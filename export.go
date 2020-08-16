@@ -26,23 +26,23 @@ import (
 // Log
 const (
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelTrace   = camStatics.LevelTrace   // log level: trace
+	LogLevelTrace   = camStatics.LogLevelTrace // log level: trace
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelDebug   = camStatics.LevelDebug   // log level: debug
+	LogLevelDebug   = camStatics.LogLevelDebug // log level: debug
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelInfo    = camStatics.LevelInfo    // log level: info
+	LogLevelInfo    = camStatics.LogLevelInfo // log level: info
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelWarn    = camStatics.LevelWarn    // log level: warning
+	LogLevelWarn    = camStatics.LogLevelWarn // log level: warning
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelError   = camStatics.LevelError   // log level: error
+	LogLevelError   = camStatics.LogLevelError // log level: error
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelFatal   = camStatics.LevelFatal   // log level: fatal
+	LogLevelFatal   = camStatics.LogLevelFatal // log level: fatal
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelNone    = camStatics.LevelNone    // none
+	LogLevelNone    = camStatics.LogLevelNone // none
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelSuggest = camStatics.LevelSuggest // suggest this level to write file
+	LogLevelSuggest = camStatics.LogLevelSuggest // suggest this level to write file
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelAll     = camStatics.LevelAll     // all
+	LogLevelAll     = camStatics.LogLevelAll // all
 )
 
 // Validation
@@ -142,13 +142,13 @@ func NewConfig() *camConfig.Config {
 }
 
 // Deprecated: Remove on v0.6.0
-// new cache config
+// new cacheComp config
 func NewCacheConfig() *camCache.CacheComponentConfig {
 	return camCache.NewCacheConfig()
 }
 
 // Deprecated: Remove on v0.6.0
-// new file cache engine
+// new file cacheComp engine
 func NewFileCache() *camCache.FileCache {
 	return camCache.NewFileCache()
 }

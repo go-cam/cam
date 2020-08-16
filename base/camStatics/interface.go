@@ -48,6 +48,18 @@ type ApplicationInterface interface {
 	GetMail() MailComponentInterface
 	// valid struct.
 	Valid(v interface{}) (firstErr error, errDict map[string][]error)
+	// Before app init
+	BeforeInit(handler func())
+	// After app init
+	AfterInit(handler func())
+	// Before app start
+	BeforeStart(handler func())
+	// After app start
+	AfterStart(handler func())
+	// Before app stop
+	BeforeStop(handler func())
+	// After app start
+	AfterStop(handler func())
 }
 
 // component config interface
