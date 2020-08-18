@@ -3,7 +3,11 @@ package cam
 // Help framework easy start, default setting, simplified application method
 
 import (
+	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/base/camStatics"
+	"github.com/go-cam/cam/component/camHttp"
+	"github.com/go-cam/cam/component/camSocket"
+	"github.com/go-cam/cam/component/camWebsocket"
 	"github.com/go-cam/cam/plugin/camRouter"
 )
 
@@ -24,21 +28,21 @@ func newDefaultAo() *defaultAo {
 
 // default http server config
 func defaultHttpConfig() camStatics.ComponentConfigInterface {
-	conf := NewHttpConfig(20200)
+	conf := camHttp.NewHttpComponentConfig(20200)
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
 
 // default websocket server config
 func defaultWebsocketConfig() camStatics.ComponentConfigInterface {
-	conf := NewWebsocketConfig(20201)
+	conf := camWebsocket.NewWebsocketComponentConfig(20201)
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
 
 // default tcp socket server config
 func defaultSocketConfig() camStatics.ComponentConfigInterface {
-	conf := NewSocketConfig(20202)
+	conf := camSocket.NewSocketComponentConfig(20202)
 	conf.Trace = true
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
@@ -56,7 +60,7 @@ func RegisterController(ctrl camStatics.ControllerInterface) {
 
 // run application
 func RunDefault() {
-	conf := NewConfig()
+	conf := camConfig.NewConfig()
 	conf.ComponentDict = map[string]camStatics.ComponentConfigInterface{
 		"http": defaultHttpConfig(),
 		"ws":   defaultWebsocketConfig(),

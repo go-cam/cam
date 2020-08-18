@@ -21,7 +21,7 @@ type LogComponentConfig struct {
 	// When the log file exceeds this size, a new file will be created. Old file will be renamed
 	FileMaxSize int64
 	// log prefix
-	Prefix string
+	Tag string
 	// log flag
 	//
 	// See: log.Flag
@@ -42,7 +42,7 @@ func NewLogConfig() *LogComponentConfig {
 	config.PrintLevel = camStatics.LogLevelAll
 	config.WriteLevel = camStatics.LogLevelSuggest
 	config.FileMaxSize = 10 * 1024 * 1024
-	config.Prefix = "[cam] "
+	config.Tag = ""
 	config.Flag = log.LstdFlags
 	return config
 }

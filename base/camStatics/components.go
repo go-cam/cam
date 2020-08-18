@@ -21,7 +21,7 @@ const (
 	LogLevelFatal            = LogLevelError << 1                                                           // fatal log
 	LogLevelNone             = 0                                                                            // none
 	LogLevelSuggest          = LogLevelInfo | LogLevelWarn | LogLevelError | LogLevelFatal                  // suggest this level to write file
-	LogLevelAll              = LogLevelTrace | LogLevelDebug | LogLevelWarn | LogLevelError | LogLevelFatal // all
+	LogLevelAll              = LogLevelTrace | LogLevelDebug | LogLevelInfo | LogLevelWarn | LogLevelError | LogLevelFatal // all
 )
 
 // ValidationComponent

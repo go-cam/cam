@@ -17,8 +17,8 @@ import (
 
 // framework Application global instance struct define
 type Application struct {
-	status               camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config              *camConfig.Config                        // Application config
+	status             camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
+	config             *camConfig.Config                        // Application config
 	logComp            *camLog.LogComponent                     // Log component
 	cacheComp          camStatics.CacheComponentInterface       // Cache component
 	validComp          camStatics.ValidationComponentInterface  // Validation component
@@ -141,7 +141,7 @@ func (app *Application) onStop() {
 	app.afterStopHandler()
 }
 
-// Wait until the app call Stop()
+// WaitAndRun until the app call Stop()
 func (app *Application) wait() {
 	for {
 		time.Sleep(1 * time.Second)
@@ -256,6 +256,13 @@ func (app *Application) AddMigration(m camStatics.MigrationInterface) {
 
 // base log
 func (app *Application) basicLog(logLevel camStatics.LogLevel, title string, content string) {
+	if app.logComp == nil {
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			app.basicLog(logLevel, title, content)
+		}()
+		return
+	}
 	err := app.logComp.Record(logLevel, title, content)
 	if err != nil {
 		panic(err)

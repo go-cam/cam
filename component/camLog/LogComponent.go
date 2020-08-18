@@ -26,6 +26,7 @@ type LogComponent struct {
 	fileLogger             *log.Logger                    // file logger
 	logFile                *os.File                       // log file
 	fileRenameMutex        sync.Mutex                     // log file rename mutex
+	tag                    string                         // log Tag
 }
 
 // on App init
@@ -43,13 +44,19 @@ func (comp *LogComponent) Init(configI camStatics.ComponentConfigInterface) {
 	comp.logRootDir = camUtils.File.GetRunPath() + "/runtime/log"
 	if !camUtils.File.Exists(comp.logRootDir) {
 		err := camUtils.File.Mkdir(comp.logRootDir)
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 	comp.initLevelLabels()
 	comp.lastCheckFileTimestamp = 0
 	comp.titleMaxLen = 32
-	comp.consoleLogger = log.New(os.Stdout, comp.config.Prefix, comp.config.Flag)
-	comp.fileLogger = log.New(nil, comp.config.Prefix, comp.config.Flag)
+	comp.consoleLogger = log.New(os.Stdout, "", comp.config.Flag)
+	comp.fileLogger = log.New(nil, "", comp.config.Flag)
+	comp.tag = ""
+	if comp.config.Tag != "" {
+		comp.tag = comp.config.Tag + " | "
+	}
 	comp.resetFileLoggerOutput()
 }
 
@@ -75,13 +82,15 @@ func (comp *LogComponent) Record(level camStatics.LogLevel, title string, conten
 	var err error = nil
 	levelLabel := comp.getLevelLabels(level)
 	spaceTitle := comp.addSpaceToTitle(title)
-	line := "[ " + levelLabel + " | " + spaceTitle + " ] " + content
+	line := "[ " + comp.config.Tag + spaceTitle + " ] " + content
 
 	if isPrint {
+		comp.consoleLogger.SetPrefix(levelLabel + " ")
 		comp.consoleLogger.Println(line)
 	}
 	if isWrite {
 		comp.checkAndRenameFile()
+		comp.fileLogger.SetPrefix(levelLabel + " ")
 		comp.fileLogger.Println(line)
 	}
 	return err
