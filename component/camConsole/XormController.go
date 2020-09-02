@@ -14,7 +14,6 @@ type XormController struct {
 
 // OVERWRITE
 func (ctrl *XormController) BeforeAction(action camStatics.ControllerActionInterface) bool {
-	camStatics.App.Warn("XormController", "`xorm` is deprecated, please use `migrate` instead it")
 	return ctrl.ConsoleController.BeforeAction(action)
 }
 
