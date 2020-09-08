@@ -10,6 +10,7 @@ import (
 	"github.com/go-cam/cam/component/camLog"
 	"github.com/go-cam/cam/component/camMail"
 	"github.com/go-cam/cam/component/camValidation"
+	"google.golang.org/grpc"
 	"reflect"
 	"strconv"
 	"time"
@@ -421,6 +422,19 @@ func (app *Application) Valid(v interface{}) (firstErr error, errDict map[string
 	fieldName := reflect.ValueOf(errDict).MapKeys()[0].Interface().(string)
 	firstErr = errDict[fieldName][0]
 	return firstErr, errDict
+}
+
+
+func (app *Application) GetGrpcClientConn(name string) *grpc.ClientConn {
+	compI := app.GetComponentByName(name)
+	if compI == nil {
+		return nil
+	}
+	grpcClientI, ok := compI.(camStatics.GrpcClientComponentInterface)
+	if !ok {
+		return nil
+	}
+	return grpcClientI.GetConn()
 }
 
 func (app *Application) BeforeInit(handler func()) {

@@ -4,7 +4,6 @@ import (
 	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/component"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"sync"
 )
 
@@ -89,8 +88,8 @@ func (comp *GRpcClientComponent) GetConn() *grpc.ClientConn {
 	if !comp.checkConn(conn) {
 		var goOn = make(chan bool)
 		go comp.reconnect(goOn)
-		<- goOn
-		close(goOn)
+		_ = <- goOn
+		//close(goOn)
 		conn = comp.GetConn()
 	}
 
@@ -155,9 +154,11 @@ func (comp *GRpcClientComponent) checkConn(conn *grpc.ClientConn) bool {
 	if conn == nil {
 		return false
 	}
-	if conn.GetState() != connectivity.Idle {
-		return false
-	}
+	//state := conn.GetState()
+	//fmt.Println(state)
+	//if conn.GetState() != connectivity.Ready {
+	//	return false
+	//}
 	return true
 }
 

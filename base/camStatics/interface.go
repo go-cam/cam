@@ -48,6 +48,9 @@ type ApplicationInterface interface {
 	GetMail() MailComponentInterface
 	// valid struct.
 	Valid(v interface{}) (firstErr error, errDict map[string][]error)
+	// Get grpc client conn
+	// name: Component name
+	GetGrpcClientConn(name string) *grpc.ClientConn
 	// Before app init
 	BeforeInit(handler func())
 	// After app init
@@ -309,4 +312,8 @@ type MysqlColumnBuilderInterface interface {
 	Unique() MysqlColumnBuilderInterface
 	ToSql() string
 	GetKeyPartSql() string
+}
+
+type GrpcClientComponentInterface interface {
+	GetConn() *grpc.ClientConn
 }

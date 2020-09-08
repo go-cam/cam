@@ -12,7 +12,7 @@ type Recover struct {
 }
 
 // new recoverable
-func NewRecoverable(message string) *Recover {
+func NewRecover(message string) *Recover {
 	r := new(Recover)
 	r.error = errors.New(message)
 	return r

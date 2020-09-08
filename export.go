@@ -170,7 +170,7 @@ func NewCamManager() *template.CamManager {
 
 // Deprecated: Remove on v0.6.0
 func NewRecover(message string) *camStructs.Recover {
-	return camStructs.NewRecoverable(message)
+	return camStructs.NewRecover(message)
 }
 
 // Deprecated: Remove on v0.6.0
