@@ -15,7 +15,7 @@ type ConsoleComponentConfig struct {
 	camContext.ContextPluginConfig
 
 	DatabaseDir     string // DatabaseComponentConfig file storage path. Default is: /[path to run dir]/database
-	XormTemplateDir string // xorm template path.
+	XormTemplateDir string // Deprecated: xorm template path.
 	grpcOption      *GrpcOption
 }
 

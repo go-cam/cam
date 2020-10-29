@@ -1,4 +1,4 @@
-package template
+package cmd
 
 import "github.com/go-cam/cam/base/camUtils"
 

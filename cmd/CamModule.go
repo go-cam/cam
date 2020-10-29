@@ -1,4 +1,4 @@
-package template
+package cmd
 
 const (
 	CamModuleTypeApplication = "application"

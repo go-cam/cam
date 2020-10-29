@@ -15,6 +15,16 @@ type MigrateController struct {
 	ConsoleController
 }
 
+// Install xorm reverse command
+func (ctrl *MigrateController) Install() {
+	_ = camUtils.Console.Start("go get xorm.io/reverse@v0.1.1")
+}
+
+// Gen xorm model's files
+func (ctrl *MigrateController) Generate() {
+	_ = camUtils.Console.Start("reverse -f " + camUtils.File.GetRunPath() + "/database/generate.yml")
+}
+
 // create migration's file
 func (ctrl *MigrateController) Create() {
 	name := ctrl.GetArgv(0)

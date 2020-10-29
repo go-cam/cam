@@ -28,6 +28,7 @@ Cam may not be suitable for small projects. It may be more suitable for medium a
     - [Upload file](#upload-file)
     - [Validation](#validation)
     - [Middleware](#middleware)
+    - [Grpc](#grpc)
 - [Contact](#Contact)
 
 ## Framework structure
@@ -53,7 +54,10 @@ require (
 ```go
 package main
 
-import "github.com/go-cam/cam"
+import (
+    "github.com/go-cam/cam"
+    "github.com/go-cam/cam/plugin/camRouter"
+)
 
 func main() {
 	cam.RegisterController(&HelloController{})
@@ -61,7 +65,7 @@ func main() {
 }
 
 type HelloController struct {
-	cam.Controller
+	camRouter.Controller
 }
 
 func (ctrl *HelloController) Cam() {
@@ -195,7 +199,7 @@ func (ctrl *FileController) Upload() {
 Then
 post file to `http://.../file/upload`
 
-# Validation
+### Validation
 
 Example:
 ```go
@@ -204,6 +208,7 @@ package valid
 import (
     "github.com/go-cam/cam"
     "github.com/go-cam/cam/base/camBase"
+    "github.com/go-cam/cam/base/camStructs"
 )
 
 type User struct {
@@ -215,7 +220,7 @@ type Email string
 
 func (user *User) Rules() []camBase.RuleInterface {
 	return []camBase.RuleInterface{
-		cam.NewRule([]string{"Email", "MyEmail"}, cam.Rule.Email, cam.Rule.Length(0, 100)),
+		camStructs.NewRule([]string{"Email", "MyEmail"}, cam.Rule.Email, cam.Rule.Length(0, 100)),
 	}
 }
 
@@ -230,7 +235,7 @@ func init() {
 }
 ```
 
-# Middleware
+### Middleware
 
 Support Component: HttpComponent, WebsocketComponent, SocketComponent
 
@@ -241,11 +246,12 @@ package config
 import (
 	"github.com/go-cam/cam"
 	"github.com/go-cam/cam/base/camBase"
+    "github.com/go-cam/cam/component/camHttp"
 )
 
 
 func httpServer() camBase.ComponentConfigInterface {
-	config := cam.NewHttpConfig(20000)
+	config := camHttp.NewHttpComponentConfig(20000)
 	config.Register(&controllers.TestController{}) 
 	// Add middleware
 	config.AddMiddleware("", &AMiddleware{}) // All route will use this Middleware
@@ -262,6 +268,15 @@ func (mid *AMiddleware) Handler(ctx camBase.ContextInterface, next camBase.NextH
 	return res
 }
 ```
+
+### Grpc
+
+#### Grpc Server
+```
+
+```
+
+#### Grpc Client
 
 # Contact
 

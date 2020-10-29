@@ -7,6 +7,7 @@ import (
 	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
+	"github.com/go-cam/cam/cmd"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
 	"github.com/go-cam/cam/component/camDatabase"
@@ -18,7 +19,6 @@ import (
 	"github.com/go-cam/cam/component/camWebsocket"
 	"github.com/go-cam/cam/plugin/camContext"
 	"github.com/go-cam/cam/plugin/camRouter"
-	"github.com/go-cam/cam/template"
 )
 
 // #################### [START] constant export ####################
@@ -164,8 +164,8 @@ func NewMailConfig(email string, password string, host string) *camMail.MailComp
 	return camMail.NewMailConfig(email, password, host)
 }
 
-func NewCamManager() *template.CamManager {
-	return template.NewCamManager()
+func NewCamManager() *cmd.CamManager {
+	return cmd.NewCamManager()
 }
 
 // Deprecated: Remove on v0.6.0

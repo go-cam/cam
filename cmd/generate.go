@@ -1,4 +1,4 @@
-package template
+package cmd
 
 // generate file class
 // TODO
