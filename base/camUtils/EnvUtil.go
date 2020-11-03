@@ -32,7 +32,9 @@ func (util *EnvUtil) autoLoadEnvDict() {
 	}
 
 	contentBytes, err := File.ReadFile(envFilename)
-	Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 
 	contentStr := string(contentBytes)
 	lines := strings.Split(contentStr, "\n")

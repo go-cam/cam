@@ -2,7 +2,6 @@ package camDatabase
 
 import (
 	"github.com/go-cam/cam/base/camStatics"
-	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/component/camConsole"
 	"xorm.io/xorm"
@@ -51,7 +50,9 @@ func (comp *DatabaseComponent) GetEngine() *xorm.Engine {
 	if comp.engine == nil {
 		var err error
 		comp.engine, err = xorm.NewEngine(comp.config.DriverName, comp.GetDSN())
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return comp.engine
 }
