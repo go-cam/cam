@@ -13,6 +13,8 @@ type RouterOption struct {
 	RecoverRoute string
 	// Receive message parse handler
 	RecvMessageParseHandler plugin.RecvMessageParseHandler
+	// Send message parse handler
+	SendMessageParseHandler plugin.SendMessageParseHandler
 }
 
 // router plugin.
@@ -61,9 +63,20 @@ func (conf *RouterPluginConfig) SetRecvMessageParseHandler(handler plugin.RecvMe
 
 func (conf *RouterPluginConfig) GetRecvMessageParseHandler() plugin.RecvMessageParseHandler {
 	if conf.option.RecvMessageParseHandler == nil {
-		return plugin.DefaultRecvToMessageHandler
+		return plugin.DefaultRecvMessageParseHandler
 	}
 	return conf.option.RecvMessageParseHandler
+}
+
+func (conf *RouterPluginConfig) SetSendMessageParseHandler(handler plugin.SendMessageParseHandler) {
+	conf.option.SendMessageParseHandler = handler
+}
+
+func (conf *RouterPluginConfig) GetSendMessageParseHandler() plugin.SendMessageParseHandler {
+	if conf.option.SendMessageParseHandler == nil {
+		return plugin.DefaultSendMessageParseHandler
+	}
+	return conf.option.SendMessageParseHandler
 }
 
 // Set router option

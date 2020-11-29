@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/go-cam/cam/base/camStatics"
+	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
@@ -25,6 +26,8 @@ type SocketComponent struct {
 	connHandler camStatics.SocketConnHandler
 	// receive message parse handler
 	recvMessageParseHandler plugin.RecvMessageParseHandler
+	// send message parse handler
+	sendMessageParseHandler plugin.SendMessageParseHandler
 }
 
 // init config
@@ -46,7 +49,8 @@ func (comp *SocketComponent) Init(configI camStatics.ComponentConfigInterface) {
 	if comp.config.ConnHandler != nil {
 		comp.connHandler = comp.config.ConnHandler
 	}
-	comp.recvMessageParseHandler = plugin.DefaultRecvToMessageHandler
+	comp.recvMessageParseHandler = comp.config.GetRecvMessageParseHandler()
+	comp.sendMessageParseHandler = comp.config.GetSendMessageParseHandler()
 }
 
 // start
@@ -148,7 +152,11 @@ func (comp *SocketComponent) callNext(ctx SocketContextInterface, route string, 
 	action.Call()
 	response := ctrl.AfterAction(action, ctx.Read())
 
-	return response
+	recvMsg := ctx.GetMessage()
+	sendMsg := new(camStructs.Message)
+	sendMsg.Id = recvMsg.Id
+	//sendMsg.Data
+	return comp.sendMessageParseHandler(sendMsg, response)
 }
 
 // get recv message
