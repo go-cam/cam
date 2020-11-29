@@ -2,6 +2,7 @@ package camWebsocket
 
 import (
 	"github.com/go-cam/cam/base/camStatics"
+	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component"
 	"github.com/go-cam/cam/plugin"
@@ -24,6 +25,8 @@ type WebsocketComponent struct {
 	upgrader websocket.Upgrader
 	// receive message parse handler
 	recvMessageParseHandler plugin.RecvMessageParseHandler
+	// send message parse handler
+	sendMessageParseHandler plugin.SendMessageParseHandler
 }
 
 // init
@@ -42,6 +45,7 @@ func (comp *WebsocketComponent) Init(configI camStatics.ComponentConfigInterface
 		},
 	}
 	comp.recvMessageParseHandler = comp.config.GetRecvMessageParseHandler()
+	comp.sendMessageParseHandler = comp.config.GetSendMessageParseHandler()
 	comp.RouterPlugin.Init(&comp.config.RouterPluginConfig)
 	comp.ContextPlugin.Init(&comp.config.ContextPluginConfig)
 	comp.MiddlewarePlugin.Init(&comp.config.MiddlewarePluginConfig)
@@ -145,7 +149,11 @@ func (comp *WebsocketComponent) callNext(ctx WebsocketContextInterface, route st
 	action.Call()
 	response := ctrl.AfterAction(action, ctx.Read())
 
-	return response
+	recvMsg := ctx.GetMessage()
+	sendMsg := new(camStructs.Message)
+	sendMsg.Id = recvMsg.Id
+	//sendMsg.Data
+	return comp.sendMessageParseHandler(sendMsg, response)
 }
 
 func (comp *WebsocketComponent) tryRecover(oldCtx WebsocketContextInterface, v interface{}) {

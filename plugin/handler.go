@@ -9,11 +9,20 @@ import (
 type RecvMessageParseHandler func(recv []byte) *camStructs.Message
 
 // default RecvMessageParseHandler
-func DefaultRecvToMessageHandler(recv []byte) *camStructs.Message {
-	if recv == nil {
+func DefaultRecvMessageParseHandler(bytes []byte) *camStructs.Message {
+	if bytes == nil {
 		return nil
 	}
 	msgStruct := new(camStructs.Message)
-	camUtils.Json.DecodeToObj(recv, msgStruct)
+	camUtils.Json.DecodeToObj(bytes, msgStruct)
 	return msgStruct
+}
+
+// sendMessage parse handler
+type SendMessageParseHandler func(msg *camStructs.Message, response []byte) []byte
+
+// default SendMessageParseHandler
+func DefaultSendMessageParseHandler(msg *camStructs.Message, response []byte) []byte {
+	camUtils.Json.DecodeToObj(response, msg.Data)
+	return camUtils.Json.Encode(msg)
 }
