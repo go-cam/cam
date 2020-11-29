@@ -5,18 +5,18 @@ import "github.com/go-cam/cam/base/camStructs"
 type MessageContextInterface interface {
 	// return by plugin.RecvMessageParseHandler
 	// SEE: WebsocketComponent.recvMessageParseHandler
-	SetMessage(msg *camStructs.Message)
-	GetMessage() *camStructs.Message
+	SetMessage(msg *camStructs.RecvMessage)
+	GetMessage() *camStructs.RecvMessage
 }
 
 type MessageContext struct {
-	msg *camStructs.Message
+	msg *camStructs.RecvMessage
 }
 
-func (ctx *MessageContext) SetMessage(msg *camStructs.Message) {
+func (ctx *MessageContext) SetMessage(msg *camStructs.RecvMessage) {
 	ctx.msg = msg
 }
 
-func (ctx *MessageContext) GetMessage() *camStructs.Message {
+func (ctx *MessageContext) GetMessage() *camStructs.RecvMessage {
 	return ctx.msg
 }

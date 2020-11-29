@@ -22,7 +22,7 @@ type WebsocketContext struct {
 	camContext.MessageContext
 	conn *websocket.Conn
 	recv []byte
-	msg  *camStructs.Message
+	msg  *camStructs.RecvMessage
 }
 
 func (ctx *WebsocketContext) SetConn(conn *websocket.Conn) {
@@ -41,10 +41,10 @@ func (ctx *WebsocketContext) GetRecv() []byte {
 	return ctx.recv
 }
 
-func (ctx *WebsocketContext) SetMessage(msg *camStructs.Message) {
+func (ctx *WebsocketContext) SetMessage(msg *camStructs.RecvMessage) {
 	ctx.msg = msg
 }
 
-func (ctx *WebsocketContext) GetMessage() *camStructs.Message {
+func (ctx *WebsocketContext) GetMessage() *camStructs.RecvMessage {
 	return ctx.msg
 }

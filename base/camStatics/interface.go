@@ -97,35 +97,11 @@ type ControllerInterface interface {
 	SetContext(context ContextInterface)
 	// get context
 	GetContext() ContextInterface
-	// set session
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().SetSession();
-	SetSession(session SessionInterface)
-	// get session
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().GetSession();
-	GetSession() SessionInterface
 	// set values.
 	// it will replace the original values
 	SetValues(values map[string]interface{})
 	// get default action
 	GetDefaultActionName() string
-	// set response
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().Write();
-	SetResponse([]byte)
-	// get response
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().Read();
-	GetResponse() []byte
-	// set recover
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().SetRecover();
-	SetRecover(rec RecoverInterface)
-	// get recover
-	// Deprecated: remove on v0.5.0
-	// Instead: GetContext().GetRecover();
-	GetRecover() RecoverInterface
 }
 
 // controller action interface
@@ -154,18 +130,6 @@ type ContextInterface interface {
 	SetRoute(route string)
 	// Get route
 	GetRoute() string
-}
-
-// http context
-// it will inject http.ResponseWriter and request *http.Request to context
-// Deprecated: remove on v0.5.0
-// Instead: HttpContextInterface
-type ContextHttpInterface interface {
-	ContextInterface
-	SetHttpResponseWriter(responseWriter http.ResponseWriter)
-	GetHttpResponseWriter() http.ResponseWriter
-	SetHttpRequest(request *http.Request)
-	GetHttpRequest() *http.Request
 }
 
 // http context

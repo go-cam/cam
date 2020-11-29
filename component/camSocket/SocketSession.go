@@ -3,15 +3,12 @@ package camSocket
 import (
 	"github.com/go-cam/cam/base/camStatics"
 	"github.com/go-cam/cam/base/camUtils"
-	"net"
 	"sync"
 )
 
 type SocketSession struct {
 	camStatics.SessionInterface
 
-	// Deprecated: remove on v0.5.0
-	conn      net.Conn // socket connection
 	sessionId string   // session id. Generate when new instance
 	values    sync.Map // values
 }
@@ -46,19 +43,8 @@ func (sess *SocketSession) Del(key string) {
 	sess.values.Delete(key)
 }
 
-// Deprecated: remove on v0.5.0
-func (sess *SocketSession) SetConn(conn net.Conn) {
-	sess.conn = conn
-}
-
-// Deprecated: remove on v0.5.0
-func (sess *SocketSession) GetConn() net.Conn {
-	return sess.conn
-}
-
 // destroy session
 func (sess *SocketSession) Destroy() {
-	_ = sess.conn.Close()
 	sess.sessionId = ""
 	sess.values.Range(func(key, value interface{}) bool {
 		sess.values.Delete(key)

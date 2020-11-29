@@ -100,7 +100,6 @@ func (comp *SocketComponent) defaultConnHandler(conn net.Conn) {
 	}
 
 	sess := NewSocketSession()
-	sess.SetConn(conn)
 	defer sess.Destroy()
 
 	for {
@@ -144,19 +143,18 @@ func (comp *SocketComponent) callNext(ctx SocketContextInterface, route string, 
 	// init ctrl
 	ctrl.Init()
 	ctrl.SetContext(ctx)
-	ctrl.SetSession(ctx.GetSession())
 	ctrl.SetValues(values)
 	if !ctrl.BeforeAction(action) {
 		return []byte("illegal request")
 	}
 	action.Call()
-	response := ctrl.AfterAction(action, ctx.Read())
 
 	recvMsg := ctx.GetMessage()
-	sendMsg := new(camStructs.Message)
+	sendMsg := new(camStructs.SendMessage)
 	sendMsg.Id = recvMsg.Id
-	//sendMsg.Data
-	return comp.sendMessageParseHandler(sendMsg, response)
+	sendMsg.Route = recvMsg.Route
+	sendMsg.Data = ctrl.AfterAction(action, ctx.Read())
+	return comp.sendMessageParseHandler(sendMsg)
 }
 
 // get recv message
