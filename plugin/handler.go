@@ -23,5 +23,9 @@ type SendMessageParseHandler func(msg *camStructs.SendMessage) []byte
 
 // default SendMessageParseHandler
 func DefaultSendMessageParseHandler(msg *camStructs.SendMessage) []byte {
-	return camUtils.Json.Encode(msg)
+	return camUtils.Json.Encode(map[string]interface{}{
+		"i": msg.Id,
+		"r": msg.Route,
+		"d": string(msg.Data.([]byte)), // use Character stream
+	})
 }
