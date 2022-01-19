@@ -31,7 +31,7 @@ type SocketComponent struct {
 }
 
 // init config
-func (comp *SocketComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *SocketComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

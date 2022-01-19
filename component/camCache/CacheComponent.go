@@ -15,7 +15,7 @@ type CacheComponent struct {
 }
 
 // init config
-func (comp *CacheComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *CacheComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

@@ -1,3 +1,3 @@
 package camStatics
 
-var App ApplicationInterface
+var App IApplication

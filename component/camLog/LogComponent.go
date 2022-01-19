@@ -30,7 +30,7 @@ type LogComponent struct {
 }
 
 // on App init
-func (comp *LogComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *LogComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

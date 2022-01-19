@@ -7,84 +7,6 @@ import (
 	"xorm.io/xorm"
 )
 
-// application interface
-// NODE: Provides interface function to the module inner framework
-type ApplicationInterface interface {
-	// get Component instance by reflect
-	GetComponent(v ComponentInterface) ComponentInterface
-	// get Component instance by component name
-	GetComponentByName(name string) ComponentInterface
-	// get default db component's interface
-	GetDB() DatabaseComponentInterface
-	// run application
-	Run()
-	// stop application
-	Stop()
-	// add migration struct
-	AddMigration(m MigrationInterface)
-	// log trace
-	Trace(title string, content string)
-	// log debug
-	Debug(title string, content string)
-	// log info
-	Info(title string, content string)
-	// log warn
-	Warn(title string, content string)
-	// log error
-	Error(title string, content string)
-	// log fatal
-	Fatal(title string, content string)
-	// Add config
-	AddConfig(config AppConfigInterface)
-	// get value form .evn file
-	GetEvn(key string) string
-	// get params form camAppConfig.Config.Params
-	GetParam(key string) interface{}
-	// get migrate dict
-	GetMigrateDict() map[string]MigrationInterface
-	// get cache component
-	GetCache() CacheComponentInterface
-	// get mail component
-	GetMail() MailComponentInterface
-	// valid struct.
-	Valid(v interface{}) (firstErr error, errDict map[string][]error)
-	// Get grpc client conn
-	// name: Component name
-	GetGrpcClientConn(name string) *grpc.ClientConn
-	// Before app init
-	BeforeInit(handler func())
-	// After app init
-	AfterInit(handler func())
-	// Before app start
-	BeforeStart(handler func())
-	// After app start
-	AfterStart(handler func())
-	// Before app stop
-	BeforeStop(handler func())
-	// After app start
-	AfterStop(handler func())
-}
-
-// component config interface
-type ComponentConfigInterface interface {
-	// new component
-	NewComponent() ComponentInterface
-	// get recover handler
-	GetRecoverHandler() RecoverHandler
-}
-
-// Component interface
-type ComponentInterface interface {
-	// init
-	Init(configInterface ComponentConfigInterface)
-	// start
-	Start()
-	// stop
-	Stop()
-	// set app instance
-	SetApp(app ApplicationInterface)
-}
-
 // controller interface
 type ControllerInterface interface {
 	// init
@@ -235,7 +157,8 @@ type ConsoleComponentInterface interface {
 	GetXormTemplateDir() string
 }
 
-// app config interface
+// AppConfigInterface
+// Deprecated: remove after v0.6.0-beta
 type AppConfigInterface interface {
 }
 

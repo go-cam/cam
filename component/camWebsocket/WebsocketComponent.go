@@ -30,7 +30,7 @@ type WebsocketComponent struct {
 }
 
 // init
-func (comp *WebsocketComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *WebsocketComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

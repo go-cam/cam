@@ -26,7 +26,7 @@ type HttpComponent struct {
 }
 
 // init
-func (comp *HttpComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *HttpComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

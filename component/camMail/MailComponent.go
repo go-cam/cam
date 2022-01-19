@@ -16,7 +16,7 @@ type MailComponent struct {
 	addr string
 }
 
-func (comp *MailComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *MailComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

@@ -15,33 +15,33 @@ import (
 type defaultAo struct {
 	camRouter.RouterPluginConfig
 
-	compDict map[string]camStatics.ComponentConfigInterface
+	compDict map[string]camStatics.IComponentConfig
 }
 
 var ao = newDefaultAo()
 
 func newDefaultAo() *defaultAo {
 	ao := new(defaultAo)
-	ao.compDict = map[string]camStatics.ComponentConfigInterface{}
+	ao.compDict = map[string]camStatics.IComponentConfig{}
 	return ao
 }
 
 // default http server config
-func defaultHttpConfig() camStatics.ComponentConfigInterface {
+func defaultHttpConfig() camStatics.IComponentConfig {
 	conf := camHttp.NewHttpComponentConfig(20200)
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
 
 // default websocket server config
-func defaultWebsocketConfig() camStatics.ComponentConfigInterface {
+func defaultWebsocketConfig() camStatics.IComponentConfig {
 	conf := camWebsocket.NewWebsocketComponentConfig(20201)
 	conf.RouterPluginConfig = ao.RouterPluginConfig
 	return conf
 }
 
 // default tcp socket server config
-func defaultSocketConfig() camStatics.ComponentConfigInterface {
+func defaultSocketConfig() camStatics.IComponentConfig {
 	conf := camSocket.NewSocketComponentConfig(20202)
 	conf.Trace = true
 	conf.RouterPluginConfig = ao.RouterPluginConfig
@@ -49,7 +49,7 @@ func defaultSocketConfig() camStatics.ComponentConfigInterface {
 }
 
 // must run before cam.RunDefault
-func AddComponent(name string, conf camStatics.ComponentConfigInterface) {
+func AddComponent(name string, conf camStatics.IComponentConfig) {
 	ao.compDict[name] = conf
 }
 
@@ -61,7 +61,7 @@ func RegisterController(ctrl camStatics.ControllerInterface) {
 // run application
 func RunDefault() {
 	conf := camConfig.NewConfig()
-	conf.ComponentDict = map[string]camStatics.ComponentConfigInterface{
+	conf.ComponentDict = map[string]camStatics.IComponentConfig{
 		"http": defaultHttpConfig(),
 		"ws":   defaultWebsocketConfig(),
 		"tcp":  defaultSocketConfig(),

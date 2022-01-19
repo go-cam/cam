@@ -17,7 +17,7 @@ type ValidationComponent struct {
 }
 
 // init
-func (comp *ValidationComponent) Init(conf camStatics.ComponentConfigInterface) {
+func (comp *ValidationComponent) Init(conf camStatics.IComponentConfig) {
 	comp.Component.Init(conf)
 
 	var ok bool

@@ -23,13 +23,13 @@ import (
 
 func GetApp() camBase.AppConfigInterface {
 	config := cam.NewConfig()
-	config.ComponentDict = map[string]camBase.ComponentConfigInterface{
+	config.ComponentDict = map[string]camBase.IComponentConfig{
 		"http":    httpServer(),
 	}
 	return config
 }
 
-func httpServer() camBase.ComponentConfigInterface {
+func httpServer() camBase.IComponentConfig {
 	config := cam.NewHttpConfig(10800)
 	config.SessionName = "` + name + `"
 	config.RecoverRoute("test/recover")

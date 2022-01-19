@@ -22,7 +22,7 @@ type ConsoleComponent struct {
 }
 
 // init
-func (comp *ConsoleComponent) Init(configI camStatics.ComponentConfigInterface) {
+func (comp *ConsoleComponent) Init(configI camStatics.IComponentConfig) {
 	comp.Component.Init(configI)
 
 	var ok bool

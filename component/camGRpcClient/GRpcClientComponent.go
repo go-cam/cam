@@ -7,13 +7,10 @@ import (
 	"sync"
 )
 
-
-
-
 type GRpcClientComponent struct {
 	component.Component
 
-	conf     *GRpcClientComponentConfig
+	conf *GRpcClientComponentConfig
 	// connect dict
 	connDict *connDict
 	// only sequence logic will be create
@@ -21,13 +18,13 @@ type GRpcClientComponent struct {
 	// lock func reconnect()
 	reconnectMutex sync.Mutex
 	// If it true, when call GetConn() doesn't need to wait for a connection to be detected
-	canGoOn                bool
+	canGoOn bool
 	// serverOption key => index to the conf.Servers
 	serverAddrIndexDict map[string]int
 }
 
 // init conf
-func (comp *GRpcClientComponent) Init(confI camStatics.ComponentConfigInterface) {
+func (comp *GRpcClientComponent) Init(confI camStatics.IComponentConfig) {
 	comp.Component.Init(confI)
 
 	conf, ok := confI.(*GRpcClientComponentConfig)
@@ -88,7 +85,7 @@ func (comp *GRpcClientComponent) GetConn() *grpc.ClientConn {
 	if !comp.checkConn(conn) {
 		var goOn = make(chan bool)
 		go comp.reconnect(goOn)
-		_ = <- goOn
+		_ = <-goOn
 		//close(goOn)
 		conn = comp.GetConn()
 	}
@@ -113,7 +110,7 @@ func (comp *GRpcClientComponent) createConn(server *Server) bool {
 		return false
 	}
 	comp.connDict.Set(server.Addr, conn)
-	camStatics.App.Trace("GRpcClientComponent", "Connect to addr: " + server.Addr)
+	camStatics.App.Trace("GRpcClientComponent", "Connect to addr: "+server.Addr)
 	return true
 }
 
@@ -175,7 +172,7 @@ func (comp *GRpcClientComponent) getConnBySequence() *grpc.ClientConn {
 func (comp *GRpcClientComponent) getServerOptByAddr(addr string) *Server {
 	i, has := comp.serverAddrIndexDict[addr]
 	if !has {
-		camStatics.App.Fatal("GRpcClientComponent.getServerOptByAddr()", "addr has no config. addr: " + addr)
+		camStatics.App.Fatal("GRpcClientComponent.getServerOptByAddr()", "addr has no config. addr: "+addr)
 		return nil
 	}
 	return comp.conf.Servers[i]

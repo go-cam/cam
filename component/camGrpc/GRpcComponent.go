@@ -12,7 +12,7 @@ type GRpcComponent struct {
 	conf *GRpcComponentConfig
 }
 
-func (comp *GRpcComponent) Init(confI camStatics.ComponentConfigInterface) {
+func (comp *GRpcComponent) Init(confI camStatics.IComponentConfig) {
 	comp.Component.Init(confI)
 
 	var ok bool

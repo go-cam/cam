@@ -26,23 +26,23 @@ import (
 // Log
 const (
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelTrace   = camStatics.LogLevelTrace // log level: trace
+	LogLevelTrace = camStatics.LogLevelTrace // log level: trace
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelDebug   = camStatics.LogLevelDebug // log level: debug
+	LogLevelDebug = camStatics.LogLevelDebug // log level: debug
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelInfo    = camStatics.LogLevelInfo // log level: info
+	LogLevelInfo = camStatics.LogLevelInfo // log level: info
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelWarn    = camStatics.LogLevelWarn // log level: warning
+	LogLevelWarn = camStatics.LogLevelWarn // log level: warning
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelError   = camStatics.LogLevelError // log level: error
+	LogLevelError = camStatics.LogLevelError // log level: error
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelFatal   = camStatics.LogLevelFatal // log level: fatal
+	LogLevelFatal = camStatics.LogLevelFatal // log level: fatal
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelNone    = camStatics.LogLevelNone // none
+	LogLevelNone = camStatics.LogLevelNone // none
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	LogLevelSuggest = camStatics.LogLevelSuggest // suggest this level to write file
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	LogLevelAll     = camStatics.LogLevelAll // all
+	LogLevelAll = camStatics.LogLevelAll // all
 )
 
 // Validation
@@ -50,9 +50,9 @@ const (
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
 	ValidModeInterface = camStatics.ModeInterface // Interface mode
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	ValidModeTag       = camStatics.ModeTag       // Tag mode
+	ValidModeTag = camStatics.ModeTag // Tag mode
 	// Deprecated: Remove on v0.6.0 instead by camStatics.*
-	ValidModeBot       = camStatics.ModeBoth      // Interface and Tag mode
+	ValidModeBot = camStatics.ModeBoth // Interface and Tag mode
 )
 
 // #################### [END] constant export ####################
@@ -98,7 +98,9 @@ type MiddlewareInterface interface {
 
 // #################### [START] new instance func export ####################
 
+// NewAppConfig
 // new Application config
+// Deprecated: instead by NewApplicationConfig
 func NewAppConfig() *camConfig.AppConfig {
 	appConfig := new(camConfig.AppConfig)
 	appConfig.DefaultDBName = "db"

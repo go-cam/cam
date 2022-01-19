@@ -7,13 +7,13 @@ import (
 
 // base config
 type ComponentConfig struct {
-	camStatics.ComponentConfigInterface
-	Component      camStatics.ComponentInterface // Instance of corresponding component
+	camStatics.IComponentConfig
+	Component      camStatics.IComponent // Instance of corresponding component
 	recoverHandler camStatics.RecoverHandler
 }
 
 // get component instance
-func (config *ComponentConfig) NewComponent() camStatics.ComponentInterface {
+func (config *ComponentConfig) NewComponent() camStatics.IComponent {
 	if config.Component == nil {
 		return nil
 	}
@@ -21,7 +21,7 @@ func (config *ComponentConfig) NewComponent() camStatics.ComponentInterface {
 	t := reflect.TypeOf(config.Component)
 	componentType := t.Elem()
 	componentValue := reflect.New(componentType)
-	componentI := componentValue.Interface().(camStatics.ComponentInterface)
+	componentI := componentValue.Interface().(camStatics.IComponent)
 
 	return componentI
 }
@@ -39,7 +39,7 @@ func (config *ComponentConfig) RecoverHandler(handler camStatics.RecoverHandler)
 }
 
 // init all pluginConfig in configInterface
-//func (config *ComponentConfig) InitPlugin(configI ComponentConfigInterface) {
+//func (config *ComponentConfig) InitPlugin(configI IComponentConfig) {
 //	rValue := camUtils.Reflect.ValueOfElem(configI)
 //
 //	num := rValue.NumField()

@@ -7,7 +7,7 @@ import (
 
 // base component struct
 type Component struct {
-	camStatics.ComponentInterface
+	camStatics.IComponent
 
 	// component name
 	name string
@@ -16,7 +16,7 @@ type Component struct {
 }
 
 // init config
-func (comp *Component) Init(configInterface camStatics.ComponentConfigInterface) {
+func (comp *Component) Init(configInterface camStatics.IComponentConfig) {
 	comp.name = comp.getComponentName(configInterface.NewComponent())
 	comp.recoverHandler = configInterface.GetRecoverHandler()
 	if comp.recoverHandler == nil {
@@ -35,7 +35,7 @@ func (comp *Component) Stop() {
 }
 
 // get component struct name
-func (comp *Component) getComponentName(componentInterface camStatics.ComponentInterface) string {
+func (comp *Component) getComponentName(componentInterface camStatics.IComponent) string {
 	t := reflect.TypeOf(componentInterface)
 	return t.Elem().Name()
 }

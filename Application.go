@@ -3,6 +3,7 @@ package cam
 import (
 	"github.com/go-cam/cam/base/camConfig"
 	"github.com/go-cam/cam/base/camStatics"
+	"github.com/go-cam/cam/base/camStructs"
 	"github.com/go-cam/cam/base/camUtils"
 	"github.com/go-cam/cam/component/camCache"
 	"github.com/go-cam/cam/component/camConsole"
@@ -16,14 +17,16 @@ import (
 	"time"
 )
 
-// framework Application global instance struct define
+// Application global instance struct define
 type Application struct {
+	camStatics.IApplication
 	status             camStatics.ApplicationStatus             // Application status[onInit, onStart, onRun, onStop, onDestroy]
-	config             *camConfig.Config                        // Application config
+	config             *camConfig.Config                        // Deprecated: Application config
+	appConfig          camStatics.IApplicationConfig            //
 	logComp            *camLog.LogComponent                     // Log component
 	cacheComp          camStatics.CacheComponentInterface       // Cache component
 	validComp          camStatics.ValidationComponentInterface  // Validation component
-	componentDict      map[string]camStatics.ComponentInterface // Components dict
+	componentDict      map[string]camStatics.IComponent         // Components dict
 	migrationDict      map[string]camStatics.MigrationInterface // Migration dict
 	beforeInitHandler  func()
 	afterInitHandler   func()
@@ -33,7 +36,7 @@ type Application struct {
 	afterStopHandler   func()
 }
 
-var App camStatics.ApplicationInterface
+var App camStatics.IApplication
 
 func init() {
 	camStatics.App = NewApplication()
@@ -46,9 +49,10 @@ func NewApplication() *Application {
 	app.status = camStatics.AppStatusBeforeInit
 	app.config = camConfig.NewConfig()
 	app.config.AppConfig = NewAppConfig()
+	app.appConfig = camStructs.NewApplicationConfig("cam")
 	app.cacheComp = nil
 	app.validComp = nil
-	app.componentDict = map[string]camStatics.ComponentInterface{}
+	app.componentDict = map[string]camStatics.IComponent{}
 	app.migrationDict = map[string]camStatics.MigrationInterface{}
 	app.beforeInitHandler = func() {}
 	app.afterInitHandler = func() {}
@@ -79,6 +83,10 @@ func (app *Application) AddConfig(configI camStatics.AppConfigInterface) {
 	if config.AppConfig != nil {
 		app.config.AppConfig = config.AppConfig
 	}
+}
+
+func (app *Application) SetApplicationConfig(config camStatics.IApplicationConfig) {
+	app.appConfig = config
 }
 
 // run Application
@@ -197,8 +205,8 @@ func (app *Application) callConsole() {
 }
 
 // get component and the name in the dict
-func (app *Application) getComponentAndName(v camStatics.ComponentInterface) (camStatics.ComponentInterface, string) {
-	var componentIns camStatics.ComponentInterface = nil
+func (app *Application) getComponentAndName(v camStatics.IComponent) (camStatics.IComponent, string) {
+	var componentIns camStatics.IComponent = nil
 	var componentName = ""
 
 	targetName := camUtils.Reflect.GetStructName(v)
@@ -215,7 +223,7 @@ func (app *Application) getComponentAndName(v camStatics.ComponentInterface) (ca
 
 // Overwrite:
 // Try to get instance using struct type
-func (app *Application) GetComponent(v camStatics.ComponentInterface) camStatics.ComponentInterface {
+func (app *Application) GetComponent(v camStatics.IComponent) camStatics.IComponent {
 	ins, _ := app.getComponentAndName(v)
 	return ins
 }
@@ -223,7 +231,7 @@ func (app *Application) GetComponent(v camStatics.ComponentInterface) camStatics
 // Overwrite:
 // Try to get component instance by name.
 // The name is define in config
-func (app *Application) GetComponentByName(name string) camStatics.ComponentInterface {
+func (app *Application) GetComponentByName(name string) camStatics.IComponent {
 	componentIns, has := app.componentDict[name]
 	if !has {
 		return nil
@@ -371,7 +379,7 @@ func (app *Application) getValid() camStatics.ValidationComponentInterface {
 }
 
 // add component after app ran
-func (app *Application) AddComponentAfterRun(name string, conf camStatics.ComponentConfigInterface) camStatics.ComponentInterface {
+func (app *Application) AddComponentAfterRun(name string, conf camStatics.IComponentConfig) camStatics.IComponent {
 	compI := conf.NewComponent()
 	compName := name
 
@@ -424,7 +432,6 @@ func (app *Application) Valid(v interface{}) (firstErr error, errDict map[string
 	return firstErr, errDict
 }
 
-
 func (app *Application) GetGrpcClientConn(name string) *grpc.ClientConn {
 	compI := app.GetComponentByName(name)
 	if compI == nil {
@@ -460,3 +467,21 @@ func (app *Application) BeforeStop(handler func()) {
 func (app *Application) AfterStop(handler func()) {
 	app.afterStopHandler = handler
 }
+
+func (app *Application) GetMicroGrpcConn(appName string) *grpc.ClientConn {
+	//addr, err := app.getMicroServerComponent().GetAddress(appName)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//return
+	// TODO
+	return nil
+}
+
+//func (app *Application) getMicroServerComponent() camStatics.IMicroServerComponent {
+//	ins := app.GetComponent(&camMicroServer.MicroServerComponent{})
+//	if ins == nil {
+//		panic("未选择")
+//	}
+//	return ins.(camStatics.IMicroServerComponent)
+//}
