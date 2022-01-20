@@ -73,7 +73,6 @@ func (comp *WebsocketComponent) handlerFunc(w http.ResponseWriter, r *http.Reque
 	}
 
 	sess := NewWebsocketSession()
-	sess.SetConn(conn)
 
 	defer func() {
 		sess.Destroy()
@@ -119,15 +118,6 @@ func (comp *WebsocketComponent) routeHandler(ctx WebsocketContextInterface, rout
 
 // call Controller-Action or Custom-Handler
 func (comp *WebsocketComponent) callNext(ctx WebsocketContextInterface, route string, values map[string]interface{}) []byte {
-	handler := comp.getCustomHandler(route)
-	if handler != nil {
-		websocketSession, ok := ctx.GetSession().(*WebsocketSession)
-		if !ok {
-			panic("session cannot convert to *WebsocketSession")
-		}
-		return handler(websocketSession.GetConn())
-	}
-
 	customHandler := comp.GetCustomHandler(route)
 	if customHandler != nil {
 		return customHandler(ctx)
@@ -141,19 +131,18 @@ func (comp *WebsocketComponent) callNext(ctx WebsocketContextInterface, route st
 	// init ctrl
 	ctrl.Init()
 	ctrl.SetContext(ctx)
-	ctrl.SetSession(ctx.GetSession())
 	ctrl.SetValues(values)
 	if !ctrl.BeforeAction(action) {
 		return []byte("illegal request")
 	}
 	action.Call()
-	response := ctrl.AfterAction(action, ctx.Read())
 
 	recvMsg := ctx.GetMessage()
-	sendMsg := new(camStructs.Message)
+	sendMsg := new(camStructs.SendMessage)
 	sendMsg.Id = recvMsg.Id
-	//sendMsg.Data
-	return comp.sendMessageParseHandler(sendMsg, response)
+	sendMsg.Route = recvMsg.Route
+	sendMsg.Data = ctrl.AfterAction(action, ctx.Read())
+	return comp.sendMessageParseHandler(sendMsg)
 }
 
 func (comp *WebsocketComponent) tryRecover(oldCtx WebsocketContextInterface, v interface{}) {
@@ -196,16 +185,6 @@ func (comp *WebsocketComponent) listenAndServeTLS() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-// get custom route handler
-// Deprecated: remove on v0.5.0  it's not support Middleware
-func (comp *WebsocketComponent) getCustomHandler(route string) camStatics.WebsocketRouteHandler {
-	handler, has := comp.config.routeHandlerDict[route]
-	if !has {
-		return nil
-	}
-	return handler
 }
 
 // new websocket context

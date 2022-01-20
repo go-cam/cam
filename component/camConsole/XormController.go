@@ -50,11 +50,15 @@ func (ctrl *XormController) Generate() {
 	modelsDir := dbDir + "/models"
 	if !camUtils.File.Exists(modelsDir) {
 		err := camUtils.File.Mkdir(modelsDir)
-		camUtils.Error.Panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	command := "xorm reverse mysql \"" + dsn + "\" \"" + tplDir + "\" \"" + modelsDir + "\""
 	fmt.Println(command)
 	err := camUtils.Console.Start(command)
-	camUtils.Error.Panic(err)
+	if err != nil {
+		panic(err)
+	}
 }

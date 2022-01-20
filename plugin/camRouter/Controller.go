@@ -43,20 +43,6 @@ func (ctrl *Controller) GetContext() camStatics.ContextInterface {
 }
 
 // OVERWRITE
-// Deprecated: remove on v0.5.0
-// Instead: GetContext().SetSession();
-func (ctrl *Controller) SetSession(session camStatics.SessionInterface) {
-	ctrl.context.SetSession(session)
-}
-
-// OVERWRITE
-// Deprecated: remove on v0.5.0
-// Instead: GetContext().GetSession();
-func (ctrl *Controller) GetSession() camStatics.SessionInterface {
-	return ctrl.context.GetSession()
-}
-
-// OVERWRITE
 // set values
 func (ctrl *Controller) SetValues(values map[string]interface{}) {
 	ctrl.values = values
@@ -84,22 +70,6 @@ func (ctrl *Controller) GetValue(key string) interface{} {
 // get the value with string type
 func (ctrl *Controller) GetString(key string) string {
 	return camUtils.C.InterfaceToString(ctrl.GetValue(key))
-}
-
-// set response content
-// Deprecated: remove on v0.5.0
-// Instead: GetContext().Write();
-func (ctrl *Controller) SetResponse(bytes []byte) {
-	ctrl.responseBytes = bytes
-	ctrl.GetContext().Write(bytes)
-}
-
-// OVERWRITE
-// return action write
-// Deprecated: remove on v0.5.0
-// Instead: GetContext().Read();
-func (ctrl *Controller) GetResponse() []byte {
-	return ctrl.responseBytes
 }
 
 // OVERWRITE
